@@ -1,0 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Noto+Serif+TC&family=Raleway&display=swap&family=Josefin+Slab:wght@100");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Noto Serif TC", sans-serif;
+  }
+}
