@@ -1,0 +1,31 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useLoadingStore } from '../../store/loading';
+
+const isLoading = computed(() => useLoadingStore().getLoadingStatus());
+</script>
+
+<template>
+    <div v-if="isLoading"
+        class="fixed top-0 left-0 z-50 w-screen h-screen flex flex-col gap-8 items-center justify-center bg-stone-600 bg-opacity-100">
+        <div class="relative p-4 flex">
+            <div class="absolute top-0 left-0 w-full h-full border-[.375rem] border-white text-[#b4b2b265] animate-loading">
+            </div>
+            <img src="/assets/img/deerIcon.png" alt="deerIcon" class="w-16" />
+        </div>
+        <div class="flex items-center justify-between gap-8">
+            <div class="w-3 h-3">
+                <div class="w-2 h-2 bg-white opacity-0 rounded-full animate-bounce1"></div>
+            </div>
+            <div class="w-3 h-3">
+                <div class="w-2 h-2 bg-white opacity-0 rounded-full animate-bounce2"></div>
+            </div>
+            <div class="w-3 h-3">
+                <div class="w-2 h-2 bg-white opacity-0 rounded-full animate-bounce3"></div>
+            </div>
+            <div class="w-3 h-3">
+                <div class="w-2 h-2 bg-white opacity-0 rounded-full animate-bounce4"></div>
+            </div>
+        </div>
+    </div>
+</template>

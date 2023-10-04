@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getLevelTwoData } from '../../api/gallery.ts';
+import { getGalleryData } from '../../api/gallery.ts';
 import { ref, toRefs, onMounted, watchEffect } from 'vue';
 import {
     XCircleIcon,
@@ -21,7 +21,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['click']);
+const emit = defineEmits();
 
 const leftBlock = ref<HTMLElement | null>(null);
 const rightBlock = ref<HTMLElement | null>(null);
@@ -54,7 +54,7 @@ const comments = [
 const { id, photoPostShow } = toRefs(props);
 const photoPost = ref();
 const fetchData = async () => {
-    const responseData = await getLevelTwoData('/gallery', `/${id.value}`);
+    const responseData = await getGalleryData(`/${id.value}`);
     photoPost.value = responseData;
 };
 
@@ -88,8 +88,8 @@ watchEffect(() => {
             <span class="font-bold text-stone-500 tracking-widest">留言區</span>
             <div class="border-b-[.0938rem] border-gray-300 my-4"></div>
             <div>
-                <div class="mt-10 mb-4 border border-stone-600 p-6">
-                    <textarea v-model="comment" name="" id="" cols="20" rows="2" placeholder="輸入留言..."
+                <div class="mt-10 mb-4 border border-stone-600 p-3">
+                    <textarea v-model="comment" name="" id="" cols="20" rows="3" placeholder="輸入留言..."
                         class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current"></textarea>
                 </div>
                 <div class="flex justify-end gap-2">

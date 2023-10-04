@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import TheHeader from '../components/layout/TheHeader.vue';
 import { ref, onMounted } from 'vue';
-import { getLevelOneData } from '../api/gallery.ts';
+import { getGalleryData } from '../api/gallery.ts';
 import mapboxgl from 'mapbox-gl';
 import MapBoxGeoCoder from '@mapbox/mapbox-gl-geocoder';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import "mapbox-gl/dist/mapbox-gl.css";
 import '@mapbox/mapbox-gl-geocoder/lib/mapbox-gl-geocoder.css';
+import { useLoadingStore } from '../store/loading';
+
+
 const mapContainer = ref<HTMLElement | null>(null);
 let currentPopup: mapboxgl.Popup | null = null;
 
 onMounted(async () => {
-    const animalsDataset = await getLevelOneData('/gallery');
+    const loadingStore = useLoadingStore();
+    loadingStore.setLoadingStatus(true);
+    loadingStore.setInRequest(true);
+    const animalsDataset = await getGalleryData();
 
     const geoJSONFeatures = animalsDataset.map(animalsData => ({
         type: "Feature",
@@ -209,7 +215,9 @@ onMounted(async () => {
             setPopup(e.result.center, e.result.properties);
 
         });
-    });
+    });    
+    loadingStore.setInRequest(false);
+    loadingStore.setLoadingStatus(false);
 });
 </script>
 

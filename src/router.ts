@@ -1,12 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useUserStore } from "./store/user.ts";
+import { useLoadingStore } from "./store/loading.ts";
 
 import Home from "./pages/Home.vue";
 import Login from "./pages/Login.vue";
 import Register from "./pages/Register.vue";
+import Help from "./pages/Help.vue";
 import Articles from "./pages/Articles.vue";
 import Explore from "./pages/Explore.vue";
 import Gallery from "./pages/Gallery.vue";
-import User from "./pages/User.vue";
+import Community from "./pages/Community.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,11 +20,6 @@ const router = createRouter({
     },
     { path: "/home", component: Home, name: "Home" },
     {
-      path: "/explore",
-      component: Explore,
-      name: "Explore",
-    },
-    {
       path: "/login",
       component: Login,
       name: "Login",
@@ -30,6 +28,16 @@ const router = createRouter({
       path: "/register",
       component: Register,
       name: "Register",
+    },
+    {
+      path: "/help",
+      component: Help,
+      name: "Help",
+    },
+    {
+      path: "/explore",
+      component: Explore,
+      name: "Explore",
     },
     {
       path: "/articles",
@@ -51,6 +59,26 @@ const router = createRouter({
       component: Gallery,
       name: "Gallery",
     },
+    {
+      path: "/community",
+      component: Community,
+      name: "Community",
+    },
   ],
 });
 export default router;
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore();
+  if (userStore.userData) {
+    userStore.isLogin = true;
+  }
+
+  useLoadingStore().setLoadingStatus(true);
+  useLoadingStore().setIsCountingSeconds(true);
+  next();
+});
+
+router.afterEach(() => {
+  useLoadingStore().setIsCountingSeconds(false);
+});

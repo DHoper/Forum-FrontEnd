@@ -18,8 +18,6 @@ const addTabClass = (index: number) => {
 };
 
 watch(activeTab, () => {
-    console.log(22);
-
     Array.from(nav.value?.children || []).forEach((item, index) => {
         if (index === activeTab.value) {
             item.classList.add('text-white', 'border-white', 'border-b-2', 'scale-110');
@@ -96,7 +94,7 @@ const removeLineClass = () => {
                     </div>
                 </transition>
             </div>
-            <button ref="button" @click="router.push('/explore')"
+            <button ref="button" @click="router.push('Login')"
                 class="relative w-60 h-12 text-white border-2 text-lg border-white hover:bg-[#3332323f] font-bold py-2 mt-8 rounded-full tracking-widest transition-all origin-center hover:animate-circle"
                 tabindex="0" @mouseover.once="addAnimateClass" @mouseenter="addLineClass" @mouseleave="removeLineClass">
                 <span>現&nbsp;&nbsp;在&nbsp;&nbsp;開&nbsp;&nbsp;始</span>

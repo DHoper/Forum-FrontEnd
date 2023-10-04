@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Noto+Serif+TC&family=Raleway&display=swap&family=Josefin+Slab:wght@100");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Josefin+Slab:wght@200&family=Noto+Serif+TC&family=Raleway&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -8,4 +8,12 @@
   html {
     font-family: "Noto Serif TC", sans-serif;
   }
+}
+
+/* 取消自动填充背景颜色 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 30px #d1d1d1 inset !important;
 }

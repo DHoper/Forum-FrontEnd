@@ -1,23 +1,18 @@
-import axios from "axios";
+import { apiClient } from "./axiosInstance";
 
-export const apiClient = axios.create({
-  baseURL: "http://localhost:3000/",
-});
-
-
-export async function getLevelOneData(url) {
-  let responseData = null;
-  const response = await apiClient.get(url);
-  responseData = response.data;
-
-  return responseData;
+export const ApiConfig = {
+  index: '/photoPost',
 }
 
-export async function getLevelTwoData(url, id) {
+export async function getGalleryData(id?:string) {
   let responseData = null;
-  const response = await apiClient.get(url + id);
-  responseData = response.data;
-
+  if(!id) {
+    const response = await apiClient.get(ApiConfig.index);
+    responseData = response.data;
+  }else {
+    const response = await apiClient.get(id);
+    responseData = response.data;
+  }
   return responseData;
 }
 

@@ -5,12 +5,14 @@ import {
     PlusCircleIcon,
 } from '@heroicons/vue/24/solid';
 import { ref, onMounted } from 'vue';
-import { getLevelOneData } from '../api/gallery.ts';
+import { getGalleryData } from '../api/gallery.ts';
 
 const galleryDataset = ref();
 const fetchData = async () => {
-    const responseData = await getLevelOneData('/gallery');
+    const responseData = await getGalleryData();
     galleryDataset.value = responseData;
+    console.log(galleryDataset.value);
+    
 };
 
 enum AddBlock {
@@ -41,6 +43,7 @@ onMounted(async () => {
 const photoPostShow = ref(false);
 const photoPostShowInner = ref(false);
 const photoPostID = ref<string>('');
+
 function openPhoto(id: string) {
     photoPostID.value = id;
     photoPostShow.value = true;
