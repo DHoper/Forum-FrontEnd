@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", () => {
 
   const storedUser = localStorage.getItem("user");
   const userData = ref(storedUser ? JSON.parse(storedUser) : null);
-  
+
   const loggingStatus = ref<LoginStatus | undefined>();
 
   async function login(email: string, password: string) {
@@ -39,10 +39,17 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  function logout() {
+    localStorage.removeItem("user");
+    isLogin.value = false;
+    userData.value = null;
+  }
+
   return {
     isLogin,
     loggingStatus,
     userData,
     login,
+    logout,
   };
 });

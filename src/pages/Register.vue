@@ -6,21 +6,86 @@ import {
 import { useRouter } from 'vue-router';
 import { useLoadingStore } from '../store/loading';
 import { useUserStore } from '../store/user';
-import { postUserData } from '../api/user.ts';
+import { postUserData, checkRepeatEmail } from '../api/user.ts';
+import { FormInputType, FormInputInvalidType } from '../types.ts';
 
 const loadingStore = useLoadingStore();
 const router = useRouter();
 
-//表單註冊
-interface FormInput {
-    email: string,
-    username: string,
-    password: string,
-    passwordConfirm: string,
-    selectedAvatarIndex: number
-}
+const topicTags = {
+    ecology: {
+        color: "#A89376",
+        tag: [
+            "生態系",
+            "水生生物",
+            "魚類",
+            "陸生動物",
+            "節肢動物",
+            "兩棲動物",
+            "植物",
+            "瀕危物種",
+            "危險動物",
+            "鳥類",
+        ],
+    },
+    knowledge: {
+        color: "#875B4A",
+        tag: [
+            "動物行為",
+            "遷徒",
+            "奇特行為",
+            "攝影技巧",
+        ],
+    },
+    geographicalFeatures: {
+        color: "#B7AFA6",
+        tag: [
+            "野生動物保護區",
+            "海洋",
+            "溪河湖泊",
+            "山林",
+            "森林",
+            "草原",
+            "雪地",
+            "沙漠",
+            "海島",
+            "沼澤",
+        ],
+    },
+    style: {
+        color: "#566E3D",
+        tag: [
+            "自然風景",
+            "夜間攝影",
+            "微距攝影",
+            "野外探險",
+            "地理風貌",
+        ],
+    },
+    issue: {
+        color: "#22577A",
+        tag: [
+            "環境保育",
+            "全球生態",
+            "嚴重議題",
+        ],
+    },
+    geolocation: {
+        color: "#F4B860",
+        tag: [
+            "非洲",
+            "亞洲",
+            "南美洲",
+            "北美洲",
+            "歐洲",
+            "澳大利亞",
+            "南極洲",
+        ],
+    },
+};
 
-const formInput = ref<FormInput>({
+//表單註冊
+const formInput = ref<FormInputType>({
     email: '',
     username: '',
     password: '',
@@ -28,15 +93,11 @@ const formInput = ref<FormInput>({
     selectedAvatarIndex: Math.floor(Math.random() * 12) + 1
 });
 
-
-interface FormInputInvalid {
-    email: boolean,
-    username: boolean,
-    password: boolean,
-    passwordConfirm: boolean,
-}
-const formInputInvalid = ref<FormInputInvalid>({
-    email: true,
+const formInputInvalid = ref<FormInputInvalidType>({
+    email: {
+        valid: true,
+        registered: false,
+    },
     username: true,
     password: true,
     passwordConfirm: true,
@@ -47,10 +108,14 @@ const showAvatarSelector = ref<boolean>(false);
 const openAvatarSelector = () => showAvatarSelector.value = true;
 const closeAvatarSelector = () => showAvatarSelector.value = false;
 
+////表單註冊-主題
+const selectedTags = ref<string[]>([]);
+
 ////表單註冊-驗證
 type FieldName = "email" | "username" | "password" | "passwordConfirm";
-function validateInput(fieldName: FieldName) {
+async function validateInput(fieldName: FieldName) {
     let isValid = true;
+    let emailRepeatCheck = false;
     let value = formInput.value[fieldName];
 
     if (value.trim() === '') {
@@ -59,8 +124,17 @@ function validateInput(fieldName: FieldName) {
 
     switch (fieldName) {
         case 'email':
-            if (!value.includes('@') || !value.includes('.')) {
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!emailRegex.test(value)) {
                 isValid = false;
+            } else {
+                isValid = true;
+            }
+            const isEmailDuplicate = await checkRepeatEmail(value);
+            if (isEmailDuplicate) {
+                emailRepeatCheck = true;
+            } else {
+                emailRepeatCheck = false;
             }
             break;
         case 'username':
@@ -88,13 +162,20 @@ function validateInput(fieldName: FieldName) {
         default:
             break;
     }
-    formInputInvalid.value[fieldName] = isValid;
+
+    if (fieldName === 'email') {
+        formInputInvalid.value[fieldName].valid = isValid;
+        formInputInvalid.value[fieldName].registered = emailRepeatCheck;
+    } else {
+        formInputInvalid.value[fieldName] = isValid;
+    }
+
 }
 
 ////表單註冊-提交
 const handleRegisterSuccess = (email: string, password: string) => {
     const userStore = useUserStore();
-    console.log( userStore.login);
+    console.log(userStore.login);
     userStore.login(email, password);
     router.push('Articles');
 }
@@ -109,6 +190,7 @@ async function handleSubmit() {
         username: formInput.value.username,
         password: formInput.value.password,
         selectedAvatarIndex: formInput.value.selectedAvatarIndex,
+        selectedTags: selectedTags.value
     };
 
     await postUserData(submitFormData)
@@ -118,8 +200,6 @@ async function handleSubmit() {
     loadingStore.setInRequest(false);
     loadingStore.setLoadingStatus(false);
 
-    console.log(submitFormData.email,777);
-    
     handleRegisterSuccess(submitFormData.email, submitFormData.password);
 }
 
@@ -130,16 +210,17 @@ const nextStep = () => {
     if (formStep.value === 0) {
         validateInput('email');
         validateInput('username');
-        if (formInputInvalid.value.email && formInputInvalid.value.username) {
-            formStep.value++;
+        if (!formInputInvalid.value.email.valid || formInputInvalid.value.email.registered || !formInputInvalid.value.username) {
+            return;
         }
     } else if (formStep.value === 1) {
         validateInput('password');
         validateInput('passwordConfirm');
-        if (formInputInvalid.value.password && formInputInvalid.value.passwordConfirm) {
-            formStep.value++;
+        if (!formInputInvalid.value.password || !formInputInvalid.value.passwordConfirm) {
+            return;
         }
     }
+    formStep.value++;
 };
 const previousStep = () => { formStep.value-- };
 
@@ -170,7 +251,7 @@ watch(activeTab, () => {
 
 <template>
     <div class="relative flex h-screen w-screen overflow-hidden">
-        <div class="loginForm min-w-fit bg-stone-700 opacity-95 flex flex-col items-center w-96 px-12 gap-10">
+        <div class="loginForm min-w-fit bg-stone-700 opacity-95 flex flex-col items-center w-96 gap-10">
             <div class="mt-8">
                 <div class="flex-1 flex items-center border-4 border-white p-4 w-fit mx-auto">
                     <img src="/assets/img/deerIcon.png" alt="deerIcon" class="w-16">
@@ -178,19 +259,24 @@ watch(activeTab, () => {
                 <span class="text-white text-3xl font-bold">WILDLENS</span>
             </div>
             <form method="POST" autocomplete="off" @submit.prevent="handleSubmit"
-                class="text-white flex flex-col items-center gap-6 w-full">
-                <div class="formContent">
+                class="text-white flex flex-col items-center gap-6 w-80">
+                <div class="formContent w-full">
                     <div v-if="formStep === 0" class="step1 flex flex-col gap-6">
                         <div class="relative mb-3 text-center flex flex-col bg-[#61606058] px-2 pt-1 pb-0 border-2"
-                            :class="formInputInvalid.email ? 'border-transparent' : 'border-red-500 pb-1'">
+                            :class="formInputInvalid.email.valid || formInputInvalid.email.registered ? 'border-transparent' : 'border-red-500 pb-1'">
                             <div class="border-b-2 border-stone-300 flex gap-2 w-full py-1"
-                                :class="formInputInvalid.email ? '' : 'border-none'">
+                                :class="formInputInvalid.email.valid || formInputInvalid.email.registered ? '' : 'border-none'">
                                 <label class="text-gray-200 opacity-80" for="email">信&emsp;&emsp;箱 :</label>
                                 <input v-model="formInput.email" @blur="validateInput('email')"
                                     class="border-0 focus:ring-0 focus:outline-none bg-transparent w-48 text-sm" type="text"
                                     placeholder="請輸入有效信箱" name="email" id="email" required autocomplete="autocomplete_off">
                             </div>
-                            <div v-if="!formInputInvalid.email"
+                            <div v-if="formInputInvalid.email.registered"
+                                class="w-full absolute left-0 -top-6 flex items-center justify-center gap-1 text-sm text-red-500">
+                                <ExclamationCircleIcon class="w-4" />
+                                <p>此信箱已被註冊</p>
+                            </div>
+                            <div v-else-if="!formInputInvalid.email.valid"
                                 class="w-full absolute left-0 -top-6 flex items-center justify-center gap-1 text-sm text-red-500">
                                 <ExclamationCircleIcon class="w-4" />
                                 <p>請輸入有效信箱</p>
@@ -247,27 +333,44 @@ watch(activeTab, () => {
 
                         </div>
                     </div>
-                    <div v-if="formStep === 2" class="step3 flex flex-col gap-4 -mt-4">
-                        <div class="bg-stone-100 border-2 border-dashed border-stone-700"> <img class="w-32 p-3"
+                    <div v-if="formStep === 2" class="step3 flex flex-col items-center gap-4 -mt-4 mb-8">
+                        <div class="bg-stone-100 border-2 border-dashed border-stone-700 w-32">
+                            <img class=" p-3"
                                 :src="`../../public//assets/img/avatar (${formInput.selectedAvatarIndex}).png`" alt="">
                         </div>
                         <button @click="openAvatarSelector" type="button"
-                            class="w-full bg-stone-600 text-white px-4 py-2 hover:bg-stone-500 focus:outline-none tracking-widest transition-all duration-500">
+                            class="w-32 bg-stone-600 text-white px-4 py-2 hover:bg-stone-500 focus:outline-none tracking-widest transition-all duration-500">
                             選擇頭像
                         </button>
+                    </div>
+                    <div v-if="formStep === 3" class="step4 flex flex-col -mt-4 mb-2 w-full">
+                        <p
+                            class="w-full bg-stone-500 text-stone-100 px-4 py-2 text-center border border-stone-500 border-b-0">
+                            挑選一些感興趣的主題
+                        </p>
+                        <div
+                            class="overflow-auto flex items-center justify-center flex-wrap w-full h-40 border border-stone-500 p-2 bg-stone-600 border-t-0">
+                            <div class="flex items-center justify-center flex-wrap" v-for="topic in topicTags">
+                                <label v-for="tag in topic.tag" class="border p-1 m-1 bg-stone-600"
+                                    :style="selectedTags.includes(tag) ? `background-color:${topic.color}` : ''">
+                                    <input type="checkbox" v-model="selectedTags" :value="tag" class="hidden">
+                                    <span class="cursor-pointer">{{ tag }}</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="formActions w-full flex gap-4">
                     <button @click.prevent="previousStep()" v-if="formStep !== 0" type="button"
-                        class="w-full border-2 bg-stone-600 border-stone-100 text-white px-4 py-2 hover:bg-stone-100 hover:text-stone-800 focus:outline-none tracking-widest transition-all duration-500">
+                        class="flex-1 border-2 bg-stone-600 border-stone-100 text-white px-4 py-2 hover:bg-stone-100 hover:text-stone-800 focus:outline-none tracking-widest transition-all duration-500">
                         上一步
                     </button>
-                    <button v-if="formStep !== 2" @click.prevent="nextStep" type="button"
-                        class="w-full bg-stone-600 border-2 border-stone-100 text-white px-4 py-2 hover:bg-stone-100 hover:text-stone-800 focus:outline-none tracking-widest transition-all duration-500">
+                    <button v-if="formStep !== 3" @click.prevent="nextStep" type="button"
+                        class="flex-1 bg-stone-600 border-2 border-stone-100 text-white px-4 py-2 hover:bg-stone-100 hover:text-stone-800 focus:outline-none tracking-widest transition-all duration-500">
                         下一步
                     </button>
                     <button v-else :disabled="!finished" type="submit"
-                        class="w-full bg-stone-600 border-2 border-stone-100 text-white px-4 py-2 hover:bg-stone-100 hover:text-stone-800 focus:outline-none tracking-widest transition-all duration-500">
+                        class="flex-1 bg-stone-600 border-2 border-stone-100 text-white px-4 py-2 hover:bg-stone-100 hover:text-stone-800 focus:outline-none tracking-widest transition-all duration-500">
                         註冊
                     </button>
                 </div>
@@ -275,9 +378,9 @@ watch(activeTab, () => {
                     class="w-full bg-[#FF5722] text-white border-2 border-[#FF5722] px-4 py-2 opacity-90 hover:bg-[#FF5722] hover:opacity-100 transition-all duration-500">
                     使用Google帳號註冊
                 </button>
-                <div class="text-sm underline">
-                    <router-link to="Login">已有帳號?</router-link>
-                </div>
+                <router-link :to="{name: 'Login'}">
+                    <div class="text-sm underline">已有帳號?</div>
+                </router-link>
             </form>
         </div>
         <div
@@ -313,14 +416,19 @@ watch(activeTab, () => {
                     </transition>
                 </div>
                 <div class="absolute bottom-10 flex justify-end w-full gap-4 pr-4">
-                    <button
-                        class="text-white py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
-                        <router-link to="Articles">返回主頁</router-link>
-                    </button>
-                    <button
-                        class="border-2 border-stone-100 text-stone-100 py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
-                        聯絡我們
-                    </button>
+
+                    <router-link :to="{name: 'Articles'}">
+                        <button
+                            class="text-white py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
+                            返回主頁
+                        </button>
+                    </router-link>
+                    <router-link :to="{name: 'Help'}">
+                        <button
+                            class="border-2 border-stone-100 text-stone-100 py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
+                            聯絡我們
+                        </button>
+                    </router-link>
                 </div>
             </div>
             <Transition name="avatarSelector" enter-active-class="animate-slideInRight"

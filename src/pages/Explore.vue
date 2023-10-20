@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import TheHeader from '../components/layout/TheHeader.vue';
-import { ref, onMounted } from 'vue';
+import Popup from './Explore/Popup.vue';
+import PhotoPost from './Gallery/PhotoPost.vue';
+import { ref, onMounted, h, render } from 'vue';
 import { getGalleryData } from '../api/gallery.ts';
 import mapboxgl from 'mapbox-gl';
 import MapBoxGeoCoder from '@mapbox/mapbox-gl-geocoder';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import MapBoxLanguage from '@mapbox/mapbox-gl-language';
 import "mapbox-gl/dist/mapbox-gl.css";
 import '@mapbox/mapbox-gl-geocoder/lib/mapbox-gl-geocoder.css';
 import { useLoadingStore } from '../store/loading';
@@ -13,8 +14,23 @@ import { useLoadingStore } from '../store/loading';
 const mapContainer = ref<HTMLElement | null>(null);
 let currentPopup: mapboxgl.Popup | null = null;
 
+const photoPostShow = ref(false);
+const photoPostShowInner = ref(false);
+const photoPostID = ref<string>('');
+
+function openPhoto(id: string) {
+    photoPostID.value = id;
+    photoPostShow.value = true;
+    photoPostShowInner.value = true;
+}
+function closePhoto() {
+    photoPostShow.value = false;
+    photoPostShowInner.value = false;
+    photoPostID.value = '';
+}
+
 onMounted(async () => {
-    const loadingStore = useLoadingStore();
+    const loadingStore = useLoadingStore();  //設置loading動畫頁
     loadingStore.setLoadingStatus(true);
     loadingStore.setInRequest(true);
     const animalsDataset = await getGalleryData();
@@ -43,35 +59,23 @@ onMounted(async () => {
         zoom: 2
     });
 
-    const language = new MapboxLanguage({ defaultLanguage: 'zh-Hant' });
+    const language = new MapBoxLanguage({ defaultLanguage: 'zh-Hant' });
     map.addControl(language);
 
-    function setPopup(coordinates: mapboxgl.LngLatLike, properties) {
-        const popupElement = ` 
-      <div class="transition-all bg-white duration-700 ease-in rounded-sm  shadow-md shadow-gray-800 cursor-pointer hover:scale-105 border-t-8 border-2 border-b border-stone-600 flex">
-          <img src=${properties.url} alt="animal" class="w-52 rounded-sm  rounded-r-none shadow-xl">
-          <div class="relative rounded-r-sm border-l-0 flex flex-col justify-between items-center flex-1 p-4 max-w-[6rem]">
-            <div class="my-2 w-full h-full overflow-hidden flex flex-col justify-between items-center">
-                <div>
-              <p class="text-xl font-bold text-center leading-6 line-clamp-2">${properties.title}</p>
-              <p class="text-gray-500 text-center text-xs truncate" mt-1>${properties.location}</p>
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 text-stone-700 hover:text-blue-700 hover:scale-105  transition-all duration-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-           </div>
-      </div>
-    `;
-
-        const pop = new mapboxgl.Popup({ offset: 0, closeButton: false, className: 'popcard' })
-
-        pop.setLngLat(coordinates)
-            .setHTML(popupElement)
-            .setMaxWidth("50vw")
+    function setPopup(coordinates: mapboxgl.LngLatLike, properties: object) {
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML('<div id="map-popup-content"></div>')
             .addTo(map);
-        currentPopup = pop;
+
+
+        const popupComp = h(Popup, {
+            properties,
+            onOpenPhoto: (id: string) => openPhoto(id)
+        });
+
+        render(popupComp, document.getElementById("map-popup-content")!);
+
     }
 
     const searchData = {
@@ -99,7 +103,7 @@ onMounted(async () => {
         localGeocoder: forwardGeocoder,
         localGeocoderOnly: true,
         marker: false,
-        language: 'zh',
+        language: 'zh-Hant',
         minLength: 1,
         zoom: 14,
         placeholder: '動物名稱',
@@ -215,7 +219,7 @@ onMounted(async () => {
             setPopup(e.result.center, e.result.properties);
 
         });
-    });    
+    });
     loadingStore.setInRequest(false);
     loadingStore.setLoadingStatus(false);
 });
@@ -223,11 +227,10 @@ onMounted(async () => {
 
 <template>
     <div class="flex flex-col h-screen">
-        <TheHeader :is-login="false" />
-        <div class="bg-stone-600 p-1 pt-0 flex-grow">
+        <div class="bg-stone-600 p-1 pt-0 flex-grow relative">
             <div ref="mapContainer" class="w-full h-full rounded-sm"></div>
+            <PhotoPost v-if="photoPostShow" :id="photoPostID" :photoPostShow="photoPostShowInner" @close="closePhoto" />
         </div>
-
     </div>
 </template>
 
@@ -255,6 +258,9 @@ onMounted(async () => {
      border: none !important;
      box-shadow: none !important;
      background-color: transparent !important;
+ }
+ .mapboxgl-popup-close-button {
+    display: none;
  }
 </style>
 

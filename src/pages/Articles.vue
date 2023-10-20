@@ -97,13 +97,12 @@ const articles = [
 </script>
 
 <template>
-    <div class="bg-articles bg-no-repeat bg-cover bg-center w-full bg-fixed">
-        <TheHeader :is-login="false" />
-        <div class="absolute flex flex-col items-center top-52 left-1/2 -translate-x-1/2 font-Josefin tracking-widest">
+    <div class="bg-articles bg-no-repeat bg-cover bg-center w-full bg-fixed flex flex-col items-center">
+        <div class="flex flex-col items-center mt-44 font-Josefin tracking-widest">
             <h1 class="uppercase text-5xl font-bold text-center">The beauty of nature</h1>
             <h3 class="italic text-xl mt-2">探索自然與保育之美</h3>
         </div>
-        <div class="bg-white w-full mt-[90vh]">
+        <div class="bg-white w-full mt-[55vh]">
             <ul class="mx-auto flex flex-col items-center w-[62rem] translate-y-[-7.5rem]">
                 <li v-for="article in articles" class="bg-white p-5 w-full">
                     <div class="">

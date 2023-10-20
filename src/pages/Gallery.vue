@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import TheHeader from '../components/layout/TheHeader.vue';
 import PhotoPost from './Gallery/PhotoPost.vue';
 import {
     PlusCircleIcon,
 } from '@heroicons/vue/24/solid';
 import { ref, onMounted } from 'vue';
 import { getGalleryData } from '../api/gallery.ts';
+import { useLoadingStore } from '../store/loading';
+
 
 const galleryDataset = ref();
 const fetchData = async () => {
     const responseData = await getGalleryData();
     galleryDataset.value = responseData;
-    console.log(galleryDataset.value);
-    
 };
 
 enum AddBlock {
@@ -23,43 +22,48 @@ enum AddBlock {
 const addBlock = ref<AddBlock>(AddBlock.Icon);
 const rightBlock = ref<HTMLElement | null>(null);
 
+//處理發布按鈕 當頁面置底時隱藏
 function handleScroll() {
     const scrollY = rightBlock.value?.scrollTop;
     const clientHeight = rightBlock.value?.clientHeight;
     const scrollHeight = rightBlock.value?.scrollHeight;
 
-    if (scrollY + clientHeight + 100>= scrollHeight) {
+    if (scrollY + clientHeight + 100 >= scrollHeight) {
         addBlock.value = AddBlock.Block;
-    }else {
+    } else {
         addBlock.value = AddBlock.Icon;
     }
 }
 
 onMounted(async () => {
+    const loadingStore = useLoadingStore();  //設置loading動畫頁
+    loadingStore.setLoadingStatus(true);
+    loadingStore.setInRequest(true);
+
     await fetchData();
     rightBlock.value?.addEventListener('scroll', handleScroll);
+
+    loadingStore.setInRequest(false);
+    loadingStore.setLoadingStatus(false);
 });
 
+//photoPost組件邏輯
 const photoPostShow = ref(false);
-const photoPostShowInner = ref(false);
 const photoPostID = ref<string>('');
 
 function openPhoto(id: string) {
     photoPostID.value = id;
     photoPostShow.value = true;
-    photoPostShowInner.value = true;
 }
 function closePhoto() {
     photoPostShow.value = false;
-    photoPostShowInner.value = false;
     photoPostID.value = '';
 }
 </script>
 
 <template>
-    <div class="h-screen overflow-hidden flex flex-col">
-        <TheHeader :is-login="false" />
-        <div v-if="galleryDataset" class="flex relative overflow-hidden">
+    <div class="overflow-hidden flex flex-col relative">
+        <div v-if="galleryDataset" class="flex relative overflow-hidden bg-stone-600">
             <div
                 class="flex flex-col items-center bg-gallery bg-no-repeat bg-cover bg-center basis-[30%] text-white h-full">
                 <span class="text-5xl [writing-mode:vertical-lr] mt-16 tracking-[1rem] font-bold">偉大的世界</span>
@@ -69,15 +73,16 @@ function closePhoto() {
                 </div>
             </div>
             <div class="basis-[70%] h-full">
-                <div ref="rightBlock" class="h-full flex flex-wrap overflow-auto">
-                    <div v-for="galleryData in galleryDataset" class="relative basis-1/4 group cursor-pointer hover:z-10">
+                <div ref="rightBlock" class="h-full flex flex-wrap overflow-y-auto overflow-x-hidden">
+                    <div v-for="galleryData in galleryDataset"
+                        class="relative basis-1/4 group cursor-pointer hover:z-10 border border-stone-600">
                         <img class="scale-[101%] group-hover:scale-105 transition-all ease-in duration-700"
                             :src="galleryData.image[0].url" />
                         <div
-                            class="absolute top-0 left-0 w-full h-full scale-[101%] bg-black bg-opacity-0 group-hover:bg-opacity-40 group-hover:scale-105 transition-all ease-in duration-700">
+                            class="absolute top-0 left-0 w-full h-full scale-[101%] bg-black bg-opacity-0 group-hover:bg-opacity-30 group-hover:scale-105 transition-all ease-in duration-700">
                         </div>
                         <div @click="openPhoto(galleryData._id)"
-                            class="flex flex-col justify-between absolute top-0 left-0 w-full h-full scale-[101%] text-white p-4 pb-1 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:scale-105 group-hover:translate-x-0 transition-all duration-1000 ease-in"
+                            class="flex flex-col justify-between absolute top-0 left-0 w-full h-full scale-[101%] text-white px-4 pt-3 pb-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:scale-105 group-hover:translate-x-0 transition-all duration-700 ease-in"
                             tabindex="-1">
                             <div>
                                 <p class="text-xs text-[#fdfdfdda]">
@@ -91,24 +96,28 @@ function closePhoto() {
                                 </p>
                             </div>
                             <div>
-                                <div class="border border-[#fdfdfd7d] "></div>
+                                <div class="border border-[#fdfdfdb7]"></div>
                                 <div class="flex items-center justify-between h-7">
                                     <span class="button text-sm tracking-widest">查看更多</span>
                                     <img src="/assets/svg/long-arrow.svg" alt="long-arrow"
-                                        class="w-14 h-10 0 -translate-x-1/2 group-hover:translate-x-0 transition-all duration-[1150ms] ease-linear">
+                                        class="w-14 h-10 0 -translate-x-1/2 group-hover:translate-x-0 transition-all duration-1000 ease-linear">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <a v-if="addBlock === 'block'" href="add"
-                        class="flex justify-center items-center flex-grow text-2xl font-bold bg-gray-100 text-stone-700 cursor-pointer hover:text-stone-900 hover:scale-105 hover:bg-white hover:z-10 transition-all duration-[1150ms]">
-                        添加更多發現
-                    </a>
-                    <PlusCircleIcon v-else
-                        class="fixed bottom-12 right-12 w-16 h-16 z-10 text-white cursor-pointer hover:scale-110 hover:text-green-400 transition-all ease-in" />
+                    <router-link class="flex-grow" v-if="addBlock === 'block'" :to="{ name: 'CreatePost' }">
+                        <a
+                            class="w-full h-full flex justify-center items-center text-xl font-bold bg-gray-100 text-stone-700 cursor-pointer hover:text-stone-800 hover:scale-105 hover:bg-white hover:z-10 transition-all duration-[1150ms] py-4">
+                            添加更多發現
+                        </a>
+                    </router-link>
+                    <router-link v-else :to="{ name: 'CreatePost' }">
+                        <PlusCircleIcon
+                            class="fixed bottom-12 right-12 w-16 h-16 z-10 text-white cursor-pointer hover:scale-110 hover:text-green-400 transition-all ease-in" />
+                    </router-link>
                 </div>
             </div>
-            <PhotoPost v-if="photoPostShow" :id="photoPostID" :photoPostShow="photoPostShowInner" @click="closePhoto" />
+            <PhotoPost v-if="photoPostShow" :id="photoPostID" @close="closePhoto" />
         </div>
     </div>
 </template>

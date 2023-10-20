@@ -30,7 +30,7 @@ async function login() {
                 <span class="text-white text-[#8d8c8ca0] text-3xl font-bold">WILDLENS</span>
             </div>
             <div class="relative h-full basis-2/5 bg-stone-800 bg-opacity-40 flex flex-col justify-center items-center">
-                <router-link to="Help">
+                <router-link :to="{name: 'Help'}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="absolute top-6 right-6 w-10 h-10 text-white">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -65,13 +65,13 @@ async function login() {
                         使用Google帳號登錄
                     </button>
                     <div class="text-sm underline">
-                        <router-link to="Register">還未註冊?</router-link>
+                        <router-link :to="{name: 'Register'}">還未註冊?</router-link>
                     </div>
                 </div>
                 <div class="absolute bottom-10 flex justify-end w-full gap-4 pr-4">
                     <button
                         class="text-white py-1 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
-                        <router-link to="Articles">返回主頁</router-link>
+                        <router-link :to="{name: 'Articles'}">返回主頁</router-link>
                     </button>
                     <button
                         class="border-2 border-stone-100 text-stone-100 py-1 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">

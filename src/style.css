@@ -10,10 +10,23 @@
   }
 }
 
-/* 取消自动填充背景颜色 */
+/* 隱藏瀏覽器input自動填色 */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   box-shadow: 0 0 0 30px #d1d1d1 inset !important;
+}
+
+/* 隱藏滾動條 */
+::-webkit-scrollbar {
+  width: 0;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
 }

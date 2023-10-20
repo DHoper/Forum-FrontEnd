@@ -56,8 +56,18 @@ const router = createRouter({
     },
     {
       path: "/gallery",
-      component: Gallery,
-      name: "Gallery",
+      children: [
+        {
+          path: "",
+          name: "Gallery",
+          component: Gallery,
+        },
+        {
+          path: "createPost",
+          name: "CreatePost",
+          component: () => import("./pages/Gallery/CreatePost.vue"),
+        },
+      ],
     },
     {
       path: "/community",
