@@ -1,7 +1,7 @@
-//照片牆貼文//
+//----照片牆貼文----//
 
 export interface CommentType {
-  authorId: object;
+  authorId: string;
   photoPostId: string;
   content: string;
 }
@@ -23,23 +23,28 @@ export interface PhotoPostImageType {
   filename: string;
 }
 
-export interface PhotoPostType {
+export interface NewPhotoPostType {
   title: string;
-  image: PhotoPostImageType[];
+  images: PhotoPostImageType[];
   location: string;
+  geometry: {
+    type: "point";
+    coordinates: number[];
+  };
   description: string;
   authorId: string;
-  views: number;
-  likes: number;
-  comments: CommentType[];
-  isEdit: boolean;
+  views: 0;
+  likes: 0;
+  comments: [];
+  isEdit: false;
 }
 
 export interface PhotoPostFilledType {
   _id: string;
   title: string;
-  image: PhotoPostImageType[];
+  images: PhotoPostImageType[];
   location: string;
+  geometry?: any;
   description: string;
   authorInfo: {
     authorName: string;
@@ -52,29 +57,31 @@ export interface PhotoPostFilledType {
   createdAt: string;
 }
 
-//用戶及註冊表單//
-
-export interface FormInputType {
+//----用戶----//
+export interface UserDataPost {
   email: string;
-  username: string;
   password: string;
-  passwordConfirm: string;
   selectedAvatarIndex: number;
+  selectedTags: string[];
+  username: string;
+  intro?: string,
 }
 
-export interface FormInputInvalidType {
-  email: {
-    valid: boolean;
-    registered: boolean;
-  };
-  username: boolean;
-  password: boolean;
-  passwordConfirm: boolean;
+export interface UserData {
+  email: string;
+  password: string;
+  selectedAvatarIndex: number;
+  selectedTags: string[];
+  username: string;
+  intro?: string,
+  _id: string;
 }
 
-//全局彈窗框
+
+//----全域彈窗框
 export interface DialogType {
-  title: string,
-  content: string,
-  warringStyle?: boolean
+  title: string;
+  content: string;
+  warringStyle?: boolean;
+  cancelButton?: boolean;
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
 import { DialogType } from '../../types';
 
 const props = defineProps({
@@ -9,20 +10,31 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["closePopup"]);
+
+onMounted(() => {
+    window.scrollTo(0, 0);
+
+    document.body.style.overflow = 'hidden';
+});
+
+onUnmounted(() => {
+    document.body.style.overflow = 'auto';
+});
 </script>
 
 <template>
-    <div class="bg-stone-800 bg-opacity-80 absolute top-0 left-0 w-screen h-screen z-50 flex justify-center items-center">
+    <div class="bg-stone-700 bg-opacity-80 fixed top-0 left-0 w-screen h-screen z-50 flex justify-center items-center">
         <div class="p-1 w-80 -mt-20" :class="props.dialogData.warringStyle ? 'bg-red-500' : 'bg-white'">
             <div class="h-full text-white flex flex-col  justify-around items-center py-10 gap-6"
                 :class="props.dialogData.warringStyle ? 'bg-red-600' : 'bg-stone-600'">
                 <h3 class="text-2xl tracking-widest">{{
                     props.dialogData.title }}</h3>
                 <p>{{ props.dialogData.content }}</p>
-                <div class="flex gap-4 w-full px-8"><button @click="emit('closePopup', true)"
-                        class="text-lg  border-2 border-white p-2 basis-1/2 hover:bg-white transition-all duration-300"
-                        :class="props.dialogData.warringStyle ? 'bg-red-600 hover:text-red-600' : 'hover:text-stone-600'">確認</button>
-                    <button v-if="props.dialogData.warringStyle" @click="emit('closePopup', false)"
+                <div class="flex gap-4 w-full px-8">
+                    <button @click="emit('closePopup', true)"
+                        class="text-lg border-2 border-white p-2 hover:bg-white transition-all duration-300"
+                        :class="props.dialogData.cancelButton ? 'bg-red-600 hover:text-red-600 basis-1/2' : 'hover:text-stone-600 w-full'">確認</button>
+                    <button v-if="props.dialogData.cancelButton" @click="emit('closePopup', false)"
                         class="text-lg  border-2 border-white p-2 basis-1/2 hover:bg-white bg-white text-stone-600 hover:text-red-600 transition-all duration-300">取消</button>
                 </div>
             </div>

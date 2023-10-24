@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import MapBoxGeoCoder from '@mapbox/mapbox-gl-geocoder';
@@ -9,8 +9,13 @@ import '@mapbox/mapbox-gl-geocoder/lib/mapbox-gl-geocoder.css';
 import {
     EyeIcon,
     XCircleIcon,
+    ExclamationCircleIcon
 } from '@heroicons/vue/24/outline';
-
+import { NewPhotoPostType, PhotoPostImageType, DialogType, UserData } from '../../types.ts';
+import { useUserStore } from '../../store/user.ts';
+import { useLoadingStore } from '../../store/loading';
+import { createPost } from '../../api/photoPost';
+import router from '../../router';
 
 //----cloudinary&圖片預覽----
 const cloudName = import.meta.env.VITE_APP_CLOUDINARY_CLOUD_NAME;
@@ -19,25 +24,27 @@ const cloudName = import.meta.env.VITE_APP_CLOUDINARY_CLOUD_NAME;
 
 const previewImg = ref<number>(0); //紀錄所選預覽大圖
 
-const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-const imgInput = ref(null);
+const imgInput = ref<HTMLInputElement>();
 
 const previewUrls = ref<string[]>([]);
 const showPreview = ref<boolean>(false);
 
 const previewImages = () => {
     previewImg.value = 0;
-    const inputElement = imgInput.value as unknown as HTMLInputElement;
-    if (inputElement.files) {
-        const selectedFiles = Array.from(inputElement.files);
-        const urls = selectedFiles.map(file => URL.createObjectURL(file));
-        previewUrls.value = urls;
+    if (imgInput.value) {
+        const inputElement = imgInput.value;
+        if (inputElement.files) {
+            const selectedFiles = Array.from(inputElement.files);
+            const urls = selectedFiles.map(file => URL.createObjectURL(file));
+            previewUrls.value = urls;
+        }
     }
 };
 
-const userImages = ref();
-const uploadImages = async (e: Event) => {
-    const inputElement = imgInput.value as unknown as HTMLInputElement;
+let createPostImages: PhotoPostImageType[] = [];//儲存最終提交之圖片url
+const uploadImages = async () => {
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+    const inputElement = imgInput.value;
 
     if (inputElement) {
         const files = inputElement.files as FileList;
@@ -50,21 +57,18 @@ const uploadImages = async (e: Event) => {
             formData.append("upload_preset", "Animals_preset");
 
             const uploadPromise = axios.post(url, formData)
-                .then(response => response.data.secure_url)
+                .then(response => createPostImages.push({
+                    url: response.data.secure_url,
+                    filename: response.data.public_id
+                }))
                 .catch(error => {
-                    console.error("Error uploading image:", error);
+                    console.error("圖片上傳失敗", error);
                     return null;
                 });
 
             uploadPromises.push(uploadPromise);
         }
-
-        const uploadedImages = await Promise.all(uploadPromises);
-
-        // 处理上传完成后的图片 URL
-        console.log(uploadedImages);
-
-        // 你可以在这里进行其他处理，比如将 URL 传递给另外的处理函数
+        await Promise.all(uploadPromises);
     }
 };
 
@@ -73,7 +77,6 @@ const uploadImages = async (e: Event) => {
 mapboxgl.accessToken = import.meta.env.VITE_APP_MAPBOX_TOKEN;
 
 const mapContainer = ref<HTMLElement | null>(null);
-const geoResult = ref<string>();
 
 
 onMounted(async () => {
@@ -81,7 +84,8 @@ onMounted(async () => {
         container: mapContainer.value!,
         style: 'mapbox://styles/mapbox/light-v10',
         center: [120.93874358912397, 23.92239934359359],
-        zoom: 9
+        zoom: 3,
+        interactive: false
     });
 
     const language = new MapBoxLanguage({ defaultLanguage: 'zh-Hant' });
@@ -98,64 +102,190 @@ onMounted(async () => {
     map.addControl(geoCoder);
 
     geoCoder.on('result', (event: mapboxgl.EventData) => {
-        geoResult.value = event.result.place_name;
+        newPost.value.location = event.result.place_name;
+        newPost.value.coordinates = event.result.center;
     });
 
 })
 
-const showForm = ref(false);
+//----表單----
+
 const newPost = ref({
     title: '',
     location: '',
+    coordinates: [],
     description: '',
-    authorId: 'user123',
-    views: 0,
-    likes: 0,
-    comments: [],
-    isEdit: false,
 });
 
-const createNewPost = () => {
-    newPost.value = {
-        title: '',
-        location: '',
-        description: '',
-        authorId: 'user123',
+//表單提交驗證失敗彈窗
+const showDialog = ref(false);
+const dialogData = ref<DialogType>({
+    title: "",
+    content: "",
+    warringStyle: false,
+});
+
+////表單驗證
+type FieldName = "title" | "description";
+const postInputInvalid = ref({
+    title: true,
+    description: true,
+})
+
+function countCharacters(text: string) {
+    let totalWeight = 0;
+    for (const char of text) {
+        if (/[\u4e00-\u9fa5]/.test(char)) {
+            totalWeight += 2;
+        } else if (/^[A-Za-z0-9]+$/i.test(char)) {
+            totalWeight += 1;
+        } else {
+            totalWeight += 1;
+        }
+    }
+    return totalWeight;
+}
+
+async function validateInput(fieldName: FieldName) {
+    let isValid = true;
+    let value = newPost.value[fieldName];
+
+    value = value.replace(/\s/g, '');
+    let totalCharacters = countCharacters(value);
+    switch (fieldName) {
+        case 'title':
+            isValid = totalCharacters >= 8 && totalCharacters <= 20;
+            break;
+        case 'description':
+            isValid = totalCharacters >= 10 && totalCharacters <= 200;
+            break;
+        default:
+            break;
+    }
+    postInputInvalid.value[fieldName] = isValid;
+}
+
+////表單提交
+const submitNewPost = async () => {
+    const loadingStore = useLoadingStore();
+    loadingStore.setLoadingStatus(true); //loading動畫設置
+    loadingStore.setInRequest(true);
+    loadingStore.setIsCountingSeconds(true);
+    loadingStore.setIsCountingSeconds(false);
+
+    const userStore = useUserStore();
+    if (!userStore.isLogin || !userStore.getData()) {
+        router.push({ name: 'Login' })
+        return;
+    }
+    //問題--以userStore.getData()進行if判定仍無法通過TS檢查?
+    const userData: UserData = userStore.getData();
+    await uploadImages()
+    const submitForm: NewPhotoPostType = {
+        authorId: userData._id,
+        title: newPost.value.title,
+        location: newPost.value.location,
+        geometry: {
+            type: "point",
+            coordinates: newPost.value.coordinates
+        },
+        description: newPost.value.description,
+        images: createPostImages,
         views: 0,
         likes: 0,
         comments: [],
         isEdit: false,
     };
 
-    showForm.value = false;
+    await createPost(submitForm).catch(err => console.error('建立時貼文出錯:', err));
+    dialogData.value.title = "貼文建立成功";
+    dialogData.value.content = "將跳轉回照片牆";
+    dialogData.value.warringStyle = false;
+    showDialog.value = true;
+    loadingStore.setInRequest(false);
+    loadingStore.setLoadingStatus(false);
+
+    await new Promise((resolve) => {
+        watch(showDialog, (newValue) => {
+            if (!newValue) {
+                resolve(true);
+            }
+        });
+    });
+    router.push({ name: 'Gallery' });
+}
+const handleSubmit = async () => {
+
+    //驗證失敗
+    if (!imgInput.value) {
+        return;
+    }
+    const verification = postInputInvalid.value.title || postInputInvalid.value.description || imgInput.value.files?.length || newPost.value.location
+    if (!verification) {
+        dialogData.value.title = "貼文建立失敗";
+        dialogData.value.warringStyle = true;
+        if (!newPost.value.location) {
+            dialogData.value.content = "請選擇照片拍攝之地點"
+        } else if (!postInputInvalid.value.title) {
+            dialogData.value.content = "請填入正確格式之標題"
+        } else if (!postInputInvalid.value.description) {
+            dialogData.value.content = "請填入正確格式之敘述"
+        }
+        else if (!imgInput.value.files?.length) {
+            dialogData.value.content = "請選擇欲上傳之圖片"
+        }
+        showDialog.value = true;
+        return;
+    }
+
+    //驗證成功
+    submitNewPost();
+
 };
 </script>
 
 <template>
-    <div class=" w-full flex-1 flex flex-col overflow-auto px-40 pt-12 gap-4 bg-stone-700">
+    <div class=" w-full flex-1 flex flex-col overflow-auto px-40 py-12 gap-4 bg-stone-700">
         <div class="w-full flex flex-col items-center bg-stone-600 border-2 border-x-0 border-stone-100">
             <h3 class="text-white text-xl border-2 border-y-0 border-stone-100 bg-stone-500 p-1 px-8">
                 發布新貼文
             </h3>
         </div>
         <div class="flex flex-col items-center bg-stone-600 rounded-sm border-2 border-t-0 border-stone-100">
-            <form class="flex-1 w-full flex flex-col items-end gap-12">
+            <form method="POST" autocomplete="off" @submit.prevent="handleSubmit"
+                class="flex-1 w-full flex flex-col items-end gap-12">
                 <div class="mapBlock w-full flex flex-col items-center gap-8">
                     <div ref="mapContainer" class="border-t-4 border-stone-300 w-full h-80"></div>
-                    <input v-model="geoResult" type="text" id="location" placeholder="請透過地圖選擇照片拍攝地點"
+                    <input v-model="newPost.location" type="text" id="location" placeholder="請透過地圖搜尋選擇照片拍攝地點"
                         class="w-full border-4 border-stone-300 border-dashed p-2 pointer-events-none bg-stone-100 text-center tracking-wide"
                         required readonly>
                 </div>
                 <div class="contentBlock flex flex-col items-center gap-8 w-full text-white px-10">
                     <div class="border-t-2 border-stone-100 w-full "></div>
-                    <div class="w-1/2 flex flex-col items-center gap-2">
+                    <div class="relative w-1/2 flex flex-col items-center gap-2">
                         <label for="title" class="text-lg">貼文標題</label>
-                        <input v-model="newPost.title" type="text" id="title" class="w-full p-2 border-2 border-stone-400 focus:border-stone-200 focus:outline-none text-stone-700" placeholder="10字以內" required>
+                        <input v-model="newPost.title" @blur="validateInput('title')" type="text" id="title"
+                            class="w-full p-2 border-2 border-stone-400 focus:border-stone-200 focus:outline-none text-stone-700"
+                            :class="postInputInvalid.title ? 'border-stone-400' : 'border-red-400'"
+                            placeholder="4~15字(中英2:1)" required>
+                        <div v-if="!postInputInvalid.title"
+                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm text-red-500">
+                            <ExclamationCircleIcon class="w-4" />
+                            <p>請輸入4 ~ 10字之標題</p>
+                        </div>
                     </div>
-                    <div class="w-1/2 flex flex-col items-center gap-2">
+                    <div class="relative w-1/2 flex flex-col items-center gap-2">
                         <label for="description" class="block text-lg">簡短描述</label>
-                        <textarea v-model="newPost.description" id="description" rows="4"
-                            class="w-full border-2 resize-none border-stone-400 focus:border-stone-200 focus:outline-none text-stone-700 p-2" placeholder="45字以內" required></textarea>
+                        <textarea v-model="newPost.description" @blur="validateInput('description')" id="description"
+                            rows="4"
+                            class="w-full border-2 resize-none focus:border-stone-200 focus:outline-none text-stone-700 p-2"
+                            :class="postInputInvalid.description ? 'border-stone-400' : 'border-red-400'"
+                            placeholder="5~100字(中英2:1)" required></textarea>
+                        <div v-if="!postInputInvalid.description"
+                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm text-red-500">
+                            <ExclamationCircleIcon class="w-4" />
+                            <p>請輸入5 ~ 100字之內容</p>
+                        </div>
                     </div>
                 </div>
                 <div class="imgBlock flex flex-col items-center gap-4 w-full px-10">
@@ -184,7 +314,7 @@ const createNewPost = () => {
                         </div>
                         <label for="imgUpload" class="relative cursor-pointer bg-white w-full">
                             <span type="button"
-                                class="bg-green-600 text-stone-100 p-2 w-full font-bold hover:bg-green-500 transition-all duration-300 text-center text-lg">選擇圖片</span>
+                                class="bg-green-500 text-stone-100 p-2 w-full font-bold hover:bg-green-600 transition-all duration-300 text-center text-lg">選擇圖片</span>
                             <input ref="imgInput" id="imgUpload" name="imgUpload" type="file" class="sr-only"
                                 @change="previewImages" multiple>
                         </label>
@@ -220,10 +350,12 @@ const createNewPost = () => {
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-stone-600 text-white px-4 py-2 basis-1 text-lg font-bold">添加</button>
+                <button type="submit"
+                    class="w-full bg-green-500 text-white px-4 py-2 basis-1 text-lg font-bold hover:bg-green-600">發佈</button>
             </form>
         </div>
     </div>
+    <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="showDialog = false" />
 </template>
 
 <style scoped>
