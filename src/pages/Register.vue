@@ -6,8 +6,8 @@ import {
 import { useRouter } from 'vue-router';
 import { useLoadingStore } from '../store/loading';
 import { useUserStore } from '../store/user';
-import { postUserData } from '../api/user.ts';
-import { FieldName, userDataInputValidator } from '../utils/validator';
+import { postUserData, checkRepeatEmail } from '../api/user.ts';
+import { FormInputType, FormInputInvalidType } from '../types.ts';
 
 const loadingStore = useLoadingStore();
 const router = useRouter();
@@ -85,7 +85,7 @@ const topicTags = {
 };
 
 //表單註冊
-const formInput = ref({
+const formInput = ref<FormInputType>({
     email: '',
     username: '',
     password: '',
@@ -93,18 +93,85 @@ const formInput = ref({
     selectedAvatarIndex: Math.floor(Math.random() * 12) + 1
 });
 
+const formInputInvalid = ref<FormInputInvalidType>({
+    email: {
+        valid: true,
+        registered: false,
+    },
+    username: true,
+    password: true,
+    passwordConfirm: true,
+});
 
 ////表單註冊-頭像
 const showAvatarSelector = ref<boolean>(false);
+const openAvatarSelector = () => showAvatarSelector.value = true;
+const closeAvatarSelector = () => showAvatarSelector.value = false;
 
 ////表單註冊-主題
 const selectedTags = ref<string[]>([]);
 
 ////表單註冊-驗證
-const validator = userDataInputValidator();
-const validateInput = (fieldName: FieldName) => { //重新包裝validator
-    validator.validate(fieldName, formInput.value)
+type FieldName = "email" | "username" | "password" | "passwordConfirm";
+async function validateInput(fieldName: FieldName) {
+    let isValid = true;
+    let emailRepeatCheck = false;
+    let value = formInput.value[fieldName];
+
+    if (value.trim() === '') {
+        isValid = false;
+    }
+
+    switch (fieldName) {
+        case 'email':
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!emailRegex.test(value)) {
+                isValid = false;
+            } else {
+                isValid = true;
+            }
+            const isEmailDuplicate = await checkRepeatEmail(value);
+            if (isEmailDuplicate) {
+                emailRepeatCheck = true;
+            } else {
+                emailRepeatCheck = false;
+            }
+            break;
+        case 'username':
+            let totalWeight = 0;
+            for (const char of value) {
+                if (/[\u4e00-\u9fa5]/.test(char)) {
+                    totalWeight += 2;
+                } else if (/^[A-Za-z0-9]+$/.test(char)) {
+                    totalWeight += 1;
+                } else {
+                    totalWeight += 15;
+                }
+            }
+
+            if (totalWeight < 4 || totalWeight > 15) {
+                isValid = false;
+            }
+            break;
+
+        case 'passwordConfirm':
+            if (value !== formInput.value.password) {
+                isValid = false;
+            }
+            break;
+        default:
+            break;
+    }
+
+    if (fieldName === 'email') {
+        formInputInvalid.value[fieldName].valid = isValid;
+        formInputInvalid.value[fieldName].registered = emailRepeatCheck;
+    } else {
+        formInputInvalid.value[fieldName] = isValid;
+    }
+
 }
+
 ////表單註冊-提交
 const handleRegisterSuccess = (email: string, password: string) => {
     const userStore = useUserStore();
@@ -136,10 +203,9 @@ async function handleSubmit() {
     handleRegisterSuccess(submitFormData.email, submitFormData.password);
 }
 
-////表單註冊-交互流程
+////表單註冊-互動流程
 const finished = ref<boolean>(true);
 const formStep = ref<number>(0);
-const formInputInvalid = validator.formInputInvalid;
 const nextStep = () => {
     if (formStep.value === 0) {
         validateInput('email');
@@ -158,7 +224,7 @@ const nextStep = () => {
 };
 const previousStep = () => { formStep.value-- };
 
-//右側tab互動效果
+//tab互動效果
 const button = ref<HTMLButtonElement | null>();
 const nav = ref<HTMLButtonElement | null>();
 enum Tab {
@@ -205,15 +271,15 @@ watch(activeTab, () => {
                                     class="border-0 focus:ring-0 focus:outline-none bg-transparent w-48 text-sm" type="text"
                                     placeholder="請輸入有效信箱" name="email" id="email" required autocomplete="autocomplete_off">
                             </div>
-                            <div v-if="!formInputInvalid.email.valid"
-                                class="w-full absolute left-0 -top-6 flex items-center justify-center gap-1 text-sm text-red-500">
-                                <ExclamationCircleIcon class="w-4" />
-                                <p>請輸入有效信箱</p>
-                            </div>
-                            <div v-else-if="formInputInvalid.email.registered"
+                            <div v-if="formInputInvalid.email.registered"
                                 class="w-full absolute left-0 -top-6 flex items-center justify-center gap-1 text-sm text-red-500">
                                 <ExclamationCircleIcon class="w-4" />
                                 <p>此信箱已被註冊</p>
+                            </div>
+                            <div v-else-if="!formInputInvalid.email.valid"
+                                class="w-full absolute left-0 -top-6 flex items-center justify-center gap-1 text-sm text-red-500">
+                                <ExclamationCircleIcon class="w-4" />
+                                <p>請輸入有效信箱</p>
                             </div>
                         </div>
                         <div class="relative mb-3 text-center flex flex-col bg-[#61606058] px-2 pt-1 pb-0 border-2"
@@ -223,7 +289,7 @@ watch(activeTab, () => {
                                 <label class="text-gray-200 opacity-80" for="username">用戶暱稱 :</label>
                                 <input v-model="formInput.username" @blur="validateInput('username')"
                                     class="border-0 focus:ring-0 focus:outline-none bg-transparent w-48 text-sm" type="text"
-                                    placeholder="2~7字" name="username" id="username" required
+                                    placeholder="請輸入2~15字(中文記為2字)" name="username" id="username" required
                                     autocomplete="autocomplete_off">
                             </div>
                             <div v-if="!formInputInvalid.username"
@@ -239,7 +305,7 @@ watch(activeTab, () => {
                             <div class="border-b-2 border-stone-300 flex gap-2 w-full py-1"
                                 :class="formInputInvalid.password ? '' : 'border-none'">
                                 <label class="text-gray-200 opacity-80" for="password">密&emsp;&emsp;碼 :</label>
-                                <input v-model="formInput.password" @blur="validateInput('password')" placeholder="6 ~ 15字"
+                                <input v-model="formInput.password" @blur="validateInput('password')"
                                     class="border-0 focus:ring-0 focus:outline-none bg-transparent w-48 text-sm"
                                     type="password" name="password" id="password" required autocomplete="new-password">
                             </div>
@@ -255,7 +321,6 @@ watch(activeTab, () => {
                                 :class="formInputInvalid.passwordConfirm ? '' : 'border-none'">
                                 <label class="text-gray-200 opacity-80" for="passwordConfirm">密碼確認 :</label>
                                 <input v-model="formInput.passwordConfirm" @blur="validateInput('passwordConfirm')"
-                                    placeholder="6 ~ 15字"
                                     class="border-0 focus:ring-0 focus:outline-none bg-transparent w-48 text-sm"
                                     type="password" name="passwordConfirm" id="passwordConfirm" required
                                     autocomplete="new-password">
@@ -273,7 +338,7 @@ watch(activeTab, () => {
                             <img class=" p-3"
                                 :src="`../../public//assets/img/avatar (${formInput.selectedAvatarIndex}).png`" alt="">
                         </div>
-                        <button @click="showAvatarSelector = true" type="button"
+                        <button @click="openAvatarSelector" type="button"
                             class="w-32 bg-stone-600 text-white px-4 py-2 hover:bg-stone-500 focus:outline-none tracking-widest transition-all duration-500">
                             選擇頭像
                         </button>
@@ -313,7 +378,7 @@ watch(activeTab, () => {
                     class="w-full bg-[#FF5722] text-white border-2 border-[#FF5722] px-4 py-2 opacity-90 hover:bg-[#FF5722] hover:opacity-100 transition-all duration-500">
                     使用Google帳號註冊
                 </button>
-                <router-link :to="{ name: 'Login' }">
+                <router-link :to="{name: 'Login'}">
                     <div class="text-sm underline">已有帳號?</div>
                 </router-link>
             </form>
@@ -352,13 +417,13 @@ watch(activeTab, () => {
                 </div>
                 <div class="absolute bottom-10 flex justify-end w-full gap-4 pr-4">
 
-                    <router-link :to="{ name: 'Articles' }">
+                    <router-link :to="{name: 'Articles'}">
                         <button
                             class="text-white py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
                             返回主頁
                         </button>
                     </router-link>
-                    <router-link :to="{ name: 'Help' }">
+                    <router-link :to="{name: 'Help'}">
                         <button
                             class="border-2 border-stone-100 text-stone-100 py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
                             聯絡我們
@@ -387,7 +452,7 @@ watch(activeTab, () => {
                                 </label>
                             </div>
                         </div>
-                        <button @click="showAvatarSelector = false"
+                        <button @click="closeAvatarSelector"
                             class="w-full bg-stone-600 font-bold px-4 py-3 hover:bg-stone-700 text-white focus:outline-none tracking-widest transition-all duration-500">
                             完成
                         </button>
@@ -396,4 +461,4 @@ watch(activeTab, () => {
             </Transition>
         </div>
     </div>
-</template>../utils/validator.ts
+</template>

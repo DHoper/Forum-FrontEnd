@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { getPostData, setStats } from '../../api/photoPost';
-import { getAuthor } from '../../api/user.ts';
+import { getPostData, setStats } from '../../api/gallery.ts';
+import { getAuthor, } from '../../api/user.ts';
 import { getComment, postComment, deleteComment } from '../../api/comment.ts';
 import { useUserStore } from '../../store/user.ts';
 import { formatDateTime } from '../../utils/formattingUtils.ts';
-import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType, UserData } from '../../types.ts';
+import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType } from '../../types.ts';
 import { ref, toRefs, onMounted, watchEffect, watch } from 'vue';
-import router from '../../router';
 import {
     XCircleIcon,
     EyeIcon,
@@ -16,7 +15,6 @@ import {
     HeartIcon,
 } from '@heroicons/vue/24/solid'
 
-const userStore = useUserStore();
 const props = defineProps({
     id: {
         type: String,
@@ -64,7 +62,7 @@ const fetchData = async () => {
     const responseData = await getPostData(id.value);
     await setStats(id.value, "updateViews");
 
-    const { _id, title, images, location, description, createdAt, authorId, views, likes, isEdit, commentsId } = responseData;
+    const { _id, title, image, location, description, createdAt, authorId, views, likes, isEdit, commentsId } = responseData;
     const authorData = await getAuthor(authorId);
     let commentData: CommentFilledType[] = [];
     for (const commentId of commentsId) {
@@ -76,7 +74,7 @@ const fetchData = async () => {
     photoPost.value = {
         _id,
         title,
-        images,
+        image,
         location,
         description,
         createdAt: formatDateTime(createdAt),
@@ -117,13 +115,7 @@ watchEffect(() => {
 });
 
 async function handleSubmit() {
-    if (!userStore.isLogin || !userStore.getData()) {
-        router.push({ name: 'Login' })
-        return;
-    }
-
-    const userData: UserData = userStore.getData();
-
+    const userData = useUserStore().userData;
     if (photoPost.value) {
         const postData: CommentType = {
             authorId: userData._id,
@@ -143,13 +135,9 @@ async function handleSubmit() {
     }
 }
 
-
 let isLiked = false;
 
 async function handleLikes() {
-    if (!userStore.isLogin) {
-        router.push({ name: 'Login' })
-    }
     if (photoPost && photoPost.value && id && id.value) {
         if (!isLiked) {
             await setStats(id.value, "increaseLikes");
@@ -169,7 +157,6 @@ const dialogData = ref<DialogType>({
     title: "刪除評論",
     content: "是否確認刪除該評論?",
     warringStyle: true,
-    cancelButton: true,
 });
 
 ////彈窗框邏輯
@@ -211,8 +198,7 @@ async function handleDeleteComment(commentId: string) {
                 <div class="flex justify-end gap-2">
                     <button type="button" @click="commentPost = ''"
                         class="text-green-400 px-5 py-2 hover:text-green-600">取消</button>
-                    <button ref="commentSubmitButton" type="submit"
-                        class="text-white bg-gray-300 px-5 py-2 transition-all ">送出</button>
+                    <button ref="commentSubmitButton" type="submit" class="text-white bg-gray-300 px-5 py-2 transition-all ">送出</button>
                 </div>
             </form>
             <ul v-if="photoPost.comments.length > 0" class="mt-8">
@@ -249,19 +235,19 @@ async function handleDeleteComment(commentId: string) {
                                 <div class="relative basis-2/3 -ml-2 p-4">
                                     <div class="absolute top-0 left-0 w-1/6 h-1/4 border-l-2 border-t-4 border-stone-600 ">
                                     </div>
-                                    <img :src="photoPost.images[0].url" :alt="photoPost.images[0].filename"
+                                    <img :src="photoPost.image[0].url" :alt="photoPost.image[0].filename"
                                         class="rounded-sm relative z-10 shadow-sm shadow-stone-600">
                                 </div>
                                 <div
-                                    class="flex-1 h-full pt-4 flex flex-col items-center text-stone-700  border-b-4 border-stone-600">
+                                    class="flex-1 pt-4 flex flex-col items-center text-stone-700  border-b-4 border-stone-600">
                                     <h2 class="text-2xl font-bold text-center">{{ photoPost.title }}</h2>
                                     <p class="text-sm text-center text-stone-500 py-2">{{ photoPost.location }}</p>
-                                    <p class="w-full h-60 p-4 italic text-center flex justify-center overflow-auto">
+                                    <p class=" w-full p-4 flex-grow italic text-center flex justify-center items-center">
                                         {{ photoPost.description }}</p>
                                 </div>
                             </div>
-                            <div class="flex gap-4 justify-between italic ">
-                                <div class="flex items-center py-2 gap-2">
+                            <div class="basis-full flex gap-4 justify-between italic ">
+                                <div class="flex items-center gap-2">
                                     <div
                                         class="border border-stone-800 rounded-full bg-white w-10 h-10 p-1 flex items-center justify-center">
                                         <img class="rounded-full"
@@ -291,21 +277,21 @@ async function handleDeleteComment(commentId: string) {
                         <div v-else class="h-full absolute top-0">
                             <div class="flex justify-around items-center h-full p-4">
                                 <div class="basis-1/4 overflow-hidden overflow-y-auto h-full flex flex-col gap-4 p-2">
-                                    <div v-for="picture, index in photoPost.images" @click="pictureIndex = index"
+                                    <div v-for="picture, index in photoPost.image" @click="pictureIndex = index"
                                         class="relative cursor-pointer hover:scale-[105%] transition-all duration-500 border-4 border-stone-400 focus:border-stone-700"
                                         tabindex="0">
                                         <img :src="picture.url" :alt="picture.filename"
                                             class="relative z-10 shadow-sm shadow-stone-600">
                                     </div>
                                     <!-- 展示用途 -->
-                                    <!-- <div v-if="photoPost.images.length === 1" v-for="picture, index in photoPost.images"
+                                    <!-- <div v-if="photoPost.image.length === 1" v-for="picture, index in photoPost.image"
                                         @click="pictureIndex = index"
                                         class="relative cursor-pointer hover:scale-[105%] transition-all duration-500 border-4 border-stone-400 focus:border-stone-700"
                                         tabindex="0">
                                         <img :src="picture.url" :alt="picture.filename"
                                             class="relative z-10 shadow-sm shadow-stone-600">
                                     </div> -->
-                                    <div v-if="photoPost.images.length === 1"
+                                    <div v-if="photoPost.image.length === 1"
                                         class="flex items-center justify-center border-4 border-dashed border-stone-200 py-10 text-stone-400">
                                         <p>沒有更多的圖了</p>
                                     </div>
@@ -314,9 +300,9 @@ async function handleDeleteComment(commentId: string) {
                                         <p>沒有更多的圖了</p>
                                     </div>
                                 </div>
-                                <div class="relative border-4 border-b-2  border-stone-600 rounded-sm">
-                                    <img :src="photoPost.images[pictureIndex].url"
-                                        :alt="photoPost.images[pictureIndex].filename"
+                                <div class="relative  border-4 border-b-2  border-stone-600 rounded-sm">
+                                    <img :src="photoPost.image[pictureIndex].url"
+                                        :alt="photoPost.image[pictureIndex].filename"
                                         class="relative z-10 shadow-sm shadow-stone-600">
                                 </div>
                             </div>
@@ -335,4 +321,3 @@ async function handleDeleteComment(commentId: string) {
     </div>
     <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
 </template>
-../../api/photoPost.ts

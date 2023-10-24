@@ -2,28 +2,30 @@
 import Popup from './Explore/Popup.vue';
 import PhotoPost from './Gallery/PhotoPost.vue';
 import { ref, onMounted, h, render } from 'vue';
-import { getGalleryData } from '../api/photoPost';
+import { getGalleryData } from '../api/gallery.ts';
 import mapboxgl from 'mapbox-gl';
 import MapBoxGeoCoder from '@mapbox/mapbox-gl-geocoder';
 import MapBoxLanguage from '@mapbox/mapbox-gl-language';
 import "mapbox-gl/dist/mapbox-gl.css";
 import '@mapbox/mapbox-gl-geocoder/lib/mapbox-gl-geocoder.css';
 import { useLoadingStore } from '../store/loading';
-import { PhotoPostFilledType } from '../types';
 
 
 const mapContainer = ref<HTMLElement | null>(null);
 let currentPopup: mapboxgl.Popup | null = null;
 
 const photoPostShow = ref(false);
+const photoPostShowInner = ref(false);
 const photoPostID = ref<string>('');
 
 function openPhoto(id: string) {
     photoPostID.value = id;
     photoPostShow.value = true;
+    photoPostShowInner.value = true;
 }
 function closePhoto() {
     photoPostShow.value = false;
+    photoPostShowInner.value = false;
     photoPostID.value = '';
 }
 
@@ -33,7 +35,7 @@ onMounted(async () => {
     loadingStore.setInRequest(true);
     const animalsDataset = await getGalleryData();
 
-    const geoJSONFeatures = animalsDataset.map((animalsData: PhotoPostFilledType) => ({
+    const geoJSONFeatures = animalsDataset.map(animalsData => ({
         type: "Feature",
         geometry: {
             type: "Point",
@@ -43,13 +45,13 @@ onMounted(async () => {
             _id: animalsData._id,
             title: animalsData.title,
             location: animalsData.location,
-            url: animalsData.images[0].url,
+            url: animalsData.image[0].url,
         }
     }));
 
     mapboxgl.accessToken = import.meta.env.VITE_APP_MAPBOX_TOKEN;
 
-    //----定義地圖實例
+    //定義地圖實例
     const map = new mapboxgl.Map({
         container: mapContainer.value!,
         style: 'mapbox://styles/mapbox/light-v10',
@@ -209,27 +211,11 @@ onMounted(async () => {
 
         //掛載地理編碼器
         map.addControl(geocoder);
-        interface LocationData {
-            result: any;
-            center: [number, number];
-            geometry: {
-                type: string;
-                coordinates: [number, number];
-            };
-            place_name: string;
-            place_type: string[];
-            properties: {
-                _id: string;
-                title: string;
-                location: string;
-                url: string;
-            };
-            type: string;
-        }
-        geocoder.on('result', (e: LocationData) => {
+        geocoder.on('result', (e: mapboxgl.MapBoxEvent) => {
             if (currentPopup) {
                 currentPopup.remove();
             }
+
             setPopup(e.result.center, e.result.properties);
 
         });
@@ -243,7 +229,7 @@ onMounted(async () => {
     <div class="flex flex-col h-screen">
         <div class="bg-stone-600 p-1 pt-0 flex-grow relative">
             <div ref="mapContainer" class="w-full h-full rounded-sm"></div>
-            <PhotoPost v-if="photoPostShow" :id="photoPostID" @close="closePhoto" />
+            <PhotoPost v-if="photoPostShow" :id="photoPostID" :photoPostShow="photoPostShowInner" @close="closePhoto" />
         </div>
     </div>
 </template>
@@ -273,10 +259,8 @@ onMounted(async () => {
      box-shadow: none !important;
      background-color: transparent !important;
  }
-
  .mapboxgl-popup-close-button {
-     display: none;
+    display: none;
  }
 </style>
 
-../api/photoPost.ts

@@ -1,4 +1,3 @@
-import { UserData } from "../types";
 import { apiClient } from "./axiosInstance";
 
 export const ApiConfig = {
@@ -47,18 +46,13 @@ export async function getAuthor(authorId: string) {
 export async function postUserData(postData: object) {
   try {
     const response = await apiClient.post(ApiConfig.index, postData);
-    return response;
+    if (response.status === 200) {
+      return response;
+    } else {
+      throw new Error("API請求失敗，錯誤狀態:" + response.status);
+    }
   } catch (error) {
     console.error("註冊新用戶資料時發生錯誤:", error);
-    throw error;
-  }
-}
-
-export async function updateUser(updatedData: UserData) {
-  try {
-    const response = await apiClient.put(`/user`, updatedData);
-    return response;
-  } catch (error) {
     throw error;
   }
 }

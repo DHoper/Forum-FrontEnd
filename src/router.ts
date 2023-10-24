@@ -74,43 +74,16 @@ const router = createRouter({
       component: Community,
       name: "Community",
     },
-    {
-      path: "/user",
-      children: [
-        {
-          path: "personalInfo",
-          name: "PersonalInfo",
-          component: () => import("./pages/User/PersonalInfo.vue"),
-          meta: { requiresAuth: true },
-        },
-        {
-          path: "personalPost",
-          name: "PersonalPost",
-          component: () => import("./pages/User/PersonalPost.vue"),
-          meta: { requiresAuth: true },
-        },
-      ],
-    },
-    {
-      path: "/error",
-      component: () => import("./components/utils/Error.vue"),
-      name: "Error",
-    },
-    {
-      path: "/:pathMatch(.*)*",
-      component: () => import("./components/utils/NotFound.vue"),
-      name: "NotFound",
-    },
   ],
 });
 export default router;
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  if (requiresAuth && !userStore.isLogin) {
-    next({ name: "Login" });
+  if (userStore.userData) {
+    userStore.isLogin = true;
   }
+
   useLoadingStore().setLoadingStatus(true);
   useLoadingStore().setIsCountingSeconds(true);
   next();

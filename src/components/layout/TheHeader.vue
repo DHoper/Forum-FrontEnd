@@ -15,20 +15,20 @@ import {
     QuestionMarkCircleIcon,
     BellIcon
 } from '@heroicons/vue/24/outline';
-import { UserData } from '../../types';
-import router from '../../router';
 
 const userStore = useUserStore();
-const userData = computed(() => userStore.getData()) as any as UserData;//問題: 原寫法無法通過TS檢查
+
 const isLogin = computed<boolean>(() => userStore.isLogin);
 
+
 const userActions = [
-    { actionName: '個人資訊', icon: UserIcon, action: () => router.push({ name: "PersonalInfo" }) },
-    { actionName: '貼文', icon: BookmarkSquareIcon },
-    { actionName: '追蹤', icon: HeartIcon },
-    { actionName: '幫助', icon: QuestionMarkCircleIcon },
+    { actionName: '個人資訊', href: '#', icon: UserIcon },
+    { actionName: '貼文', href: '#', icon: BookmarkSquareIcon },
+    { actionName: '追蹤', href: '#', icon: HeartIcon },
+    { actionName: '幫助', href: '#', icon: QuestionMarkCircleIcon },
     {
         actionName: '登出',
+        href: '#',
         action: userStore.logout,
         icon: ArrowLeftOnRectangleIcon
     },
@@ -62,7 +62,7 @@ const notifications = [
                     <router-link :to="{ name: 'Explore' }" class="tracking-widest px-4">探索</router-link>
                 </li>
                 <li
-                    class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-wv-ifhite">
+                    class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-white">
                     <router-link :to="{ name: 'Gallery' }" class="tracking-widest px-4">照片牆</router-link>
                 </li>
                 <li
@@ -70,11 +70,11 @@ const notifications = [
                     <router-link :to="{ name: 'Community' }" class="tracking-widest px-4">社區</router-link>
                 </li>
             </ul>
-            <div v-if="isLogin && userData" class="avatar border-2 border-transparent flex items-center gap-2">
+            <div v-if="isLogin" class="avatar flex items-center gap-2">
                 <PopoverGroup class="flex items-center gap-2">
                     <Popover>
                         <PopoverButton class="flex items-center gap-x-1 text-sm font-semibold leading-6 focus:outline-none">
-                            <BellIcon class="w-6 h-6 text-white" />
+                            <BellIcon class="w-6 h-6  text-white" />
                         </PopoverButton>
 
                         <transition enter-active-class="transition ease-out duration-200"
@@ -101,10 +101,11 @@ const notifications = [
                             </PopoverPanel>
                         </transition>
                     </Popover>
-                    <Popover class="h-12">
+                    <Popover>
                         <PopoverButton class="focus:outline-none">
                             <div class="rounded-full bg-white w-12 h-12 p-1 flex items-center justify-center">
-                                <img class="rounded-full" :src="`/assets/img/avatar (${userData.selectedAvatarIndex}).png`"
+                                <img class="rounded-full"
+                                    :src="`/assets/img/avatar (${userStore.userData.selectedAvatarIndex}).png`"
                                     alt="avatar">
                             </div>
                         </PopoverButton>
@@ -114,25 +115,34 @@ const notifications = [
                             leave-active-class="transition ease-in duration-150"
                             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
                             <PopoverPanel
-                                class="flex items-center flex-col absolute right-2 top-2/3 z-10 mt-4  overflow-hidden rounded bg-white shadow-lg ring-1 ring-stone-600">
+                                class="flex items-center flex-col absolute right-2 top-2/3  z-10 mt-3  overflow-hidden rounded bg-white shadow-lg ring-1 ring-stone-600">
                                 <div class="w-64">
                                     <div
                                         class="px-6 py-4 flex gap-4 bg-stone-600 rounded rounded-b-none border border-b-0 border-white">
                                         <div
                                             class="rounded-full bg-white w-16 h-16 p-2 flex items-center justify-center border border-stone-700">
                                             <img class="rounded-full"
-                                                :src="`/assets/img/avatar (${userData.selectedAvatarIndex}).png`"
+                                                :src="`../../../public/assets/img/avatar (${userStore.userData.selectedAvatarIndex}).png`"
                                                 alt="avatar">
                                         </div>
                                         <div class="flex flex-col">
-                                            <span class="text-xl font-bold">#{{ userData.username }}</span>
-                                            <span class="text-sm">{{ userData.email }}</span>
+                                            <span class="text-xl font-bold">#{{ userStore.userData.username }}</span>
+                                            <span class="text-sm">{{ userStore.userData.email }}</span>
                                         </div>
                                     </div>
                                     <div class="border border-white">
                                         <div v-for="userAction, index in userActions" :key="index"
-                                            class="text w-full leading-6 hover:bg-stone-200 text-stone-700 cursor-pointer">
-                                            <div @click="userAction.action" class="flex-auto flex gap-2 px-6 py-4">
+                                            class="px-6 py-4 text leading-6 hover:bg-stone-200 text-stone-700 cursor-pointer">
+                                            <a v-if="userAction.href" :href="userAction.href" @click="userAction.action"
+                                                class="flex-auto flex gap-2">
+                                                <div class="flex flex-none items-center justify-center">
+                                                    <component :is="userAction.icon" class="h-4 w-4" aria-hidden="true" />
+                                                </div>
+                                                <span class="whitespace-nowrap text-center block tracking-widest">
+                                                    {{ userAction.actionName }}
+                                                </span>
+                                            </a>
+                                            <div v-else class="flex-auto flex gap-2" @click="userAction.action">
                                                 <div class="flex flex-none items-center justify-center">
                                                     <component :is="userAction.icon" class="h-4 w-4" aria-hidden="true" />
                                                 </div>
@@ -149,7 +159,7 @@ const notifications = [
                 </PopoverGroup>
             </div>
             <button v-else
-                class="text-stone-600 text-lg h-12 bg-white border-2 border-stone-600 hover:bg-[#4b493ded] hover:text-white hover:border-white transition-all duration-700 ease-in-out font-bold py-1 px-2">
+                class="text-stone-600 text-lg bg-white border-2 border-stone-600 hover:bg-[#4b493ded] hover:text-white hover:border-white transition-all duration-700 ease-in-out font-bold py-1 px-2">
                 <router-link :to="{ name: 'Login' }">Get started</router-link>
             </button>
         </div>

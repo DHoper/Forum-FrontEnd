@@ -8,7 +8,12 @@ export const ApiConfig = {
 export async function getComment(id: string) {
   try {
     const response = await apiClient.get(ApiConfig.getComment(id));
-    return response.data;
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("API請求失敗，錯誤狀態:" + response.status);
+    }
   } catch (error) {
     console.error("獲取評論失敗，出現錯誤:", error);
     throw error;
@@ -18,7 +23,12 @@ export async function getComment(id: string) {
 export async function postComment(commentData: object) {
   try {
     const response = await apiClient.post(ApiConfig.index, commentData);
-    return response;
+
+    if (response.status === 200) {
+      return response;
+    } else {
+      throw new Error("API請求失敗，錯誤狀態:" + response.status);
+    }
   } catch (error) {
     console.error("發布評論失敗，出現錯誤:", error);
     throw error;
@@ -26,9 +36,15 @@ export async function postComment(commentData: object) {
 }
 
 export async function deleteComment(id: string) {
+  
   try {
     const response = await apiClient.delete(ApiConfig.getComment(id));
-    return response;
+
+    if (response.status === 200) {
+      return response;
+    } else {
+      throw new Error("API請求失敗，錯誤狀態:" + response.status);
+    }
   } catch (error) {
     console.error("刪除評論失敗，出現錯誤:", error);
     throw error;
