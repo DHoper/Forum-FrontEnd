@@ -14,7 +14,7 @@ async function login() {
     if (email.value && password.value) {
         await userStore.login(email.value, password.value).catch(err => console.log("請求登錄失敗:", err));
         if (userStore.isLogin) {
-            router.push("Articles");
+            router.push({name: "Articles"});
         }
     }
 }
@@ -30,7 +30,7 @@ async function login() {
                 <span class="text-white text-[#8d8c8ca0] text-3xl font-bold">WILDLENS</span>
             </div>
             <div class="relative h-full basis-2/5 bg-stone-800 bg-opacity-40 flex flex-col justify-center items-center">
-                <router-link :to="{name: 'Help'}">
+                <router-link :to="{ name: 'Help' }">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="absolute top-6 right-6 w-10 h-10 text-white">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -39,16 +39,16 @@ async function login() {
                     </svg>
                 </router-link>
                 <div class="text-white flex flex-col justify-center items-center gap-6">
-                    <div class="border mb-3 text-center flex flex-col w-full bg-[#d1d1d1] px-2 pt-1 pb-0 text-stone-800"
-                        :class="loginIsFailed === LoginStatus.EmailError ? 'border-red-500 pb-1' : 'border-transparent'">
+                    <div class="border mb-3 text-center flex flex-col w-full bg-[#d1d1d1] px-2 py-1 text-stone-800"
+                        :class="loginIsFailed === LoginStatus.EmailError ? 'border-red-500' : 'border-transparent'">
                         <div class="border-b-2 border-stone-300 flex items-center gap-2 w-full py-1">
                             <label class="text-stone-700 opacity-80" for="username">信箱:</label>
                             <input class="focus:ring-0 focus:outline-none bg-transparent max-w-52 text-sm" type="text"
                                 v-model="email" name="username" id="username" required autocomplete="autocomplete_off">
                         </div>
                     </div>
-                    <div class="border mb-3 text-center flex flex-col w-full bg-[#d1d1d1] px-2 pt-1 pb-0 text-stone-800"
-                        :class="loginIsFailed === LoginStatus.PasswordError ? 'border-red-500 pb-1' : 'border-transparent'">
+                    <div class="border mb-3 text-center flex flex-col w-full bg-[#d1d1d1] px-2 py-1 text-stone-800"
+                        :class="loginIsFailed === LoginStatus.PasswordError ? 'border-red-500' : 'border-transparent'">
                         <div class="border-b-2 border-stone-300 flex gap-2 py-1">
                             <label class="text-stone-700 opacity-80" for="password">密碼:</label>
                             <input class="focus:ring-0 focus:outline-none bg-transparent
@@ -65,13 +65,13 @@ async function login() {
                         使用Google帳號登錄
                     </button>
                     <div class="text-sm underline">
-                        <router-link :to="{name: 'Register'}">還未註冊?</router-link>
+                        <router-link :to="{ name: 'Register' }">還未註冊?</router-link>
                     </div>
                 </div>
                 <div class="absolute bottom-10 flex justify-end w-full gap-4 pr-4">
-                    <button
+                    <button @click="router.push({ name: 'Articles' })"
                         class="text-white py-1 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">
-                        <router-link :to="{name: 'Articles'}">返回主頁</router-link>
+                        返回主頁
                     </button>
                     <button
                         class="border-2 border-stone-100 text-stone-100 py-1 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500">

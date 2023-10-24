@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { getUserData } from "../api/user";
+import { UserData } from "../types.ts";
 
 export enum LoginStatus {
   Success = "登錄成功",
@@ -9,46 +10,57 @@ export enum LoginStatus {
 }
 
 export const useUserStore = defineStore("user", () => {
-  const isLogin = ref<boolean>(false);
-
   const storedUser = localStorage.getItem("user");
-  const userData = ref(storedUser ? JSON.parse(storedUser) : null);
+  const data = ref<UserData | null>();
+  if (storedUser) {
+    data.value = JSON.parse(storedUser);
+  } else {
+    data.value = null;
+  }
 
+  const isLogin = computed<boolean>(() => (data.value ? true : false));
   const loggingStatus = ref<LoginStatus | undefined>();
 
   async function login(email: string, password: string) {
     try {
-      const userDataResponse = await getUserData(email);
-      userData.value = userDataResponse;
+      const dataResponse = await getUserData(email);
+
+      if (dataResponse) {
+        if (dataResponse.password === password) {
+          data.value = dataResponse;
+          loggingStatus.value = LoginStatus.Success;
+          localStorage.setItem("user", JSON.stringify(data.value));
+        } else {
+          alert("請輸入正確密碼");
+          loggingStatus.value = LoginStatus.PasswordError;
+        }
+      } else {
+        alert("請輸入正確信箱");
+        loggingStatus.value = LoginStatus.EmailError;
+      }
     } catch (err) {
       console.log("getUserData取得資料失敗: ", err);
-    }
-
-    if (userData.value) {
-      if (userData.value.password === password) {
-        isLogin.value = true;
-        loggingStatus.value = LoginStatus.Success;
-        localStorage.setItem("user", JSON.stringify(userData.value));
-      } else {
-        alert("請輸入正確密碼");
-        loggingStatus.value = LoginStatus.PasswordError;
-      }
-    } else {
-      alert("請輸入正確信箱");
-      loggingStatus.value = LoginStatus.EmailError;
     }
   }
 
   function logout() {
     localStorage.removeItem("user");
-    isLogin.value = false;
-    userData.value = null;
+    data.value = null;
+  }
+
+  function getData() {
+    if (isLogin.value) {
+      return data.value;
+    } else {
+      return null;
+    }
   }
 
   return {
+    data,
     isLogin,
     loggingStatus,
-    userData,
+    getData,
     login,
     logout,
   };

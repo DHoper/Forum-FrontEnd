@@ -4,7 +4,7 @@ import {
     PlusCircleIcon,
 } from '@heroicons/vue/24/solid';
 import { ref, onMounted } from 'vue';
-import { getGalleryData } from '../api/gallery.ts';
+import { getGalleryData } from '../api/photoPost';
 import { useLoadingStore } from '../store/loading';
 
 
@@ -77,7 +77,7 @@ function closePhoto() {
                     <div v-for="galleryData in galleryDataset"
                         class="relative basis-1/4 group cursor-pointer hover:z-10 border border-stone-600">
                         <img class="scale-[101%] group-hover:scale-105 transition-all ease-in duration-700"
-                            :src="galleryData.image[0].url" />
+                            :src="galleryData.images[0].url" />
                         <div
                             class="absolute top-0 left-0 w-full h-full scale-[101%] bg-black bg-opacity-0 group-hover:bg-opacity-30 group-hover:scale-105 transition-all ease-in duration-700">
                         </div>
@@ -120,4 +120,4 @@ function closePhoto() {
             <PhotoPost v-if="photoPostShow" :id="photoPostID" @close="closePhoto" />
         </div>
     </div>
-</template>
+</template>../api/photoPost.ts

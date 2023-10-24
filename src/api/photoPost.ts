@@ -1,4 +1,5 @@
 import { apiClient } from "./axiosInstance";
+import { NewPhotoPostType } from "../types.ts";
 
 export const ApiConfig = {
   index: "/photoPost",
@@ -13,11 +14,7 @@ export async function getGalleryData() {
 
     response = await apiClient.get(ApiConfig.index);
 
-    if (response.status === 200) {
-      return response.data;
-    } else {
-      throw new Error("API請求失敗，錯誤狀態:" + response.status);
-    }
+    return response.data;
   } catch (error) {
     console.error("獲取所有照片牆貼文數據時發生錯誤：", error);
     throw error;
@@ -28,11 +25,7 @@ export async function getPostData(id: string) {
   try {
     let response;
     response = await apiClient.get(ApiConfig.getSinglePost(id));
-    if (response.status === 200) {
-      return response.data;
-    } else {
-      throw new Error("API請求失敗，錯誤狀態:" + response.status);
-    }
+    return response.data;
   } catch (error) {
     console.error("獲取單筆照片牆貼文數據時發生錯誤：", error);
     throw error;
@@ -43,13 +36,19 @@ export async function setStats(id: string, action: string) {
   try {
     let response;
     response = await apiClient.post(ApiConfig.setStats(id, action));
-    if (response.status === 200) {
-      return response;
-    } else {
-      throw new Error("API請求失敗，錯誤狀態:" + response.status);
-    }
+    return response;
   } catch (error) {
     console.error("更新貼文統計數數據時發生錯誤：", error);
+    throw error;
+  }
+}
+
+export async function createPost(postData: NewPhotoPostType) {
+  try {
+    const response = await apiClient.post(ApiConfig.index, postData);
+    return response;
+  } catch (error) {
+    console.error("建立新貼文時發生錯誤：", error);
     throw error;
   }
 }
