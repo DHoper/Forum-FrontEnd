@@ -115,7 +115,6 @@ const validator = inputValidator();
 const formInputInvalid = validator.formInputInvalid;
 const validateInput = (fieldName: FieldName | "UserData") => {  //重新包裝validator
     validator.validate(fieldName, formData.value);
-
 }
 const validateEmail = () => {
     if (formData.value.email === userData.value?.email) {

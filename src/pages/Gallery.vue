@@ -6,13 +6,25 @@ import {
 import { ref, onMounted } from 'vue';
 import { getGalleryData } from '../api/photoPost';
 import { useLoadingStore } from '../store/loading';
+import { PhotoPostFilledType } from '../types';
 
-
-const galleryDataset = ref();
+const galleryDataset = ref<PhotoPostFilledType[]>();
 const fetchData = async () => {
-    const responseData = await getGalleryData();
-    galleryDataset.value = responseData;
+    const response = await getGalleryData();
+    galleryDataset.value = response.value;
 };
+
+onMounted(async () => {
+    const loadingStore = useLoadingStore();  //設置loading動畫頁
+    loadingStore.setLoadingStatus(true);
+    loadingStore.setInRequest(true);
+
+    await fetchData();
+    rightBlock.value?.addEventListener('scroll', handleScroll);
+
+    loadingStore.setInRequest(false);
+    loadingStore.setLoadingStatus(false);
+});
 
 enum AddBlock {
     Block = 'block',
@@ -34,18 +46,6 @@ function handleScroll() {
         addBlock.value = AddBlock.Icon;
     }
 }
-
-onMounted(async () => {
-    const loadingStore = useLoadingStore();  //設置loading動畫頁
-    loadingStore.setLoadingStatus(true);
-    loadingStore.setInRequest(true);
-
-    await fetchData();
-    rightBlock.value?.addEventListener('scroll', handleScroll);
-
-    loadingStore.setInRequest(false);
-    loadingStore.setLoadingStatus(false);
-});
 
 //photoPost組件邏輯
 const photoPostShow = ref(false);

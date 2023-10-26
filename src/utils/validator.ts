@@ -40,6 +40,8 @@ export const inputValidator = () => {
     username: true,
     password: true,
     passwordConfirm: true,
+    title: true,
+    content: true,
   });
 
   async function validate(
@@ -59,7 +61,6 @@ export const inputValidator = () => {
     } else {
       let isValid = true;
       let emailRepeatCheck = false;
-
       let value = formInput[fieldName];
 
       if (!value || value.trim() === "") {
@@ -70,7 +71,7 @@ export const inputValidator = () => {
       let totalWeight = 0;
       switch (fieldName) {
         case "email":
-          const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+          const emailRegex = /[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}/gim;
           if (!emailRegex.test(value)) {
             isValid = false;
           } else {
@@ -103,6 +104,13 @@ export const inputValidator = () => {
           if (value.length < 6 || value.length > 15) {
             isValid = false;
           }
+          const passwordRegex =
+            /^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8}$/;
+          for (const char of value) {
+            if (passwordRegex.test(char)) {
+              isValid = false;
+            }
+          }
           break;
 
         case "passwordConfirm":
@@ -116,6 +124,8 @@ export const inputValidator = () => {
               totalWeight += 2;
             } else if (/^[A-Za-z0-9]+$/.test(char)) {
               totalWeight += 1;
+            } else if (/[.,;:!?-、...]/.test(char)) {
+              return 2;
             } else {
               totalWeight += 41;
             }
@@ -131,12 +141,10 @@ export const inputValidator = () => {
               totalWeight += 2;
             } else if (/^[A-Za-z0-9]+$/.test(char)) {
               totalWeight += 1;
-            } else {
-              totalWeight += 801;
             }
           }
 
-          if (totalWeight < 40 || totalWeight > 800) {
+          if (totalWeight < 20 || totalWeight > 800) {
             isValid = false;
           }
           break;
@@ -149,6 +157,7 @@ export const inputValidator = () => {
         formInputInvalid.value.email.registered = emailRepeatCheck;
       } else {
         formInputInvalid.value[fieldName] = isValid;
+        console.log(formInputInvalid.value[fieldName]);
       }
     }
   }

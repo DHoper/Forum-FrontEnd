@@ -23,7 +23,8 @@ export interface PhotoPostImageType {
   filename: string;
 }
 
-export interface NewPhotoPostType {
+export interface PhotoPostType {
+  _id: string;
   title: string;
   images: PhotoPostImageType[];
   location: string;
@@ -35,7 +36,8 @@ export interface NewPhotoPostType {
   authorId: string;
   views: 0;
   likes: 0;
-  comments: [];
+  createdAt?: string,
+  commentsId: [];
   isEdit: false;
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import router from '../router';
 import {
     EyeIcon,
@@ -10,6 +10,8 @@ import {
 import {
     HeartIcon,
 } from '@heroicons/vue/24/solid';
+import { getPostDataset } from '../api/community';
+import { CommunityPostType } from '../types';
 
 const votes = ref([
     {
@@ -27,53 +29,61 @@ const votes = ref([
     // 添加更多虚拟数据...
 ]);
 
-const communityPosts = [
-    {
-        title: '社区文章标题1',
-        subtitle: '社区文章副标题1',
-        images: [
-            {
-                url: 'https://example.com/image1.jpg',
-                filename: 'image1.jpg',
-            },
-        ],
-        content: '这是社区文章的内容1。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vestibulum odio eget metus interdum, in bibendum ligula ultrices. Sed non lacus quis sapien hendrerit blandit. Aenean eu urna ut neque euismod ultrices.',
-        likes: 10,
-        views: 100,
-        commentsId: [],
-        isEdit: false,
-        _id: 11,
-    },
-    {
-        title: '社区文章标题2',
-        subtitle: '社区文章副标题2',
-        images: [
-            {
-                url: 'https://example.com/image2.jpg',
-                filename: 'image2.jpg',
-            },
-        ],
-        content: '这是社区文章的内容2。Pellentesque dapibus quam non felis facilisis, vel fringilla risus tincidunt. Fusce nec eros quis dui cursus scelerisque in et nunc. Maecenas ullamcorper erat quis justo posuere, a vehicula erat hendrerit.',
-        likes: 15,
-        views: 120,
-        commentsId: [],
-        isEdit: true,
-        _id: 112,
-    },
-    {
-        title: '社区文章标题3',
-        subtitle: '社区文章副标题3',
-        images: [],
-        content: '这是社区文章的内容3。Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras eu sagittis orci. Integer non ipsum ut eros laoreet sollicitudin. Quisque euismod urna vel magna tincidunt vestibulum.',
-        likes: 20,
-        views: 150,
-        commentsId: [],
-        isEdit: false,
-        _id: 14,
-    },
-    // 添加更多假数据...
-];
+// const communityPosts = [
+//     {
+//         title: '社区文章标题1',
+//         subtitle: '社区文章副标题1',
+//         images: [
+//             {
+//                 url: 'https://example.com/image1.jpg',
+//                 filename: 'image1.jpg',
+//             },
+//         ],
+//         content: '这是社区文章的内容1。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vestibulum odio eget metus interdum, in bibendum ligula ultrices. Sed non lacus quis sapien hendrerit blandit. Aenean eu urna ut neque euismod ultrices.',
+//         likes: 10,
+//         views: 100,
+//         commentsId: [],
+//         isEdit: false,
+//         _id: 11,
+//     },
+//     {
+//         title: '社区文章标题2',
+//         subtitle: '社区文章副标题2',
+//         images: [
+//             {
+//                 url: 'https://example.com/image2.jpg',
+//                 filename: 'image2.jpg',
+//             },
+//         ],
+//         content: '这是社区文章的内容2。Pellentesque dapibus quam non felis facilisis, vel fringilla risus tincidunt. Fusce nec eros quis dui cursus scelerisque in et nunc. Maecenas ullamcorper erat quis justo posuere, a vehicula erat hendrerit.',
+//         likes: 15,
+//         views: 120,
+//         commentsId: [],
+//         isEdit: true,
+//         _id: 112,
+//     },
+//     {
+//         title: '社区文章标题3',
+//         subtitle: '社区文章副标题3',
+//         images: [],
+//         content: '这是社区文章的内容3。Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras eu sagittis orci. Integer non ipsum ut eros laoreet sollicitudin. Quisque euismod urna vel magna tincidunt vestibulum.',
+//         likes: 20,
+//         views: 150,
+//         commentsId: [],
+//         isEdit: false,
+//         _id: 14,
+//     },
+//     // 添加更多假数据...
+// ];
+const communityPosts = ref<CommunityPostType[]>();
+const fetchData = async () => {
+    const response = await getPostDataset();
+    communityPosts.value = response.value;
+}
 
+onMounted(() => {
+    fetchData();
+})
 
 const activeTab = ref('latest');
 const currentPage = ref(1);
@@ -110,7 +120,7 @@ const goToPage = (pageNumber) => {
 </script>
 
 <template>
-    <div class="flex flex-col gap-12 py-4 bg-stone-100 p-4">
+    <div v-if="communityPosts && votes" class="flex flex-col gap-12 py-4 bg-stone-100 p-4">
         <div class="">
             <h1 class="text-3xl mb-4">話題投票</h1>
             <div class="border-b-2 border-stone-700 my-4"></div>
@@ -129,7 +139,7 @@ const goToPage = (pageNumber) => {
                     <p class="text-stone-600">{{ vote.description }}</p>
                     <div class="mt-4 flex justify-between items-center">
                         <span class="text-stone-800 ">截止日期：{{ vote.deadline }}</span>
-                        <button class="bg-stone-800 text-white px-3 py-1 hover-bg-stone-800">投票</button>
+                        <button class="bg-stone-800 text-white px-3 py-1 hover:bg-stone-800">投票</button>
                     </div>
                 </div>
             </div>
@@ -138,7 +148,8 @@ const goToPage = (pageNumber) => {
         <div class="">
             <div class="flex items-center justify-between gap-4">
                 <h1 class="text-3xl leading-none">社區討論</h1>
-                <div @click="router.push({name: 'CommunityCreatePost'})" class="flex gap-2 border-2 border-stone-600 p-1 px-2 hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer">
+                <div @click="router.push({ name: 'CommunityCreatePost' })"
+                    class="flex gap-2 border-2 border-stone-600 p-1 px-2 hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer">
                     新增文章
                     <PlusIcon class="w-4" />
                 </div>
@@ -174,16 +185,19 @@ const goToPage = (pageNumber) => {
             </div>
 
             <!-- 分頁標籤 -->
-            <div class="flex justify-center mt-4">
-                <button @click="changePage('prev')" :disabled="currentPage === 1"
-                    class="bg-stone-800 text-white px-3 py-1 mr-2 hover-bg-stone-800">上一頁</button>
+            <div class="flex justify-center mt-4 gap-4">
+                <button @click="changePage('next')" :disabled="currentPage === 1"
+                    class="border-2 px-3 py-1 ml-2 transition-all duration-300"
+                    :class="currentPage === 1 ? 'border-stone-500 text-stone-500' : 'border-stone-800 text-stone-800 cursor-pointer hover:text-white hover:bg-stone-800'">上一頁</button>
                 <div class="flex space-x-2">
                     <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                        :class="pageNumber === currentPage ? 'bg-stone-800 text-white px-3 py-1 hover-bg-stone-800' : 'bg-stone-500 text-white px-3 py-1 hover-bg-stone-600'">{{
+                        class="border-2 px-3 py-1 transition-all duration-300"
+                        :class="pageNumber === currentPage ? 'border-stone-800 text-stone-800 hover:bg-stone-800 hover:text-white' : 'bg-stone-500 text-white hover:bg-stone-600 '">{{
                             pageNumber }}</button>
                 </div>
                 <button @click="changePage('next')" :disabled="currentPage === totalPages"
-                    class="bg-stone-800 text-white px-3 py-1 ml-2 hover-bg-stone-800">下一頁</button>
+                    class="border-2 px-3 py-1 transition-all duration-300"
+                    :class="currentPage === totalPages ? 'border-stone-500 text-stone-500' : 'border-stone-800 text-stone-800 cursor-pointer hover-text-white hover:bg-stone-800'">下一頁</button>
             </div>
         </div>
     </div>

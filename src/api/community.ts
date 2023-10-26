@@ -1,5 +1,6 @@
 import { apiClient } from "./axiosInstance";
 import { CommunityPostType } from "../types.ts";
+import { ref } from "vue";
 
 export const ApiConfig = {
   index: "/communityPost",
@@ -8,15 +9,17 @@ export const ApiConfig = {
     `/communityPost/${id}/statistics/${action}`,
 };
 
-export async function getGalleryData() {
+export async function getPostDataset() {
   try {
+    const responseData = ref<CommunityPostType[]>();
     let response;
 
     response = await apiClient.get(ApiConfig.index);
+    responseData.value= response.data;
 
-    return response.data;
+    return responseData;
   } catch (error) {
-    console.error("獲取所有照片牆貼文數據時發生錯誤：", error);
+    console.error("獲取所有社區貼文數據時發生錯誤：", error);
     throw error;
   }
 }

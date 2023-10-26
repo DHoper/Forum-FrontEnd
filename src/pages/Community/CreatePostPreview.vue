@@ -139,11 +139,9 @@ onMounted(async () => {
     formData.value = props.data;
     authorData.value = await getAuthor(formData.value.authorId);
     formData.value.createdAt = new Date().toISOString();
-    console.log(formData.value.createdAt);
-
 })
-
 </script>
+
 <template>
     <div v-if="formData && authorData"
         class="fixed top-0 w-screen h-screen overflow-auto border-4 py-12 px-4 z-50 bg-white flex flex-col items-center gap-10">
@@ -168,7 +166,7 @@ onMounted(async () => {
                     {{ tag }}
                 </span>
             </div>
-            <pre class="text-stone-700 mt-20">{{ formData.content }}</pre>
+            <p class="text-stone-700 mt-20 whitespace-pre-wrap">{{ formData.content }}</p>
             <div class="mt-4 flex flex-col gap-4">
                 <img v-for="image in formData.images" :src="image.url" class="border-4 border-stone-700" />
             </div>
@@ -194,6 +192,6 @@ onMounted(async () => {
                 返回
             </button>
         </div>
+        <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
     </div>
-    <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
 </template>

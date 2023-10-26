@@ -9,7 +9,7 @@ import MapBoxLanguage from '@mapbox/mapbox-gl-language';
 import "mapbox-gl/dist/mapbox-gl.css";
 import '@mapbox/mapbox-gl-geocoder/lib/mapbox-gl-geocoder.css';
 import { useLoadingStore } from '../store/loading';
-import { PhotoPostFilledType } from '../types';
+import { PhotoPostType } from '../types';
 
 
 const mapContainer = ref<HTMLElement | null>(null);
@@ -31,9 +31,11 @@ onMounted(async () => {
     const loadingStore = useLoadingStore();  //設置loading動畫頁
     loadingStore.setLoadingStatus(true);
     loadingStore.setInRequest(true);
-    const animalsDataset = await getGalleryData();
 
-    const geoJSONFeatures = animalsDataset.map((animalsData: PhotoPostFilledType) => ({
+    const response = await getGalleryData();//取得照片牆貼文資料
+    const animalsDataset = response.value!;
+    
+    const geoJSONFeatures = animalsDataset.map((animalsData: PhotoPostType) => ({
         type: "Feature",
         geometry: {
             type: "Point",
@@ -76,14 +78,31 @@ onMounted(async () => {
 
     }
 
+    interface Feature {
+        type: string;
+        geometry: {
+            type: string;
+            coordinates: number[];
+        };
+        properties: {
+            _id: string;
+            title: string;
+            location: string;
+            url: string;
+        };
+        place_name: string;
+        center: number[];
+        place_type: string[];
+    }
+
     const searchData = {
-        features: geoJSONFeatures,
+        features: geoJSONFeatures as unknown as Feature[],
         type: 'FeatureCollection'
     };
 
     //定義地圖搜索函數
     function forwardGeocoder(query: string) {
-        const matchingFeatures = [];
+        const matchingFeatures:Feature[] = [];
         for (const feature of searchData.features) {
             if (feature.properties.title.toLowerCase().includes(query.toLowerCase())) {
                 feature['place_name'] = feature.properties.title;

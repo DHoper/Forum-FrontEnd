@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { ExclamationCircleIcon } from '@heroicons/vue/24/solid';
 import CreatePostPreview from './CreatePostPreview.vue';
 import { createPost } from '../../api/community';
 import { useUserStore } from '../../store/user';
@@ -115,10 +116,22 @@ const isMaxSelected = computed(() => { //限制tag最多選五
 })
 const inPreview = ref<boolean>(false);
 
-const validator = (fieldname: FieldName) => {
-    inputValidator().validate(fieldname, formData.value);
+//驗證器
+const validator = inputValidator();
+const formInputInvalid = validator.formInputInvalid;
+const validateInput = (fieldName: FieldName | "UserData") => {  //重新包裝validator
+    validator.validate(fieldName, formData.value);
 }
 
+//預覽驗證
+const previewAble = computed(() => formData.value.topicTags.length > 0 && formInputInvalid.value.title && formInputInvalid.value.content && formData.value.title && formData.value.content);
+const handelPreview = () => {
+    if(previewAble) {
+        inPreview.value = true;
+    }
+}
+
+//圖片處裡
 const cloudName = import.meta.env.VITE_APP_CLOUDINARY_CLOUD_NAME;
 let createPostImages: PhotoPostImageType[] = [];//儲存最終提交之圖片url
 const uploadImages = async () => {
@@ -192,16 +205,21 @@ const handelSubmit = async () => {
 <template>
     <div class="relative">
         <div class="bg-white w-full py-12 px-4">
-            <div class="mx-auto flex flex-col bg-white w-[62rem] px-5">
+            <div class="mx-auto flex flex-col bg-white w-[62rem] max-w-full px-5">
                 <button @click="router.back()" class="self-start text-sm font-bold text-stone-800">上一頁</button>
                 <div class="mt-12 border-2 border-stone-800 px-24 py-16">
                     <h1 class="my-8 text-4xl text-stone-600">發佈新貼文</h1>
                     <form class="mt-4 flex flex-col gap-4">
-                        <div>
+                        <div class="relative">
                             <label for="title" class="text-stone-600 font-bold text-sm">標題</label>
                             <input v-model="formData.title" type="text" id="title" name="title" placeholder="5 ~ 20字"
-                                @blur="validator('title')"
-                                class="mt-2 w-full border-2 border-stone-800 py-2 px-3 outline-none" required>
+                                @blur="validateInput('title')" class="mt-2 w-full border-2 py-2 px-3 outline-none"
+                                :class="formInputInvalid.title ? 'border-stone-800' : 'border-red-700'" required>
+                            <div v-if="!formInputInvalid.title"
+                                class="w-full absolute left-0 bottom-0 translate-y-full flex items-center gap-1 text-xs text-red-500">
+                                <ExclamationCircleIcon class="w-4" />
+                                <p>請輸入有效標題</p>
+                            </div>
                         </div>
                         <div>
                             <label for="img" class="text-stone-600 font-bold text-sm">圖片(可選)</label>
@@ -230,16 +248,22 @@ const handelSubmit = async () => {
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div class="relative">
                             <label for="content" class="text-stone-600 font-bold text-sm">貼文内容</label>
                             <textarea v-model="formData.content" id="content" name="content" cols="20" rows="10"
-                                placeholder="20 ~ 400字"
-                                @blur="validator('content')"
-                                class="mt-2 w-full border-2 border-stone-800 py-2 px-3 outline-none resize-none"
-                                required></textarea>
+                                placeholder="10 ~ 400字" @blur="validateInput('content')"
+                                class="mt-2 mb-0 w-full border-2 border-stone-800 py-2 px-3 outline-none resize-none"
+                                :class="formInputInvalid.content ? 'border-stone-800' : 'border-red-700'" required />
+                            <div v-if="!formInputInvalid.content"
+                                class="w-full absolute left-0 bottom-1 translate-y-full flex items-center gap-1 text-xs text-red-500">
+                                <ExclamationCircleIcon class="w-4" />
+                                <p>請輸入有效內容</p>
+                            </div>
                         </div>
-                        <div class="flex justify-between">
-                            <button @click="inPreview = true" type="button" class="text-white bg-blue-900 px-8 py-2">
+                        <div class="mt-8 flex justify-between">
+                            <button @click="handelPreview" type="button" :disabled="!previewAble"
+                                class="text-white border-2 border-transparent px-8  py-2 transition-all duration-300"
+                                :class="previewAble ? 'bg-blue-900 hover:bg-white hover:text-blue-900 hover:border-blue-900' : 'bg-stone-600'">
                                 預覽
                             </button>
                         </div>

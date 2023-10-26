@@ -11,7 +11,7 @@ import {
     XCircleIcon,
     ExclamationCircleIcon
 } from '@heroicons/vue/24/outline';
-import { NewPhotoPostType, PhotoPostImageType, DialogType, UserData } from '../../types.ts';
+import { PhotoPostType, PhotoPostImageType, DialogType, UserData } from '../../types.ts';
 import { useUserStore } from '../../store/user.ts';
 import { useLoadingStore } from '../../store/loading';
 import { createPost } from '../../api/photoPost';
@@ -181,7 +181,7 @@ const submitNewPost = async () => {
     //問題--以userStore.getData()進行if判定仍無法通過TS檢查?
     const userData: UserData = userStore.getData();
     await uploadImages()
-    const submitForm: NewPhotoPostType = {
+    const submitForm: PhotoPostType = {
         authorId: userData._id,
         title: newPost.value.title,
         location: newPost.value.location,

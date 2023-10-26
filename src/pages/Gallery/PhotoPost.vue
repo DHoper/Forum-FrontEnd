@@ -4,7 +4,7 @@ import { getAuthor } from '../../api/user.ts';
 import { getComment, postComment, deleteComment } from '../../api/comment.ts';
 import { useUserStore } from '../../store/user.ts';
 import { formatDateTime } from '../../utils/formattingUtils.ts';
-import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType, UserDataType } from '../../types.ts';
+import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType, UserDataType, PhotoPostType } from '../../types.ts';
 import { ref, toRefs, onMounted, watchEffect, watch } from 'vue';
 import router from '../../router';
 import {
@@ -46,7 +46,8 @@ const pictureIndex = ref<number>(0);
 
 const fetchCommentData = async () => {
     if (photoPost.value) {
-        const responseData = await getPostData(`${id.value}`);
+        const response = await getPostData(id.value);
+        const responseData: PhotoPostType = response.value!;
         const commentsId = responseData.commentsId;
 
         let commentData: CommentFilledType[] = [];
@@ -61,7 +62,8 @@ const fetchCommentData = async () => {
 }
 
 const fetchData = async () => {
-    const responseData = await getPostData(id.value);
+    const response = await getPostData(id.value);
+    const responseData: PhotoPostType = response.value!;
     await setStats(id.value, "updateViews");
 
     const { _id, title, images, location, description, createdAt, authorId, views, likes, isEdit, commentsId } = responseData;
@@ -193,7 +195,7 @@ async function handleDeleteComment(commentId: string) {
         await deleteComment(commentId);
         await fetchCommentData();
     }
-    
+
     userChoice.value = undefined;
 }
 </script>
