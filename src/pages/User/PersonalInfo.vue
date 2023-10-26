@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { ExclamationCircleIcon } from '@heroicons/vue/24/solid';
 import { useUserStore } from '../../store/user';
-import { FieldName, userDataInputValidator } from '../../utils/validator';
+import { FieldName, inputValidator } from '../../utils/validator';
 import { updateUser } from '../../api/user';
 import Dialog from '../../components/utils/Dialog.vue';
 
@@ -13,7 +13,7 @@ const userData = computed(() => userStore.getData());
 const topicTags = {
     ecology: {
         color: "#A89376",
-        tag: [
+        tags: [
             "生態系",
             "水生生物",
             "魚類",
@@ -28,7 +28,7 @@ const topicTags = {
     },
     knowledge: {
         color: "#875B4A",
-        tag: [
+        tags: [
             "動物行為",
             "遷徒",
             "奇特行為",
@@ -37,7 +37,7 @@ const topicTags = {
     },
     geographicalFeatures: {
         color: "#B7AFA6",
-        tag: [
+        tags: [
             "野生動物保護區",
             "海洋",
             "溪河湖泊",
@@ -52,7 +52,7 @@ const topicTags = {
     },
     style: {
         color: "#566E3D",
-        tag: [
+        tags: [
             "自然風景",
             "夜間攝影",
             "微距攝影",
@@ -62,7 +62,7 @@ const topicTags = {
     },
     issue: {
         color: "#22577A",
-        tag: [
+        tags: [
             "環境保育",
             "全球生態",
             "嚴重議題",
@@ -70,7 +70,7 @@ const topicTags = {
     },
     geolocation: {
         color: "#F4B860",
-        tag: [
+        tags: [
             "非洲",
             "亞洲",
             "南美洲",
@@ -111,15 +111,16 @@ setInputData();
 const showAvatarSelector = ref<boolean>(false); //頭樣選擇窗
 
 //驗證
-const validator = userDataInputValidator();
+const validator = inputValidator();
 const formInputInvalid = validator.formInputInvalid;
-const validateInput = (fieldName: FieldName | "all") => {  //重新包裝validator
+const validateInput = (fieldName: FieldName | "UserData") => {  //重新包裝validator
     validator.validate(fieldName, formData.value);
 
 }
 const validateEmail = () => {
     if (formData.value.email === userData.value?.email) {
         formInputInvalid.value.email.registered = false;
+        formInputInvalid.value.email.valid = true;
     } else {
         validateInput("email");
     }
@@ -135,7 +136,7 @@ const dialogData = {
 const isEditing = ref(false);
 const submitEdit = async () => {
     if (isEditing.value && formData.value) {
-        validateInput("all");
+        validateInput("UserData");
         validateEmail();
         const {
             username,
@@ -159,14 +160,16 @@ const submitEdit = async () => {
         await updateUser(submitData);
         showDialog.value = true;
     } else if (!isEditing.value && userData.value) {
-        validateInput("all");
+        validateInput("UserData");
         validateEmail();
     }
     isEditing.value = !isEditing.value;
+    window.scrollTo(0, 0);
 };
 const cancelEdit = () => {
     setInputData();
     isEditing.value = false;
+    window.scrollTo(0, 0);
 }
 </script>
 
@@ -175,7 +178,7 @@ const cancelEdit = () => {
     <div v-if="userData && formData" class="flex-1 bg-stone-100 flex items-center justify-center p-10">
         <div class="flex flex-col gap-6 items-center bg-white p-8 shadow-xl w-[30rem] border-2 border-stone-700">
             <div class="flex flex-col items-center gap-4">
-                <div class="flex justify-center border-2 border-stone-700 p-2 rounded-full w-36 h-36">
+                <div class="flex justify-center border-2 border-stone-700 p-2 rounded-full w-36 h-36 overflow-hidden">
                     <img :src="`/assets/img/avatar (${formData.selectedAvatarIndex}).png`" alt="User Avatar"
                         class="rounded-full object-contain" />
                 </div>
@@ -258,7 +261,7 @@ const cancelEdit = () => {
                             </span>
                         </div>
                         <div v-else class="flex gap-2 items-center justify-center flex-wrap" v-for="topic in topicTags">
-                            <label v-for="tag in topic.tag" class="border-2 border-stone-700 px-2 py-1"
+                            <label v-for="tag in topic.tags" class="border-2 border-stone-700 px-2 py-1"
                                 :style="formData.selectedTags.includes(tag) ? `background-color:${topic.color};color:white` : ''">
                                 <input type="checkbox" v-model="formData.selectedTags" :value="tag" class="hidden">
                                 <span class="cursor-pointer">{{ tag }}</span>
@@ -312,5 +315,9 @@ const cancelEdit = () => {
             </div>
         </Transition>
     </div>
-    <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="showDialog = false" />
+    <Transition enter-active-class="transition ease-in duration-150 delay-0" enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150 delay-0"
+        leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+        <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="showDialog = false" />
+    </Transition>
 </template>

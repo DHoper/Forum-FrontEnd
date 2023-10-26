@@ -316,7 +316,7 @@ const handleSubmit = async () => {
                             <span type="button"
                                 class="bg-green-500 text-stone-100 p-2 w-full font-bold hover:bg-green-600 transition-all duration-300 text-center text-lg">選擇圖片</span>
                             <input ref="imgInput" id="imgUpload" name="imgUpload" type="file" class="sr-only"
-                                @change="previewImages" multiple>
+                                @change="previewImages" multiple required>
                         </label>
                     </div>
                     <div class="previewRows flex gap-3 w-full overflow-auto p-1">
@@ -355,7 +355,11 @@ const handleSubmit = async () => {
             </form>
         </div>
     </div>
-    <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="showDialog = false" />
+    <Transition enter-active-class="transition ease-in duration-150 delay-0" enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150 delay-0"
+        leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+        <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="showDialog = false" />
+    </Transition>
 </template>
 
 <style scoped>

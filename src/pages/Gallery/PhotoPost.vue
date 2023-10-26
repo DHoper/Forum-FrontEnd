@@ -4,7 +4,7 @@ import { getAuthor } from '../../api/user.ts';
 import { getComment, postComment, deleteComment } from '../../api/comment.ts';
 import { useUserStore } from '../../store/user.ts';
 import { formatDateTime } from '../../utils/formattingUtils.ts';
-import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType, UserData } from '../../types.ts';
+import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType, UserDataType } from '../../types.ts';
 import { ref, toRefs, onMounted, watchEffect, watch } from 'vue';
 import router from '../../router';
 import {
@@ -122,7 +122,7 @@ async function handleSubmit() {
         return;
     }
 
-    const userData: UserData = userStore.getData();
+    const userData: UserDataType = userStore.getData()!;
 
     if (photoPost.value) {
         const postData: CommentType = {
@@ -183,7 +183,6 @@ const handleDialog = async () => {
             resolve(userChoice.value);
         });
     });
-
     return dialogPromise;
 };
 
@@ -194,6 +193,8 @@ async function handleDeleteComment(commentId: string) {
         await deleteComment(commentId);
         await fetchCommentData();
     }
+    
+    userChoice.value = undefined;
 }
 </script>
 
@@ -219,7 +220,7 @@ async function handleDeleteComment(commentId: string) {
                 <li v-for="comment in photoPost.comments">
                     <div class="flex items-center gap-4">
                         <div
-                            class="border border-stone-800 rounded-full bg-white w-10 h-10 p-1 flex items-center justify-center">
+                            class="border border-stone-800 rounded-full bg-white w-10 h-10 p-1 flex items-center justify-center overflow-hidden">
                             <img :src="`/assets/img/avatar (${comment.author.selectedAvatarIndex}).png`" alt="avatar">
                         </div>
                         <div class="flex gap-2 items-center justify-start flex-1">
@@ -333,6 +334,9 @@ async function handleDeleteComment(commentId: string) {
             </div>
         </div>
     </div>
-    <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
+    <Transition enter-active-class="transition ease-in duration-150 delay-0" enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150 delay-0"
+        leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+        <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
+    </Transition>
 </template>
-../../api/photoPost.ts

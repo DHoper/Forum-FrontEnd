@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router';
 import { useLoadingStore } from '../store/loading';
 import { useUserStore } from '../store/user';
 import { postUserData } from '../api/user.ts';
-import { FieldName, userDataInputValidator } from '../utils/validator';
+import { FieldName, inputValidator } from '../utils/validator';
 
 const loadingStore = useLoadingStore();
 const router = useRouter();
@@ -15,7 +15,7 @@ const router = useRouter();
 const topicTags = {
     ecology: {
         color: "#A89376",
-        tag: [
+        tags: [
             "生態系",
             "水生生物",
             "魚類",
@@ -30,7 +30,7 @@ const topicTags = {
     },
     knowledge: {
         color: "#875B4A",
-        tag: [
+        tags: [
             "動物行為",
             "遷徒",
             "奇特行為",
@@ -39,7 +39,7 @@ const topicTags = {
     },
     geographicalFeatures: {
         color: "#B7AFA6",
-        tag: [
+        tags: [
             "野生動物保護區",
             "海洋",
             "溪河湖泊",
@@ -54,7 +54,7 @@ const topicTags = {
     },
     style: {
         color: "#566E3D",
-        tag: [
+        tags: [
             "自然風景",
             "夜間攝影",
             "微距攝影",
@@ -64,7 +64,7 @@ const topicTags = {
     },
     issue: {
         color: "#22577A",
-        tag: [
+        tags: [
             "環境保育",
             "全球生態",
             "嚴重議題",
@@ -72,7 +72,7 @@ const topicTags = {
     },
     geolocation: {
         color: "#F4B860",
-        tag: [
+        tags: [
             "非洲",
             "亞洲",
             "南美洲",
@@ -101,7 +101,7 @@ const showAvatarSelector = ref<boolean>(false);
 const selectedTags = ref<string[]>([]);
 
 ////表單註冊-驗證
-const validator = userDataInputValidator();
+const validator = inputValidator();
 const validateInput = (fieldName: FieldName) => { //重新包裝validator
     validator.validate(fieldName, formInput.value)
 }
@@ -269,7 +269,7 @@ watch(activeTab, () => {
                         </div>
                     </div>
                     <div v-if="formStep === 2" class="step3 flex flex-col items-center gap-4 -mt-4 mb-8">
-                        <div class="bg-stone-100 border-2 border-dashed border-stone-700 w-32">
+                        <div class="bg-stone-100 border-2 border-dashed border-stone-700 w-32 overflow-hidden">
                             <img class=" p-3"
                                 :src="`../../public//assets/img/avatar (${formInput.selectedAvatarIndex}).png`" alt="">
                         </div>
@@ -286,7 +286,7 @@ watch(activeTab, () => {
                         <div
                             class="overflow-auto flex items-center justify-center flex-wrap w-full h-40 border border-stone-500 p-2 bg-stone-600 border-t-0">
                             <div class="flex items-center justify-center flex-wrap" v-for="topic in topicTags">
-                                <label v-for="tag in topic.tag" class="border p-1 m-1 bg-stone-600"
+                                <label v-for="tag in topic.tags" class="border p-1 m-1 bg-stone-600"
                                     :style="selectedTags.includes(tag) ? `background-color:${topic.color}` : ''">
                                     <input type="checkbox" v-model="selectedTags" :value="tag" class="hidden">
                                     <span class="cursor-pointer">{{ tag }}</span>

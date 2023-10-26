@@ -58,25 +58,38 @@ export interface PhotoPostFilledType {
 }
 
 //----用戶----//
-export interface UserDataPost {
+export interface UserDataPostType {
   email: string;
   password: string;
   selectedAvatarIndex: number;
   selectedTags: string[];
   username: string;
-  intro?: string,
+  intro?: string;
 }
 
-export interface UserData {
+export interface UserDataType {
   email: string;
   password: string;
   selectedAvatarIndex: number;
   selectedTags: string[];
   username: string;
-  intro?: string,
+  intro?: string;
   _id: string;
 }
 
+//----社區----//
+
+export interface CommunityPostType {
+  title: string;
+  authorId: string;
+  images?: PhotoPostImageType[] | null;
+  content: string;
+  likes: number;
+  views: number;
+  topicTags: string[];
+  commentsId: string[];
+  isEdit: boolean;
+}
 
 //----全域彈窗框
 export interface DialogType {

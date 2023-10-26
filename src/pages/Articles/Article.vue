@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TheHeader from '../../components/layout/TheHeader.vue';
 import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router'
 import {
@@ -88,7 +87,6 @@ watchEffect(() => {
 
 <template>
     <div class="bg-articles bg-no-repeat bg-cover bg-center w-full bg-fixed">
-        <TheHeader :is-login="false" />
         <div class="absolute flex flex-col items-center top-52 left-1/2 -translate-x-1/2 font-Josefin tracking-widest">
             <h1 class="uppercase text-5xl font-bold">The beauty of nature</h1>
             <h3 class="italic text-xl mt-2">探索自然與保育之美</h3>

@@ -32,10 +32,11 @@ onUnmounted(() => {
                 <p>{{ props.dialogData.content }}</p>
                 <div class="flex gap-4 w-full px-8">
                     <button @click="emit('closePopup', true)"
-                        class="text-lg border-2 border-white p-2 hover:bg-white transition-all duration-300"
-                        :class="props.dialogData.cancelButton ? 'bg-red-600 hover:text-red-600 basis-1/2' : 'hover:text-stone-600 w-full'">確認</button>
+                        class="flex-1 text-lg border-2 border-white p-2 hover:bg-white transition-all duration-300"
+                        :class="props.dialogData.warringStyle ? 'bg-red-600 hover:text-red-600' : 'hover:text-stone-600'">確認</button>
                     <button v-if="props.dialogData.cancelButton" @click="emit('closePopup', false)"
-                        class="text-lg  border-2 border-white p-2 basis-1/2 hover:bg-white bg-white text-stone-600 hover:text-red-600 transition-all duration-300">取消</button>
+                        class="flex-1 text-lg  border-2 border-white p-2 hover:bg-white bg-white text-stone-600 transition-all duration-300"
+                        :class="props.dialogData.warringStyle ? 'hover:text-red-600' : 'hover:font-bold'">取消</button>
                 </div>
             </div>
         </div>

@@ -94,7 +94,7 @@ const removeLineClass = () => {
                     </div>
                 </transition>
             </div>
-            <button ref="button" @click="router.push('Login')"
+            <button ref="button" @click="router.push('Articles')"
                 class="relative w-60 h-12 text-white border-2 text-lg border-white hover:bg-[#3332323f] font-bold py-2 mt-8 rounded-full tracking-widest transition-all origin-center hover:animate-circle"
                 tabindex="0" @mouseover.once="addAnimateClass" @mouseenter="addLineClass" @mouseleave="removeLineClass">
                 <span>現&nbsp;&nbsp;在&nbsp;&nbsp;開&nbsp;&nbsp;始</span>

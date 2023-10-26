@@ -11,6 +11,7 @@ import Explore from "./pages/Explore.vue";
 import Gallery from "./pages/Gallery.vue";
 import Community from "./pages/Community.vue";
 
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -23,11 +24,27 @@ const router = createRouter({
       path: "/login",
       component: Login,
       name: "Login",
+      beforeEnter: (to, from, next) => {
+        const userStore = useUserStore();//無法在global scope中/Pinia被掛載前使用
+        if (userStore.isLogin) {
+          next({ name: "Articles" });
+        } else {
+          next();
+        }
+      },
     },
     {
       path: "/register",
       component: Register,
       name: "Register",
+      beforeEnter: (to, from, next) => {
+        const userStore = useUserStore(); 
+        if (userStore.isLogin) {
+          next({ name: "Articles" });
+        } else {
+          next();
+        }
+      },
     },
     {
       path: "/help",
@@ -71,8 +88,33 @@ const router = createRouter({
     },
     {
       path: "/community",
-      component: Community,
-      name: "Community",
+      children: [
+        {
+          component: Community,
+          path: "",
+          name: "Community",
+          meta: { requiresAuth: true },
+        },
+        {
+          path: ":id",
+          name: "CommunityPost",
+          component: () => import("./pages/Community/CommunityPost.vue"),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: "createPost",
+          name: "CommunityCreatePost",
+          component: () => import("./pages/Community/CommunityCreatePost.vue"),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: "createPostPreview",
+          name: "CreatePostPreview",
+          component: () => import("./pages/Community/CreatePostPreview.vue"),
+          props: true,
+          meta: { requiresAuth: true },
+        },
+      ],
     },
     {
       path: "/user",
@@ -103,7 +145,6 @@ const router = createRouter({
     },
   ],
 });
-export default router;
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
@@ -119,3 +160,5 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
   useLoadingStore().setIsCountingSeconds(false);
 });
+
+export default router;

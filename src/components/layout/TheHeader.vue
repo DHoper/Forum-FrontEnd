@@ -15,11 +15,11 @@ import {
     QuestionMarkCircleIcon,
     BellIcon
 } from '@heroicons/vue/24/outline';
-import { UserData } from '../../types';
+import { UserDataType } from '../../types';
 import router from '../../router';
 
 const userStore = useUserStore();
-const userData = computed(() => userStore.getData()) as any as UserData;//問題: 原寫法無法通過TS檢查
+const userData = computed(() => userStore.getData()) as any as UserDataType;//問題: 原寫法無法通過TS檢查
 const isLogin = computed<boolean>(() => userStore.isLogin);
 
 const userActions = [
@@ -103,7 +103,7 @@ const notifications = [
                     </Popover>
                     <Popover class="h-12">
                         <PopoverButton class="focus:outline-none">
-                            <div class="rounded-full bg-white w-12 h-12 p-1 flex items-center justify-center">
+                            <div class="rounded-full bg-white w-12 h-12 p-1 flex items-center justify-center overflow-hidden">
                                 <img class="rounded-full" :src="`/assets/img/avatar (${userData.selectedAvatarIndex}).png`"
                                     alt="avatar">
                             </div>

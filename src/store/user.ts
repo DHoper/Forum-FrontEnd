@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { getUserData } from "../api/user";
-import { UserData } from "../types.ts";
+import { UserDataType } from "../types.ts";
 
 export enum LoginStatus {
   Success = "登錄成功",
@@ -11,7 +11,7 @@ export enum LoginStatus {
 
 export const useUserStore = defineStore("user", () => {
   const storedUser = localStorage.getItem("user");
-  const data = ref<UserData | null>();
+  const data = ref<UserDataType | null>();
   if (storedUser) {
     data.value = JSON.parse(storedUser);
   } else {
@@ -56,11 +56,20 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  function getId() {
+    if (isLogin.value && data.value) {
+      return data.value._id;
+    } else {
+      return null;
+    }
+  }
+
   return {
     data,
     isLogin,
     loggingStatus,
     getData,
+    getId,
     login,
     logout,
   };

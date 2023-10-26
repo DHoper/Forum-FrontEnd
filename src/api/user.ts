@@ -1,4 +1,4 @@
-import { UserData } from "../types";
+import { UserDataType } from "../types";
 import { apiClient } from "./axiosInstance";
 
 export const ApiConfig = {
@@ -54,7 +54,7 @@ export async function postUserData(postData: object) {
   }
 }
 
-export async function updateUser(updatedData: UserData) {
+export async function updateUser(updatedData: UserDataType) {
   try {
     const response = await apiClient.put(`/user`, updatedData);
     return response;

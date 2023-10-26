@@ -2,15 +2,22 @@ import { ref } from "vue";
 import { checkRepeatEmail } from "../api/user";
 
 ////UserData驗證
-export type FieldName = "email" | "username" | "password" | "passwordConfirm";
-export const userDataInputValidator = () => {
+export type FieldName =
+  | "email"
+  | "username"
+  | "password"
+  | "passwordConfirm"
+  | "title"
+  | "content";
+export const inputValidator = () => {
   interface FormInputType {
-    email: string;
-    username: string;
-    password: string;
-    passwordConfirm: string;
-    selectedAvatarIndex: number;
+    email?: string;
+    username?: string;
+    password?: string;
+    passwordConfirm?: string;
     intro?: string;
+    title?: string;
+    content?: string;
   }
 
   interface FormInputInvalidType {
@@ -21,7 +28,9 @@ export const userDataInputValidator = () => {
     username: boolean;
     password: boolean;
     passwordConfirm: boolean;
-    intro?: string;
+    intro?: boolean;
+    title?: boolean;
+    content?: boolean;
   }
   const formInputInvalid = ref<FormInputInvalidType>({
     email: {
@@ -34,19 +43,31 @@ export const userDataInputValidator = () => {
   });
 
   async function validate(
-    fieldName: FieldName | "all",
+    fieldName: FieldName | "UserData",
     formInput: FormInputType
   ) {
-    if (fieldName != "all") {
+    if (fieldName === "UserData") {
+      const UserDataValidate: FieldName[] = [
+        "username",
+        "password",
+        "passwordConfirm",
+      ];
+
+      for (const field of UserDataValidate) {
+        validate(field, formInput);
+      }
+    } else {
       let isValid = true;
       let emailRepeatCheck = false;
 
       let value = formInput[fieldName];
 
-      if (value.trim() === "") {
+      if (!value || value.trim() === "") {
         isValid = false;
+        value = "";
       }
 
+      let totalWeight = 0;
       switch (fieldName) {
         case "email":
           const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -63,7 +84,6 @@ export const userDataInputValidator = () => {
           }
           break;
         case "username":
-          let totalWeight = 0;
           for (const char of value) {
             if (/[\u4e00-\u9fa5]/.test(char)) {
               totalWeight += 2;
@@ -90,6 +110,36 @@ export const userDataInputValidator = () => {
             isValid = false;
           }
           break;
+        case "title":
+          for (const char of value) {
+            if (/[\u4e00-\u9fa5]/.test(char)) {
+              totalWeight += 2;
+            } else if (/^[A-Za-z0-9]+$/.test(char)) {
+              totalWeight += 1;
+            } else {
+              totalWeight += 41;
+            }
+          }
+
+          if (totalWeight < 10 || totalWeight > 40) {
+            isValid = false;
+          }
+          break;
+        case "content":
+          for (const char of value) {
+            if (/[\u4e00-\u9fa5]/.test(char)) {
+              totalWeight += 2;
+            } else if (/^[A-Za-z0-9]+$/.test(char)) {
+              totalWeight += 1;
+            } else {
+              totalWeight += 801;
+            }
+          }
+
+          if (totalWeight < 40 || totalWeight > 800) {
+            isValid = false;
+          }
+          break;
         default:
           break;
       }
@@ -99,16 +149,6 @@ export const userDataInputValidator = () => {
         formInputInvalid.value.email.registered = emailRepeatCheck;
       } else {
         formInputInvalid.value[fieldName] = isValid;
-      }
-    } else {
-      const allValidate: FieldName[] = [
-        "username",
-        "password",
-        "passwordConfirm",
-      ];
-
-      for (const field of allValidate) {
-        validate(field, formInput);
       }
     }
   }
