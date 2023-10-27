@@ -12,6 +12,8 @@ import {
 } from '@heroicons/vue/24/solid';
 import { getPostDataset } from '../api/community';
 import { CommunityPostType } from '../types';
+import { getTimeDifference } from '../utils/formattingUtils';
+import { getAuthor } from '../api/user';
 
 const votes = ref([
     {
@@ -29,60 +31,108 @@ const votes = ref([
     // 添加更多虚拟数据...
 ]);
 
-// const communityPosts = [
-//     {
-//         title: '社区文章标题1',
-//         subtitle: '社区文章副标题1',
-//         images: [
-//             {
-//                 url: 'https://example.com/image1.jpg',
-//                 filename: 'image1.jpg',
-//             },
-//         ],
-//         content: '这是社区文章的内容1。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vestibulum odio eget metus interdum, in bibendum ligula ultrices. Sed non lacus quis sapien hendrerit blandit. Aenean eu urna ut neque euismod ultrices.',
-//         likes: 10,
-//         views: 100,
-//         commentsId: [],
-//         isEdit: false,
-//         _id: 11,
-//     },
-//     {
-//         title: '社区文章标题2',
-//         subtitle: '社区文章副标题2',
-//         images: [
-//             {
-//                 url: 'https://example.com/image2.jpg',
-//                 filename: 'image2.jpg',
-//             },
-//         ],
-//         content: '这是社区文章的内容2。Pellentesque dapibus quam non felis facilisis, vel fringilla risus tincidunt. Fusce nec eros quis dui cursus scelerisque in et nunc. Maecenas ullamcorper erat quis justo posuere, a vehicula erat hendrerit.',
-//         likes: 15,
-//         views: 120,
-//         commentsId: [],
-//         isEdit: true,
-//         _id: 112,
-//     },
-//     {
-//         title: '社区文章标题3',
-//         subtitle: '社区文章副标题3',
-//         images: [],
-//         content: '这是社区文章的内容3。Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras eu sagittis orci. Integer non ipsum ut eros laoreet sollicitudin. Quisque euismod urna vel magna tincidunt vestibulum.',
-//         likes: 20,
-//         views: 150,
-//         commentsId: [],
-//         isEdit: false,
-//         _id: 14,
-//     },
-//     // 添加更多假数据...
-// ];
 const communityPosts = ref<CommunityPostType[]>();
+const usernameList = ref<string[]>([]);
 const fetchData = async () => {
     const response = await getPostDataset();
     communityPosts.value = response.value;
 }
 
-onMounted(() => {
-    fetchData();
+const topicTags: {
+    [key: string]: {
+        color: string;
+        tags: string[];
+    };
+} = {
+    ecology: {
+        color: "#A89376",
+        tags: [
+            "生態系",
+            "水生生物",
+            "魚類",
+            "陸生動物",
+            "節肢動物",
+            "兩棲動物",
+            "植物",
+            "瀕危物種",
+            "危險動物",
+            "鳥類",
+        ],
+    },
+    knowledge: {
+        color: "#875B4A",
+        tags: [
+            "動物行為",
+            "遷徒",
+            "奇特行為",
+            "攝影技巧",
+        ],
+    },
+    geographicalFeatures: {
+        color: "#B7AFA6",
+        tags: [
+            "野生動物保護區",
+            "海洋",
+            "溪河湖泊",
+            "山林",
+            "森林",
+            "草原",
+            "雪地",
+            "沙漠",
+            "海島",
+            "沼澤",
+        ],
+    },
+    style: {
+        color: "#566E3D",
+        tags: [
+            "自然風景",
+            "夜間攝影",
+            "微距攝影",
+            "野外探險",
+            "地理風貌",
+        ],
+    },
+    issue: {
+        color: "#22577A",
+        tags: [
+            "環境保育",
+            "全球生態",
+            "嚴重議題",
+        ],
+    },
+    geolocation: {
+        color: "#F4B860",
+        tags: [
+            "非洲",
+            "亞洲",
+            "南美洲",
+            "北美洲",
+            "歐洲",
+            "澳大利亞",
+            "南極洲",
+        ],
+    },
+};
+const setTagColor = (tag: string) => {
+    for (const topic in topicTags) {
+        if (topicTags[topic].tags.includes(tag)) {
+            return topicTags[topic].color;
+        }
+    }
+}
+
+onMounted(async () => {
+    await fetchData();
+    if (communityPosts.value) {
+        for (const post of communityPosts.value) {
+            const responseData = await getAuthor(post.authorId);
+            if (responseData.value) {
+                const username = responseData.value.username;
+                usernameList.value.push(username);
+            }
+        }
+    }
 })
 
 const activeTab = ref('latest');
@@ -120,7 +170,7 @@ const goToPage = (pageNumber) => {
 </script>
 
 <template>
-    <div v-if="communityPosts && votes" class="flex flex-col gap-12 py-4 bg-stone-100 p-4">
+    <div v-if="communityPosts && votes && usernameList" class="flex flex-col gap-12 py-4 bg-stone-100 p-4">
         <div class="">
             <h1 class="text-3xl mb-4">話題投票</h1>
             <div class="border-b-2 border-stone-700 my-4"></div>
@@ -135,7 +185,7 @@ const goToPage = (pageNumber) => {
             <div class="flex flex-wrap gap-8">
                 <div v-for="vote in filteredVotes" :key="vote.id"
                     class="md:basis-1/3 p-4 border-2 border-stone-700 shadow mb-4">
-                    <h2 class="text-xl  mb-2">{{ vote.title }}</h2>
+                    <h2 class="text-xl mb-2">{{ vote.title }}</h2>
                     <p class="text-stone-600">{{ vote.description }}</p>
                     <div class="mt-4 flex justify-between items-center">
                         <span class="text-stone-800 ">截止日期：{{ vote.deadline }}</span>
@@ -156,31 +206,46 @@ const goToPage = (pageNumber) => {
             </div>
             <div class="border-b-2 border-stone-700 my-4"></div>
             <div class="flex flex-col justify-between mt-8">
-                <div v-for="communityPost in communityPosts" :key="communityPost._id"
+                <div v-for="communityPost, index in communityPosts" :key="communityPost._id"
                     @click="router.push({ name: 'CommunityPost', params: { id: communityPost._id } })"
                     class="w-full basis-1 p-4 border-2 border-stone-700 shadow mb-4 cursor-pointer group hover:bg-stone-700 hover:text-white hover:border-stone-700 transition-all duration-300">
                     <div class="flex justify-between">
                         <div class="flex gap-4 items-center justify-center">
-                            <h2 class="text-xl">{{ communityPost.title }}</h2>
-                            <p class="text-sm text-stone-700 font-bold group-hover:text-stone-100">{{ '#Dhoper777' }}</p>
-                            <p class="text-sm text-stone-500 group-hover:text-stone-100">{{ '2023-12-31' }}</p>
-                            <p class="text-sm italic text-stone-500 group-hover:text-stone-100">{{ '----3天前' }}</p>
+                            <h2 class="text-xl font-bold max-w-[20rem] truncate overflow-hidden">{{ communityPost.title }}
+                            </h2>
+                            <div class="flex gap-2 flex-wrap">
+                                <span v-for="tag in communityPost.topicTags"
+                                    class="px-2 py-1 text-xs rounded text-stone-100"
+                                    :style="`background-color:${setTagColor(tag)}`">
+                                    {{ tag }}
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="flex gap-4">
-                            <span class="flex items-center text-blue-900 group-hover:text-stone-100">
-                                <EyeIcon class="flex w-5" />{{ communityPost.views }}
-                            </span>
-                            <span class="flex items-center text-red-600 group-hover:text-stone-100">
-                                <HeartIcon class="flex w-5" />{{ communityPost.likes }}
-                            </span>
-                            <span class="flex items-center text-stone-700 group-hover:text-stone-100">
-                                <ChatBubbleBottomCenterIcon class="flex w-5" />{{ communityPost.views }}
-                            </span>
+                        <div class="flex gap-8">
+                            <div class="flex items-center gap-4">
+                                <span class="flex items-center gap-1 text-blue-900 group-hover:text-stone-100">
+                                    <EyeIcon class="w-6" />{{ communityPost.views }}
+                                </span>
+                                <span class="flex items-center gap-1 text-red-600 group-hover:text-stone-100">
+                                    <HeartIcon class="w-6" />{{ communityPost.likes }}
+                                </span>
+                                <span class="flex items-center gap-1 text-stone-700 group-hover:text-stone-100">
+                                    <ChatBubbleBottomCenterIcon class="w-6" />{{ communityPost.views }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-baseline gap-2">
+                                <p class="text-sm text-stone-700 font-bold group-hover:text-stone-100">#{{
+                                    usernameList[index] }}
+                                </p>
+                                <p class="text-sm italic text-stone-500 group-hover:text-stone-100">--{{
+                                    getTimeDifference(communityPost.createdAt!) }}&nbsp;前</p>
+                            </div>
                         </div>
 
                     </div>
-                    <p class="text-stone-600 truncate group-hover:text-stone-100">{{ communityPost.content }}</p>
+                    <p class="mt-2 text-stone-600 truncate group-hover:text-stone-100">{{ communityPost.content }}</p>
                 </div>
             </div>
 

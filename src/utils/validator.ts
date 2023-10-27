@@ -120,18 +120,19 @@ export const inputValidator = () => {
           break;
         case "title":
           for (const char of value) {
+            
             if (/[\u4e00-\u9fa5]/.test(char)) {
               totalWeight += 2;
             } else if (/^[A-Za-z0-9]+$/.test(char)) {
               totalWeight += 1;
             } else if (/[.,;:!?-、...]/.test(char)) {
-              return 2;
+              totalWeight += 1;
             } else {
-              totalWeight += 41;
+              totalWeight += 61;
             }
           }
 
-          if (totalWeight < 10 || totalWeight > 40) {
+          if (totalWeight < 10 || totalWeight > 60) {
             isValid = false;
           }
           break;

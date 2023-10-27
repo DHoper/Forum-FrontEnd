@@ -1,4 +1,5 @@
-import { UserDataType } from "../types";
+import { ref } from "vue";
+import { AuthorDataType, UserDataType } from "../types";
 import { apiClient } from "./axiosInstance";
 
 export const ApiConfig = {
@@ -31,10 +32,12 @@ export async function getUserData(email: string) {
 
 export async function getAuthor(authorId: string) {
   try {
+    const responseData = ref<AuthorDataType>();
     const response = await apiClient.get(ApiConfig.getAuthor(authorId));
+    responseData.value = response.data;
 
     if (response.status === 200) {
-      return response.data;
+      return responseData;
     } else {
       throw new Error("API請求失敗，錯誤狀態:" + response.status);
     }

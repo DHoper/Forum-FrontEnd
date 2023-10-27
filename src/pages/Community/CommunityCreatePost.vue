@@ -212,7 +212,7 @@ const handelSubmit = async () => {
                     <form class="mt-4 flex flex-col gap-4">
                         <div class="relative">
                             <label for="title" class="text-stone-600 font-bold text-sm">標題</label>
-                            <input v-model="formData.title" type="text" id="title" name="title" placeholder="5 ~ 20字"
+                            <input v-model="formData.title" type="text" id="title" name="title" placeholder="5 ~ 30字"
                                 @blur="validateInput('title')" class="mt-2 w-full border-2 py-2 px-3 outline-none"
                                 :class="formInputInvalid.title ? 'border-stone-800' : 'border-red-700'" required>
                             <div v-if="!formInputInvalid.title"

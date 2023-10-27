@@ -9,7 +9,7 @@ import {
     HeartIcon
 } from '@heroicons/vue/24/solid';
 import { getTimeDifference, formatDateTime } from '../../utils/formattingUtils';
-import { CommunityPostType, DialogType, UserDataType } from '../../types';
+import { AuthorDataType, CommunityPostType, DialogType, UserDataType } from '../../types';
 import { getAuthor } from '../../api/user';
 
 const props = defineProps({
@@ -102,7 +102,7 @@ const setTagColor = (tag: string) => {
 }
 
 const formData = ref();
-const authorData = ref<UserDataType>();
+const authorData = ref<AuthorDataType>();
 
 const showDialog = ref(false);
 const dialogData = ref<DialogType>({
@@ -137,7 +137,8 @@ async function handleSubmit() {
 
 onMounted(async () => {
     formData.value = props.data;
-    authorData.value = await getAuthor(formData.value.authorId);
+    const responseData = await getAuthor(formData.value.authorId);
+    authorData.value = responseData.value;
     formData.value.createdAt = new Date().toISOString();
 })
 </script>

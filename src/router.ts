@@ -96,10 +96,11 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: ":id",
+          path: "post/:id",
           name: "CommunityPost",
           component: () => import("./pages/Community/CommunityPost.vue"),
           meta: { requiresAuth: true },
+          props: true,
         },
         {
           path: "createPost",

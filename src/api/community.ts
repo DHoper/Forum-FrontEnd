@@ -26,11 +26,13 @@ export async function getPostDataset() {
 
 export async function getPostData(id: string) {
   try {
+    const responseData = ref<CommunityPostType>();
     let response;
     response = await apiClient.get(ApiConfig.getSinglePost(id));
-    return response.data;
+    responseData.value = response.data;
+    return responseData;
   } catch (error) {
-    console.error("獲取單筆照片牆貼文數據時發生錯誤：", error);
+    console.error("獲取單筆社區貼文數據時發生錯誤：", error);
     throw error;
   }
 }

@@ -4,7 +4,7 @@ import { getAuthor } from '../../api/user.ts';
 import { getComment, postComment, deleteComment } from '../../api/comment.ts';
 import { useUserStore } from '../../store/user.ts';
 import { formatDateTime } from '../../utils/formattingUtils.ts';
-import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType, UserDataType, PhotoPostType } from '../../types.ts';
+import { PhotoPostFilledType, CommentType, CommentFilledType, DialogType, UserDataType, PhotoPostType, AuthorDataType } from '../../types.ts';
 import { ref, toRefs, onMounted, watchEffect, watch } from 'vue';
 import router from '../../router';
 import {
@@ -67,7 +67,8 @@ const fetchData = async () => {
     await setStats(id.value, "updateViews");
 
     const { _id, title, images, location, description, createdAt, authorId, views, likes, isEdit, commentsId } = responseData;
-    const authorData = await getAuthor(authorId);
+    const authorResponseData = await getAuthor(authorId);
+    const authorData: AuthorDataType = authorResponseData.value!;
     let commentData: CommentFilledType[] = [];
     for (const commentId of commentsId) {
         const comment = await getComment(commentId);
@@ -81,7 +82,7 @@ const fetchData = async () => {
         images,
         location,
         description,
-        createdAt: formatDateTime(createdAt),
+        createdAt: formatDateTime(createdAt!),
         authorInfo: {
             authorName: authorData.username,
             authorAvatarIndex: authorData.selectedAvatarIndex,
@@ -94,10 +95,26 @@ const fetchData = async () => {
 
 };
 
-onMounted(async () => {
-    await fetchData();
-})
+let isLiked = false;
 
+async function handleLikes() {
+    if (!userStore.isLogin) {
+        router.push({ name: 'Login' })
+    }
+    if (photoPost && photoPost.value && id && id.value) {
+        if (!isLiked) {
+            await setStats(id.value, "increaseLikes");
+            photoPost.value.likes++;
+            isLiked = true;
+        } else {
+            await setStats(id.value, "reduceLikes");
+            photoPost.value.likes--;
+            isLiked = false;
+        }
+    }
+}
+
+//---- 留言區
 const commentPost = ref('');
 const commentSubmitButton = ref();
 
@@ -129,7 +146,7 @@ async function handleSubmit() {
     if (photoPost.value) {
         const postData: CommentType = {
             authorId: userData._id,
-            photoPostId: photoPost.value._id,
+            postId: photoPost.value._id,
             content: commentPost.value,
         }
         await postComment(postData)
@@ -145,25 +162,6 @@ async function handleSubmit() {
     }
 }
 
-
-let isLiked = false;
-
-async function handleLikes() {
-    if (!userStore.isLogin) {
-        router.push({ name: 'Login' })
-    }
-    if (photoPost && photoPost.value && id && id.value) {
-        if (!isLiked) {
-            await setStats(id.value, "increaseLikes");
-            photoPost.value.likes++;
-            isLiked = true;
-        } else {
-            await setStats(id.value, "reduceLikes");
-            photoPost.value.likes--;
-            isLiked = false;
-        }
-    }
-}
 
 //刪除評論
 const showDialog = ref(false);
@@ -198,6 +196,10 @@ async function handleDeleteComment(commentId: string) {
 
     userChoice.value = undefined;
 }
+
+onMounted(async () => {
+    await fetchData();
+})
 </script>
 
 <template>

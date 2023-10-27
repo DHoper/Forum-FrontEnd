@@ -1,19 +1,21 @@
 //----照片牆貼文----//
 
 export interface CommentType {
+  _id?: string;
   authorId: string;
-  photoPostId: string;
+  postId: string;
   content: string;
+  createdAt?: string;
 }
 
 export interface CommentFilledType {
   _id: string;
-  author: {
+  author?: {
     username: string;
     selectedAvatarIndex: number;
     createdAt: string;
   };
-  photoPostId: string;
+  postId: string;
   content: string;
   createdAt: string;
 }
@@ -79,6 +81,11 @@ export interface UserDataType {
   _id: string;
 }
 
+export interface AuthorDataType {
+  username: string,
+  selectedAvatarIndex: number;
+}
+
 //----社區----//
 
 export interface CommunityPostType {
@@ -91,6 +98,8 @@ export interface CommunityPostType {
   topicTags: string[];
   commentsId: string[];
   isEdit: boolean;
+  createdAt?: string,
+  _id?: string
 }
 
 //----全域彈窗框
