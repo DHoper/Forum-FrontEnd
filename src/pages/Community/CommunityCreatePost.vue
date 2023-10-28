@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ExclamationCircleIcon } from '@heroicons/vue/24/solid';
 import CreatePostPreview from './CreatePostPreview.vue';
-import { createPost } from '../../api/community';
+import { createPost } from '../../api/community/community.js';
 import { useUserStore } from '../../store/user';
 import { CommunityPostType, PhotoPostImageType } from '../../types';
 import axios from 'axios';
@@ -203,29 +203,29 @@ const handelSubmit = async () => {
 
 
 <template>
-    <div class="relative">
+    <div class="relative flex-1">
         <div class="bg-white w-full py-12 px-4">
-            <div class="mx-auto flex flex-col bg-white w-[62rem] max-w-full px-5">
-                <button @click="router.back()" class="self-start text-sm font-bold text-stone-800">上一頁</button>
+            <div class="mx-auto flex flex-col bg-white w-2/3 min-w-[62rem] max-w-full px-5">
+                <button @click="router.back()" class="self-start text-sm xl:text-lg font-bold text-stone-800">上一頁</button>
                 <div class="mt-12 border-2 border-stone-800 px-24 py-16">
                     <h1 class="my-8 text-4xl text-stone-600">發佈新貼文</h1>
-                    <form class="mt-4 flex flex-col gap-4">
+                    <form class="mt-4 flex flex-col gap-4 xl:gap-12">
                         <div class="relative">
-                            <label for="title" class="text-stone-600 font-bold text-sm">標題</label>
-                            <input v-model="formData.title" type="text" id="title" name="title" placeholder="5 ~ 30字"
+                            <label for="title" class="text-stone-600 font-bold text-sm xl:text-lg">標題</label>
+                            <input v-model="formData.title" type="text" id="title" name="title" placeholder="5 ~ 40字"
                                 @blur="validateInput('title')" class="mt-2 w-full border-2 py-2 px-3 outline-none"
                                 :class="formInputInvalid.title ? 'border-stone-800' : 'border-red-700'" required>
                             <div v-if="!formInputInvalid.title"
-                                class="w-full absolute left-0 bottom-0 translate-y-full flex items-center gap-1 text-xs text-red-500">
-                                <ExclamationCircleIcon class="w-4" />
+                                class="w-full absolute left-0 bottom-0 xl:-bottom-1 translate-y-full flex items-center gap-1 text-xs xl:text-base text-red-500">
+                                <ExclamationCircleIcon class="w-4 xl:w-6" />
                                 <p>請輸入有效標題</p>
                             </div>
                         </div>
                         <div>
-                            <label for="img" class="text-stone-600 font-bold text-sm">圖片(可選)</label>
+                            <label for="img" class="text-stone-600 font-bold text-sm xl:text-lg">圖片(可選)</label>
                             <div class="flex items-center mt-4  ">
                                 <label for="imgUpload"
-                                    class="border-2 border-stone-500 bg-stone-500 text-white hover:bg-white hover:text-stone-500 font-bold py-2 px-4 cursor-pointer text-sm">
+                                    class="border-2 border-stone-500 bg-stone-500 text-white hover:bg-white hover:text-stone-500 font-bold py-2 px-4 cursor-pointer text-sm xl:text-lg">
                                     選擇檔案
                                 </label>
                                 <input ref="imgInput" id="imgUpload" name="imgUpload" type="file" class="hidden"
@@ -233,7 +233,7 @@ const handelSubmit = async () => {
                             </div>
                         </div>
                         <div>
-                            <label for="img" class="text-stone-600 font-bold text-sm">貼文主題(最多五項)</label>
+                            <label for="img" class="text-stone-600 font-bold text-sm xl:text-lg">貼文主題(最多五項)</label>
                             <div class="mt-4 border-2 border-stone-700 p-2 overflow-auto max-h-48">
                                 <div class="flex gap-2 items-center justify-center flex-wrap" v-for="topic in topicTags">
                                     <div class="mt-4 flex flex-wrap gap-2 justify-center">
@@ -249,14 +249,14 @@ const handelSubmit = async () => {
                             </div>
                         </div>
                         <div class="relative">
-                            <label for="content" class="text-stone-600 font-bold text-sm">貼文内容</label>
+                            <label for="content" class="text-stone-600 font-bold text-sm xl:text-lg">貼文内容</label>
                             <textarea v-model="formData.content" id="content" name="content" cols="20" rows="10"
-                                placeholder="10 ~ 400字" @blur="validateInput('content')"
-                                class="mt-2 mb-0 w-full border-2 border-stone-800 py-2 px-3 outline-none resize-none"
+                                placeholder="10 ~ 1000字" @blur="validateInput('content')"
+                                class="mt-2 mb-0 w-full border-2 border-stone-800 py-2 px-3 xl:p-6 xl:text-lg outline-none resize-none"
                                 :class="formInputInvalid.content ? 'border-stone-800' : 'border-red-700'" required />
                             <div v-if="!formInputInvalid.content"
-                                class="w-full absolute left-0 bottom-1 translate-y-full flex items-center gap-1 text-xs text-red-500">
-                                <ExclamationCircleIcon class="w-4" />
+                                class="w-full absolute left-0 bottom-1 translate-y-full flex items-center gap-1 text-xs xl:text-base text-red-500">
+                                <ExclamationCircleIcon class="w-4 xl:w-6" />
                                 <p>請輸入有效內容</p>
                             </div>
                         </div>
@@ -271,11 +271,12 @@ const handelSubmit = async () => {
                 </div>
             </div>
         </div>
-        <transition name="previewPost" enter-active-class="transition ease-out duration-200"
+        <Transition name="previewPost" enter-active-class="transition ease-out duration-200"
             enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0"
             leave-active-class="transition ease-in duration-300" leave-from-class="opacity-100 translate-y-0"
             leave-to-class="opacity-0 translate-y-1">
             <CreatePostPreview v-if="inPreview" :data="formData" @close="inPreview = false" @submit="handelSubmit" />
-        </transition>
+        </Transition>
     </div>
 </template>
+../../api/community/community

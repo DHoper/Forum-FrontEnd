@@ -14,7 +14,7 @@ import {
 import { PhotoPostType, PhotoPostImageType, DialogType, UserData } from '../../types.ts';
 import { useUserStore } from '../../store/user.ts';
 import { useLoadingStore } from '../../store/loading';
-import { createPost } from '../../api/photoPost';
+import { createPost } from '../../api/photoPost/photoPost.ts';
 import router from '../../router';
 
 //----cloudinary&圖片預覽----
@@ -135,12 +135,16 @@ const postInputInvalid = ref({
 function countCharacters(text: string) {
     let totalWeight = 0;
     for (const char of text) {
-        if (/[\u4e00-\u9fa5]/.test(char)) {
+        if (/[\u4e00-\u9fa5\u3100-\u312F]/.test(char)) {
             totalWeight += 2;
-        } else if (/^[A-Za-z0-9]+$/i.test(char)) {
+        } else if (/^[A-Za-z0-9]+$/.test(char)) {
+            totalWeight += 1;
+        } else if (
+            /[\「」{}.,;:!?-、...。，；：！？_、，"'：]/.test(char)
+        ) {
             totalWeight += 1;
         } else {
-            totalWeight += 1;
+            totalWeight += 10000;
         }
     }
     return totalWeight;
@@ -154,7 +158,7 @@ async function validateInput(fieldName: FieldName) {
     let totalCharacters = countCharacters(value);
     switch (fieldName) {
         case 'title':
-            isValid = totalCharacters >= 8 && totalCharacters <= 20;
+            isValid = totalCharacters >= 4 && totalCharacters <= 30;
             break;
         case 'description':
             isValid = totalCharacters >= 10 && totalCharacters <= 200;
@@ -193,7 +197,7 @@ const submitNewPost = async () => {
         images: createPostImages,
         views: 0,
         likes: 0,
-        comments: [],
+        commentsId: [],
         isEdit: false,
     };
 
@@ -214,13 +218,14 @@ const submitNewPost = async () => {
     });
     router.push({ name: 'Gallery' });
 }
+
 const handleSubmit = async () => {
 
     //驗證失敗
     if (!imgInput.value) {
         return;
     }
-    const verification = postInputInvalid.value.title || postInputInvalid.value.description || imgInput.value.files?.length || newPost.value.location
+    const verification = postInputInvalid.value.title && postInputInvalid.value.description && imgInput.value.files?.length && newPost.value.location;
     if (!verification) {
         dialogData.value.title = "貼文建立失敗";
         dialogData.value.warringStyle = true;
@@ -239,70 +244,74 @@ const handleSubmit = async () => {
     }
 
     //驗證成功
-    submitNewPost();
-
+    await submitNewPost();
 };
 </script>
 
 <template>
-    <div class=" w-full flex-1 flex flex-col overflow-auto px-40 py-12 gap-4 bg-stone-700">
-        <div class="w-full flex flex-col items-center bg-stone-600 border-2 border-x-0 border-stone-100">
-            <h3 class="text-white text-xl border-2 border-y-0 border-stone-100 bg-stone-500 p-1 px-8">
-                發布新貼文
+    <div class="w-full flex-1 flex flex-col overflow-auto px-40 xl:px-80 py-12 gap-4 bg-stone-700">
+        <div class="flex flex-col items-center bg-stone-600 border-2 border-x-0 border-stone-100">
+            <h3 class="text-white text-xl xl:text-3xl border-2 border-y-0 border-stone-100 bg-stone-500 p-1 px-8">
+                新貼文
             </h3>
         </div>
         <div class="flex flex-col items-center bg-stone-600 rounded-sm border-2 border-t-0 border-stone-100">
             <form method="POST" autocomplete="off" @submit.prevent="handleSubmit"
                 class="flex-1 w-full flex flex-col items-end gap-12">
                 <div class="mapBlock w-full flex flex-col items-center gap-8">
-                    <div ref="mapContainer" class="border-t-4 border-stone-300 w-full h-80"></div>
-                    <input v-model="newPost.location" type="text" id="location" placeholder="請透過地圖搜尋選擇照片拍攝地點"
-                        class="w-full border-4 border-stone-300 border-dashed p-2 pointer-events-none bg-stone-100 text-center tracking-wide"
+                    <div ref="mapContainer" class="border-t-4 border-stone-300 w-full h-80 xl:h-96"></div>
+                    <input v-model="newPost.location" type="text" id="location" placeholder="請從地圖選擇照片拍攝地點"
+                        class="w-full border-4 border-stone-300 border-dashed p-2 pointer-events-none bg-stone-100 text-center xl:text-lg tracking-wide"
                         required readonly>
                 </div>
                 <div class="contentBlock flex flex-col items-center gap-8 w-full text-white px-10">
                     <div class="border-t-2 border-stone-100 w-full "></div>
                     <div class="relative w-1/2 flex flex-col items-center gap-2">
-                        <label for="title" class="text-lg">貼文標題</label>
+                        <label for="title" class="text-lg xl:text-xl xl:p-4">貼文標題</label>
                         <input v-model="newPost.title" @blur="validateInput('title')" type="text" id="title"
-                            class="w-full p-2 border-2 border-stone-400 focus:border-stone-200 focus:outline-none text-stone-700"
-                            :class="postInputInvalid.title ? 'border-stone-400' : 'border-red-400'"
-                            placeholder="4~15字(中英2:1)" required>
+                            class="w-full p-2 border-2 focus:border-stone-200 focus:outline-none text-stone-700 xl:text-lg xl:px-4"
+                            :class="postInputInvalid.title ? 'border-stone-400' : 'border-red-500'" placeholder="2~15字"
+                            required>
                         <div v-if="!postInputInvalid.title"
-                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm text-red-500">
+                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm  xl:text-base xl:-bottom-7 text-red-500">
                             <ExclamationCircleIcon class="w-4" />
-                            <p>請輸入4 ~ 10字之標題</p>
+                            <p>請輸入2 ~ 15字之標題</p>
                         </div>
                     </div>
                     <div class="relative w-1/2 flex flex-col items-center gap-2">
-                        <label for="description" class="block text-lg">簡短描述</label>
+                        <label for="description" class="block text-lg xl:text-xl xl:p-4">簡短描述</label>
                         <textarea v-model="newPost.description" @blur="validateInput('description')" id="description"
                             rows="4"
-                            class="w-full border-2 resize-none focus:border-stone-200 focus:outline-none text-stone-700 p-2"
-                            :class="postInputInvalid.description ? 'border-stone-400' : 'border-red-400'"
+                            class="w-full border-2 resize-none focus:border-stone-200 focus:outline-none text-stone-700 p-2 xl:text-lg xl:p-4"
+                            :class="postInputInvalid.description ? 'border-stone-400' : 'border-red-500'"
                             placeholder="5~100字(中英2:1)" required></textarea>
                         <div v-if="!postInputInvalid.description"
-                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm text-red-500">
+                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm xl:text-base xl:-bottom-7 text-red-500">
                             <ExclamationCircleIcon class="w-4" />
                             <p>請輸入5 ~ 100字之內容</p>
                         </div>
                     </div>
                 </div>
                 <div class="imgBlock flex flex-col items-center gap-4 w-full px-10">
-                    <div class="border-t-2 border-stone-100 w-full"></div>
+                    <div class="border-t-2 border-stone-100 w-full" />
                     <div class="mt-4 flex flex-col items-center gap-2 text-sm leading-6 text-gray-600">
                         <div v-if="previewUrls.length > 0"
                             class="relative border-4 border-stone-200 rounded-sm w-[400px] h-[300px] bg-white cursor-pointer">
                             <img :src="previewUrls[previewImg]" alt="" class="w-full h-full object-cover rounded-sm">
                             <EyeIcon class="absolute top-2 right-2 w-8 z-10 text-stone-100 hover:scale-110"
                                 @click="showPreview = true" />
-                            <div v-if="showPreview"
-                                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] border-4 border-stone-200 rounded-sm z-10">
-                                <img :src="previewUrls[previewImg]" alt="Preview"
-                                    class="w-full h-full object-cover rounded-sm" />
-                                <XCircleIcon class="w-8 text-stone-100 absolute top-1 right-1  hover:scale-105"
-                                    @click="showPreview = false" />
-                            </div>
+                            <Transition name="previewImg" enter-active-class="transition ease-out duration-200"
+                                enter-from-class="opacity-0" enter-to-class="opacity-100"
+                                leave-active-class="transition ease-in duration-300" leave-from-class="opacity-100"
+                                leave-to-class="opacity-0">
+                                <div v-if="showPreview"
+                                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] xl:w-[800px] xl:h-[600px] border-4 border-stone-200 rounded-sm z-10">
+                                    <img :src="previewUrls[previewImg]" alt="Preview"
+                                        class="w-full h-full object-cover rounded-sm" />
+                                    <XCircleIcon class="w-8 text-stone-100 absolute top-1 right-1  hover:scale-105"
+                                        @click="showPreview = false" />
+                                </div>
+                            </Transition>
                         </div>
                         <div v-else
                             class="flex justify-center items-center border-4 border-dashed border-stone-200 rounded-sm w-[400px] h-[300px]">
@@ -314,7 +323,7 @@ const handleSubmit = async () => {
                         </div>
                         <label for="imgUpload" class="relative cursor-pointer bg-white w-full">
                             <span type="button"
-                                class="bg-green-500 text-stone-100 p-2 w-full font-bold hover:bg-green-600 transition-all duration-300 text-center text-lg">選擇圖片</span>
+                                class="bg-green-600 text-stone-100 p-2 w-full font-bold hover:bg-green-600 transition-all duration-300 text-center text-lg xl:text-xl xl:p-3">選擇圖片</span>
                             <input ref="imgInput" id="imgUpload" name="imgUpload" type="file" class="sr-only"
                                 @change="previewImages" multiple required>
                         </label>
@@ -351,7 +360,7 @@ const handleSubmit = async () => {
                     </div>
                 </div>
                 <button type="submit"
-                    class="w-full bg-green-500 text-white px-4 py-2 basis-1 text-lg font-bold hover:bg-green-600">發佈</button>
+                    class="w-full bg-green-600 text-white px-4 py-2 basis-1 text-lg xl:text-2xl xl:py-4 font-bold hover:bg-green-500 transition-all duration-300">發佈</button>
             </form>
         </div>
     </div>

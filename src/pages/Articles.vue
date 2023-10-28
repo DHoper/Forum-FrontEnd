@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TheHeader from '../components/layout/TheHeader.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {

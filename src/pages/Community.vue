@@ -10,25 +10,24 @@ import {
 import {
     HeartIcon,
 } from '@heroicons/vue/24/solid';
-import { getPostDataset } from '../api/community';
+import { getPostDataset } from '../api/community/community.js';
 import { CommunityPostType } from '../types';
 import { getTimeDifference } from '../utils/formattingUtils';
-import { getAuthor } from '../api/user';
+import { getAuthor } from '../api/user/user.js';
 
 const votes = ref([
     {
         id: 1,
-        title: '投票标题1',
-        description: '这是投票1的描述。',
+        title: '投票標題1',
+        description: '投票1...........。',
         deadline: '2023-12-31',
     },
     {
         id: 2,
-        title: '投票标题2',
-        description: '这是投票2的描述。',
+        title: '投票標題2',
+        description: '投票2...........。',
         deadline: '2023-12-31',
     },
-    // 添加更多虚拟数据...
 ]);
 
 const communityPosts = ref<CommunityPostType[]>();
@@ -170,15 +169,16 @@ const goToPage = (pageNumber) => {
 </script>
 
 <template>
-    <div v-if="communityPosts && votes && usernameList" class="flex flex-col gap-12 py-4 bg-stone-100 p-4">
-        <div class="">
+    <div v-if="communityPosts && votes && usernameList"
+        class="flex flex-col items-center gap-12 py-4 xl:py-16 xl:px-8 bg-stone-100 p-4 overflow-auto">
+        <div class="w-full">
             <h1 class="text-3xl mb-4">話題投票</h1>
             <div class="border-b-2 border-stone-700 my-4"></div>
             <div class="flex space-x-4 mb-4">
                 <button @click="changeTab('latest')"
                     :class="activeTab === 'latest' ? 'bg-stone-800 text-white px-4 py-2 hover:bg-stone-800' : 'bg-stone-500 text-white px-4 py-2 hover:bg-stone-600'">最新</button>
                 <button @click="changeTab('hot')"
-                    :class="activeTab === 'hot' ? 'bg-stone-800 text-white px-4 py-2 hover:bg-stone-800' : 'bg-stone-500 text-white px-4 py-2 hover:bg-stone-600'">热门</button>
+                    :class="activeTab === 'hot' ? 'bg-stone-800 text-white px-4 py-2 hover:bg-stone-800' : 'bg-stone-500 text-white px-4 py-2 hover:bg-stone-600'">熱門</button>
                 <button @click="changeTab('myVotes')"
                     :class="activeTab === 'myVotes' ? 'bg-stone-800 text-white px-4 py-2 hover:bg-stone-800' : 'bg-stone-500 text-white px-4 py-2 hover:bg-stone-600'">我的投票</button>
             </div>
@@ -195,76 +195,76 @@ const goToPage = (pageNumber) => {
             </div>
         </div>
         <!-- 貼文 -->
-        <div class="">
+        <div class="w-full">
             <div class="flex items-center justify-between gap-4">
                 <h1 class="text-3xl leading-none">社區討論</h1>
                 <div @click="router.push({ name: 'CommunityCreatePost' })"
-                    class="flex gap-2 border-2 border-stone-600 p-1 px-2 hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer">
+                    class="flex gap-2 border-2 border-stone-600 p-1 px-2 xl:p-2 xl:px-4 xl:text-lg hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer">
                     新增文章
                     <PlusIcon class="w-4" />
                 </div>
             </div>
             <div class="border-b-2 border-stone-700 my-4"></div>
-            <div class="flex flex-col justify-between mt-8">
+            <div class="flex flex-col gap-4 justify-between mt-8">
                 <div v-for="communityPost, index in communityPosts" :key="communityPost._id"
                     @click="router.push({ name: 'CommunityPost', params: { id: communityPost._id } })"
-                    class="w-full basis-1 p-4 border-2 border-stone-700 shadow mb-4 cursor-pointer group hover:bg-stone-700 hover:text-white hover:border-stone-700 transition-all duration-300">
+                    class="w-full basis-1 p-4 xl:p-8 xl:pb-4 border-2 border-stone-700 shadow cursor-pointer group hover:bg-stone-700 hover:text-white hover:border-stone-700 transition-all duration-300">
                     <div class="flex justify-between">
                         <div class="flex gap-4 items-center justify-center">
                             <h2 class="text-xl font-bold max-w-[20rem] truncate overflow-hidden">{{ communityPost.title }}
                             </h2>
                             <div class="flex gap-2 flex-wrap">
                                 <span v-for="tag in communityPost.topicTags"
-                                    class="px-2 py-1 text-xs rounded text-stone-100"
+                                    class="px-2 py-1 text-xs xl:text-sm rounded text-stone-100"
                                     :style="`background-color:${setTagColor(tag)}`">
                                     {{ tag }}
                                 </span>
                             </div>
                         </div>
+                    </div>
+                    <p class="my-2 xl:my-4 text-stone-600 xl:text-lg truncate group-hover:text-stone-100">{{
+                        communityPost.content }}</p>
 
-                        <div class="flex gap-8">
-                            <div class="flex items-center gap-4">
-                                <span class="flex items-center gap-1 text-blue-900 group-hover:text-stone-100">
-                                    <EyeIcon class="w-6" />{{ communityPost.views }}
-                                </span>
-                                <span class="flex items-center gap-1 text-red-600 group-hover:text-stone-100">
-                                    <HeartIcon class="w-6" />{{ communityPost.likes }}
-                                </span>
-                                <span class="flex items-center gap-1 text-stone-700 group-hover:text-stone-100">
-                                    <ChatBubbleBottomCenterIcon class="w-6" />{{ communityPost.views }}
-                                </span>
-                            </div>
-
-                            <div class="flex items-baseline gap-2">
-                                <p class="text-sm text-stone-700 font-bold group-hover:text-stone-100">#{{
-                                    usernameList[index] }}
-                                </p>
-                                <p class="text-sm italic text-stone-500 group-hover:text-stone-100">--{{
-                                    getTimeDifference(communityPost.createdAt!) }}&nbsp;前</p>
-                            </div>
+                    <div class="mt-4 w-full flex gap-4 justify-between">
+                        <div class="flex items-baseline gap-2">
+                            <p class="text-sm xl:text-base text-stone-700 font-bold group-hover:text-stone-100">#{{
+                                usernameList[index] }}
+                            </p>
+                            <p class="text-sm xl:text-base italic text-stone-500 group-hover:text-stone-100">--{{
+                                getTimeDifference(communityPost.createdAt!) }}&nbsp;前</p>
                         </div>
 
+                        <div class="flex items-center gap-4">
+                            <span class="flex items-center gap-1 text-blue-900 group-hover:text-stone-100">
+                                <EyeIcon class="w-6 xl:w-7" />{{ communityPost.views }}
+                            </span>
+                            <span class="flex items-center gap-1 text-red-600 group-hover:text-stone-100">
+                                <HeartIcon class="w-6 xl:w-7" />{{ communityPost.likes }}
+                            </span>
+                            <span class="flex items-center gap-1 text-stone-700 group-hover:text-stone-100">
+                                <ChatBubbleBottomCenterIcon class="w-6 xl:w-7" />{{ communityPost.views }}
+                            </span>
+                        </div>
                     </div>
-                    <p class="mt-2 text-stone-600 truncate group-hover:text-stone-100">{{ communityPost.content }}</p>
                 </div>
             </div>
 
             <!-- 分頁標籤 -->
-            <div class="flex justify-center mt-4 gap-4">
+            <div class="mt-16 flex justify-center gap-4">
                 <button @click="changePage('next')" :disabled="currentPage === 1"
-                    class="border-2 px-3 py-1 ml-2 transition-all duration-300"
+                    class="border-2 px-3 py-1 xl:px-6 xl:py-2 ml-2 xl:text-lg transition-all duration-300"
                     :class="currentPage === 1 ? 'border-stone-500 text-stone-500' : 'border-stone-800 text-stone-800 cursor-pointer hover:text-white hover:bg-stone-800'">上一頁</button>
                 <div class="flex space-x-2">
                     <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                        class="border-2 px-3 py-1 transition-all duration-300"
+                        class="border-2 px-3 py-1 xl:px-5 xl:py-2 xl:text-lg transition-all duration-300"
                         :class="pageNumber === currentPage ? 'border-stone-800 text-stone-800 hover:bg-stone-800 hover:text-white' : 'bg-stone-500 text-white hover:bg-stone-600 '">{{
                             pageNumber }}</button>
                 </div>
                 <button @click="changePage('next')" :disabled="currentPage === totalPages"
-                    class="border-2 px-3 py-1 transition-all duration-300"
+                    class="border-2 px-3 py-1 xl:px-6 xl:py-2 xl:text-lg transition-all duration-300"
                     :class="currentPage === totalPages ? 'border-stone-500 text-stone-500' : 'border-stone-800 text-stone-800 cursor-pointer hover-text-white hover:bg-stone-800'">下一頁</button>
             </div>
         </div>
     </div>
 </template>
-  
+  ../api/community/community../api/user/user.js

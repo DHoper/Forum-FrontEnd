@@ -20,7 +20,6 @@ watch(() => route.name, () => {
    <Loading />
    <div class="h-screen flex flex-col">
       <TheHeader :key="headerKey" v-if="showHeader" />
-
       <router-view></router-view>
    </div>
 </template>

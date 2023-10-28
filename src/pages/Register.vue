@@ -6,7 +6,7 @@ import {
 import { useRouter } from 'vue-router';
 import { useLoadingStore } from '../store/loading';
 import { useUserStore } from '../store/user';
-import { postUserData } from '../api/user.ts';
+import { postUserData } from '../api/user/user.ts';
 import { FieldName, inputValidator } from '../utils/validator';
 
 const loadingStore = useLoadingStore();
@@ -396,4 +396,4 @@ watch(activeTab, () => {
             </Transition>
         </div>
     </div>
-</template>../utils/validator.ts
+</template>../utils/validator.ts../api/user/user.ts

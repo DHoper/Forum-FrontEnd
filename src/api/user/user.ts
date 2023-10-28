@@ -1,6 +1,6 @@
 import { ref } from "vue";
-import { AuthorDataType, UserDataType } from "../types";
-import { apiClient } from "./axiosInstance";
+import { AuthorDataType, UserDataType } from "../../types";
+import { apiClient } from "../axiosInstance";
 
 export const ApiConfig = {
   index: "/user",

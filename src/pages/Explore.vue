@@ -2,7 +2,7 @@
 import Popup from './Explore/Popup.vue';
 import PhotoPost from './Gallery/PhotoPost.vue';
 import { ref, onMounted, h, render } from 'vue';
-import { getGalleryData } from '../api/photoPost';
+import { getGalleryData } from '../api/photoPost/photoPost.js';
 import mapboxgl from 'mapbox-gl';
 import MapBoxGeoCoder from '@mapbox/mapbox-gl-geocoder';
 import MapBoxLanguage from '@mapbox/mapbox-gl-language';

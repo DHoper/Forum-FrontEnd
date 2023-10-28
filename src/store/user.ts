@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { getUserData } from "../api/user";
+import { getUserData } from "../api/user/user.ts";
 import { UserDataType } from "../types.ts";
 
 export enum LoginStatus {

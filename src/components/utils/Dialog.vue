@@ -12,8 +12,6 @@ const props = defineProps({
 const emit = defineEmits(["closePopup"]);
 
 onMounted(() => {
-    window.scrollTo(0, 0);
-
     document.body.style.overflow = 'hidden';
 });
 
@@ -24,8 +22,8 @@ onUnmounted(() => {
 
 <template>
     <div class="bg-stone-700 bg-opacity-80 fixed top-0 left-0 w-screen h-screen z-50 flex justify-center items-center">
-        <div class="p-1 w-80 -mt-20" :class="props.dialogData.warringStyle ? 'bg-red-500' : 'bg-white'">
-            <div class="h-full text-white flex flex-col  justify-around items-center py-10 gap-6"
+        <div class="p-1 w-80 xl:w-96 -mt-20" :class="props.dialogData.warringStyle ? 'bg-red-500' : 'bg-white'">
+            <div class="text-white flex flex-col justify-around items-center py-10 xl:py-16 gap-6"
                 :class="props.dialogData.warringStyle ? 'bg-red-600' : 'bg-stone-600'">
                 <h3 class="text-2xl tracking-widest">{{
                     props.dialogData.title }}</h3>

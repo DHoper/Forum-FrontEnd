@@ -9,8 +9,8 @@ import {
     HeartIcon
 } from '@heroicons/vue/24/solid';
 import { getTimeDifference, formatDateTime } from '../../utils/formattingUtils';
-import { AuthorDataType, CommunityPostType, DialogType, UserDataType } from '../../types';
-import { getAuthor } from '../../api/user';
+import { AuthorDataType, CommunityPostType, DialogType } from '../../types';
+import { getAuthor } from '../../api/user/user.js';
 
 const props = defineProps({
     data: Object as PropType<CommunityPostType>,
@@ -126,6 +126,7 @@ const handleDialog = async () => {
 };
 
 async function handleSubmit() {
+
     const choice = await handleDialog();
 
     if (choice) {
@@ -145,54 +146,64 @@ onMounted(async () => {
 
 <template>
     <div v-if="formData && authorData"
-        class="fixed top-0 w-screen h-screen overflow-auto border-4 py-12 px-4 z-50 bg-white flex flex-col items-center gap-10">
-        <div class="mt-12 mx-auto border-2 border-stone-800 w-[62rem] max-w-full px-24 py-16">
+        class="fixed top-0 w-screen h-full overflow-auto border-4 py-12 px-4 z-50 bg-white flex flex-col items-center justify-center gap-10 xl:gap-16">
+        <div class="mt-12 mx-auto border-2 border-stone-800 w-2/3 min-w-[62rem] max-w-full px-24 py-16">
             <div class="flex items-center gap-4">
                 <div
-                    class="border border-stone-800 rounded-full bg-white w-14 h-14 p-1 flex items-center justify-center overflow-hidden">
+                    class="border border-stone-800 rounded-full bg-white w-14 h-14 xl:w-16 xl:h-16 p-1 flex items-center justify-center overflow-hidden">
                     <img :src="`/assets/img/avatar (${authorData.selectedAvatarIndex}).png`" alt="avatar">
                 </div>
                 <div class="flex gap-2 items-baseline justify-start flex-1">
-                    <span class="text-lg text-stone-700 font-bold">{{ authorData.username }}</span>
-                    <span class="font-bold text-sm text-stone-500">{{ formatDateTime(formData.createdAt) }}
+                    <span class="text-lg xl:text-xl text-stone-700 font-bold">{{ authorData.username }}</span>
+                    <span class="font-bold text-sm xl:text-base text-stone-500">{{ formatDateTime(formData.createdAt) }}
                         <span class="text-md italic">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
                         {{ getTimeDifference(formData.createdAt) }} 以前
                     </span>
                 </div>
             </div>
-            <h1 class="my-4 text-2xl text-stone-600 font-bold">{{ formData.title }}</h1>
+            <h1 class="my-4 text-2xl xl:text-3xl text-stone-900 font-bold">{{ formData.title }}</h1>
             <div class="flex gap-2 flex-wrap">
-                <span v-for="tag in formData.topicTags" class="px-2 py-1 text-stone-100"
+                <span v-for="tag in formData.topicTags" class="px-2 py-1 text-stone-100 rounded-sm"
                     :style="`background-color:${setTagColor(tag)}`">
                     {{ tag }}
                 </span>
             </div>
-            <p class="text-stone-700 mt-20 whitespace-pre-wrap">{{ formData.content }}</p>
-            <div class="mt-4 flex flex-col gap-4">
-                <img v-for="image in formData.images" :src="image.url" class="border-4 border-stone-700" />
+            <div v-if="formData.images && formData.images.length > 0" class="mt-20  flex flex-col gap-4">
+                <img :src="formData.images[0].url" class="border-2 border-stone-700" />
             </div>
-            <div class="border-b-[1.5px] border-gray-300 my-4"></div>
+            <p class="mt-10 text-stone-700 xl:text-lg whitespace-pre-wrap">{{ formData.content }}</p>
+            <div v-if="formData.images && formData.images.length > 0" class="mt-4 flex flex-col gap-4">
+                <div v-for="image, index in formData.images">
+                    <img :key="index" v-if="index !== 0" :src="image.url" class="border-2 border-stone-700" />
+                </div>
+            </div>
+            <div class="border-b-2 border-gray-300 my-4 mt-16"></div>
             <div class="flex justify-between">
-                <div class="flex gap-8"> <span class="flex gap-1">
-                        <EyeIcon class="w-4" />0
+                <div class="flex gap-8">
+                    <span class="flex items-center gap-1 xl:text-xl">
+                        <EyeIcon class="w-4 xl:w-6" />0
                     </span>
-                    <span class="flex gap-1">
-                        <ChatBubbleBottomCenterIcon class="w-4" />0
+                    <span class="flex items-center gap-1 xl:text-xl">
+                        <ChatBubbleBottomCenterIcon class="w-4 xl:w-6" />0
                     </span>
                 </div>
-                <span class="group flex gap-1 hover:cursor-pointer focus:text-red-500 transition-all" tabindex="0">
-                    <HeartIcon class="w-4 group-focus:scale-[125%] transition-all duration-300" />0
+                <span
+                    class="group flex items-center gap-1 xl:text-xl hover:cursor-pointer focus:text-red-500 transition-all"
+                    tabindex="0">
+                    <HeartIcon class="w-4 xl:w-6 group-focus:scale-[125%] transition-all duration-300" />0
                 </span>
             </div>
         </div>
         <div class="flex gap-16 text-xl">
-            <button @click="handleSubmit" class="text-white bg-green-600 px-6 py-2 border-2 border-transparent hover:border-green-600 hover:bg-white hover:text-green-600 transition-all duration-300">
+            <button @click="handleSubmit"
+                class="text-white bg-green-600 px-6 py-2 border-2 border-transparent hover:border-green-600 hover:bg-white hover:text-green-600 transition-all duration-300">
                 發佈
             </button>
-            <button @click="emit('close')" class="text-white bg-stone-600 px-6 py-2 border-2 border-transparent hover:border-stone-700 hover:bg-white hover:text-stone-700 transition-all duration-300">
+            <button @click="emit('close')"
+                class="text-white bg-stone-600 px-6 py-2 border-2 border-transparent hover:border-stone-700 hover:bg-white hover:text-stone-700 transition-all duration-300">
                 返回
             </button>
         </div>
         <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
     </div>
-</template>
+</template>../../api/user/user

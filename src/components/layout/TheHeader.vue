@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useUserStore } from '../../store/user';
 import {
     Popover,
@@ -16,7 +16,10 @@ import {
     BellIcon
 } from '@heroicons/vue/24/outline';
 import { UserDataType } from '../../types';
+import { useRoute } from 'vue-router';
 import router from '../../router';
+
+const route = useRoute();
 
 const userStore = useUserStore();
 const userData = computed(() => userStore.getData()) as any as UserDataType;//問題: 原寫法無法通過TS檢查
@@ -42,39 +45,67 @@ const notifications = [
     { content: 'Albert34442 喜歡妳在"我的靴子裡有蛇"的留言', href: '#' },
 ]
 
+//----隱藏效果
+const isHidden = ref(false);
+
+let prevScrollY = window.scrollY;
+
+const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    isHidden.value = currentScrollY > prevScrollY;
+    prevScrollY = currentScrollY;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
+
+const refreshCurrentRoute = (routeName: string) => {
+    if (route.name === routeName) {
+        router.go(0);
+    }
+}
 </script>
 
 <template>
-    <nav class="sticky font-Cormorant top-0 w-full bg-stone-600 text-white px-6 py-2 flex items-center justify-between z-40"
-        id="navbar">
+    <nav class="sticky font-Cormorant top-0 w-full bg-stone-600 text-white px-6 py-2 xl:py-4 flex items-center justify-between z-40"
+        id="invisible" :class="{ 'visible-none': isHidden, 'visible': !isHidden }">
         <div class="logo flex items-center">
-            <img src="/assets/img/deerIcon.png" alt="deerIcon" class="w-8 mr-0">
-            <a class="ml-2 text-2xl font-bold" href="/">WILDLENS</a>
+            <img src="/assets/img/deerIcon.png" alt="deerIcon" class="w-8 xl:w-12 mr-0">
+            <a class="ml-2 text-2xl xl:text-3xl font-bold" href="/">WILDLENS</a>
         </div>
         <div class="navbar flex items-center gap-4">
-            <ul class="flex gap-3 text-lg font-thin">
+            <ul class="flex gap-3 text-lg xl:text-xl font-thin">
                 <li
                     class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-white">
-                    <router-link :to="{ name: 'Articles' }" class="tracking-widest px-4">文章</router-link>
+                    <router-link @click="refreshCurrentRoute('Articles')" :to="{ name: 'Articles' }"
+                        class="tracking-widest px-4">文章</router-link>
                 </li>
                 <li
                     class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-white">
-                    <router-link :to="{ name: 'Explore' }" class="tracking-widest px-4">探索</router-link>
+                    <router-link @click="refreshCurrentRoute('Explore')" :to="{ name: 'Explore' }"
+                        class="tracking-widest px-4">探索</router-link>
                 </li>
                 <li
                     class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-wv-ifhite">
-                    <router-link :to="{ name: 'Gallery' }" class="tracking-widest px-4">照片牆</router-link>
+                    <router-link @click="refreshCurrentRoute('Gallery')" :to="{ name: 'Gallery' }"
+                        class="tracking-widest px-4">照片牆</router-link>
                 </li>
                 <li
                     class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-white">
-                    <router-link :to="{ name: 'Community' }" class="tracking-widest px-4">社區</router-link>
+                    <router-link @click="refreshCurrentRoute('Community')" :to="{ name: 'Community' }"
+                        class="tracking-widest px-4">社區</router-link>
                 </li>
             </ul>
             <div v-if="isLogin && userData" class="avatar border-2 border-transparent flex items-center gap-2">
                 <PopoverGroup class="flex items-center gap-2">
                     <Popover>
                         <PopoverButton class="flex items-center gap-x-1 text-sm font-semibold leading-6 focus:outline-none">
-                            <BellIcon class="w-6 h-6 text-white" />
+                            <BellIcon class="w-6 xl:w-8 text-white" />
                         </PopoverButton>
 
                         <transition enter-active-class="transition ease-out duration-200"
@@ -103,7 +134,8 @@ const notifications = [
                     </Popover>
                     <Popover class="h-12">
                         <PopoverButton class="focus:outline-none">
-                            <div class="rounded-full bg-white w-12 h-12 p-1 flex items-center justify-center overflow-hidden">
+                            <div
+                                class="rounded-full bg-white w-12 h-12 p-1 flex items-center justify-center overflow-hidden">
                                 <img class="rounded-full" :src="`/assets/img/avatar (${userData.selectedAvatarIndex}).png`"
                                     alt="avatar">
                             </div>
@@ -152,6 +184,5 @@ const notifications = [
                 class="text-stone-600 text-lg h-12 bg-white border-2 border-stone-600 hover:bg-[#4b493ded] hover:text-white hover:border-white transition-all duration-700 ease-in-out font-bold py-1 px-2">
                 <router-link :to="{ name: 'Login' }">Get started</router-link>
             </button>
-        </div>
-    </nav>
-</template>
+    </div>
+</nav></template>

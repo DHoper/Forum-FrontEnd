@@ -12,10 +12,9 @@ import {
 } from '@heroicons/vue/24/solid';
 import { getTimeDifference, formatDateTime } from '../../utils/formattingUtils';
 import { AuthorDataType, CommentType, CommunityPostType, DialogType, UserDataType } from '../../types';
-import { getPostData } from '../../api/community';
-import { getAuthor } from '../../api/user';
-import { getComments, postComment, deleteComment } from '../../api/communityComment';
-import { Dialog } from '@headlessui/vue';
+import { getPostData, setStats } from '../../api/community/community.js';
+import { getAuthor } from '../../api/user/user.js';
+import { getComments, postComment, deleteComment } from '../../api/community/communityComment.js';
 import { useUserStore } from '../../store/user';
 
 const router = useRouter();
@@ -30,7 +29,7 @@ const props = defineProps({
 const postData = ref<CommunityPostType>();
 const authorData = ref<AuthorDataType>();
 const commentsData = ref<CommentType[]>();
-const commentsAuthorData = ref<AuthorDataType[]>([]);
+const commentAuthorData = ref<AuthorDataType[]>([]);
 
 const topicTags: {
     [key: string]: {
@@ -116,25 +115,66 @@ const setTagColor = (tag: string) => {
     }
 }
 
-//----留言區
-const fetchCommentData = async (idList: string[]) => {
-    const commentsResponseData = await getComments(idList);
-    commentsData.value = commentsResponseData.value;
+//--資料取得
+const fetchPostData = async () => {
+    const responseData = await getPostData(props.id);
+    postData.value = responseData.value;
+}
 
-    if (commentsData.value) {
+const fetchCommentData = async (idList: string[]) => {
+
+    const commentsResponseData = await getComments(idList);
+    if (commentsResponseData.value) {
+        commentsData.value = commentsResponseData.value;
+        let authorList: AuthorDataType[] = []
         for (const comment of commentsData.value) {
             const authorResponseData = await getAuthor(comment.authorId);
             if (authorResponseData.value) {
-                commentsAuthorData.value.push(authorResponseData.value);
+                authorList.push(authorResponseData.value);
             }
+        }
+        commentAuthorData.value = authorList;
+    }
+}
+
+
+//--按讚
+let isLiked = false;
+
+async function handleLikes() {
+    if (postData && postData.value && props.id) {
+        if (!isLiked) {
+            await setStats(props.id, "increaseLikes");
+            postData.value.likes++;
+            isLiked = true;
+        } else {
+            await setStats(props.id, "reduceLikes");
+            postData.value.likes--;
+            isLiked = false;
         }
     }
 }
 
-const comment = ref('');
-const commentSubmit = ref();
+//----留言區
+
+//留言區輸入框樣式偵測
 const commentPost = ref('');
 const commentSubmitButton = ref();
+
+watchEffect(() => {
+    if (commentSubmitButton.value) {
+        const trimmedComment = commentPost.value.trim();
+
+        if (trimmedComment) {
+            commentSubmitButton.value.classList.toggle('bg-green-600', true);
+            commentSubmitButton.value.classList.toggle('bg-gray-300', false);
+        } else {
+            commentSubmitButton.value.classList.toggle('bg-green-600', false);
+            commentSubmitButton.value.classList.toggle('bg-gray-300', true);
+        }
+    }
+});
+
 async function handleCommentSubmit() {
 
     const userData: UserDataType = userStore.getData()!;
@@ -147,36 +187,18 @@ async function handleCommentSubmit() {
         }
         await postComment(submitData)
             .catch((err) => {
-                console.log(`postUserData 失敗: ${err}`);
+                console.error(`postUserData 失敗: ${err}`);
             });
 
         commentPost.value = '';
 
         //重新加載留言資料//
-        fetchCommentData(postData.value.commentsId);
+        await fetchPostData();
+        await fetchCommentData(postData.value.commentsId);
     }
 }
 
-// let isLiked = false;
-
-// async function handleLikes() {
-//     if (!userStore.isLogin) {
-//         router.push({ name: 'Login' })
-//     }
-//     if (postData && postData.value && id && id.value) {
-//         if (!isLiked) {
-//             await setStats(id.value, "increaseLikes");
-//             postData.value.likes++;
-//             isLiked = true;
-//         } else {
-//             await setStats(id.value, "reduceLikes");
-//             postData.value.likes--;
-//             isLiked = false;
-//         }
-//     }
-// }
-
-//刪除評論
+////刪除留言
 const showDialog = ref(false);
 const dialogData = ref<DialogType>({
     title: "刪除評論",
@@ -185,7 +207,7 @@ const dialogData = ref<DialogType>({
     cancelButton: true,
 });
 
-////彈窗框邏輯
+//彈窗框邏輯
 const userChoice = ref<boolean>();
 
 const handleDialog = async () => {
@@ -204,33 +226,21 @@ async function handleDeleteComment(commentId: string) {
 
     if (choice) {
         await deleteComment(commentId);
-        await fetchCommentData();
+        await fetchPostData();
+        if (postData.value) {
+            await fetchCommentData(postData.value.commentsId);
+        }
     }
 
     userChoice.value = undefined;
 }
 
-watchEffect(() => {
-    if (commentSubmit.value) {
-        const trimmedComment = comment.value.trim();
-
-        if (trimmedComment) {
-            commentSubmit.value.classList.toggle('bg-green-600', true);
-            commentSubmit.value.classList.toggle('bg-gray-300', false);
-        } else {
-            commentSubmit.value.classList.toggle('bg-green-600', false);
-            commentSubmit.value.classList.toggle('bg-gray-300', true);
-        }
-    }
-});
-
 onMounted(async () => {
-    const responseData = await getPostData(props.id);
-    postData.value = responseData.value;
+    await setStats(props.id, "updateViews");
+    await fetchPostData();
     if (postData.value) {
         const authorResponseData = await getAuthor(postData.value.authorId);
         authorData.value = authorResponseData.value;
-        console.log(postData.value.commentsId);
 
         if (postData.value.commentsId.length > 0) {
             await fetchCommentData(postData.value.commentsId);
@@ -241,96 +251,116 @@ onMounted(async () => {
 
 <template>
     <div v-if="postData && authorData" class="bg-communityPosts bg-no-repeat bg-cover bg-center w-full bg-fixed">
-        <div class="bg-white w-full py-12 px-4">
-            <div class="mx-auto flex flex-col bg-white w-[62rem] translate-y-[-7rem] pt-28 px-5">
-                <button @click="router.back()" class="self-start text-sm font-bold text-stone-800">上一頁</button>
-                <div class="mt-12 mx-auto border-2 border-stone-800 w-[62rem] max-w-full px-24 py-16">
+        <div class="bg-white w-full py-8 px-4">
+            <div class="mx-auto flex flex-col items-center gap-20  bg-white min-w-[62rem] w-2/3 pt-20 px-5">
+                <button @click="router.back()" class="self-start text-sm  xl:text-xl font-bold text-stone-800">上一頁</button>
+                <div class="mx-auto border-2 border-stone-800 w-full px-24 py-16">
                     <div class="flex items-center gap-4">
                         <div
-                            class="border border-stone-800 rounded-full bg-white w-14 h-14 p-1 flex items-center justify-center overflow-hidden">
+                            class="border border-stone-800 rounded-full bg-white w-14 h-14 xl:w-16 xl:h-16 p-1 flex items-center justify-center overflow-hidden">
                             <img :src="`/assets/img/avatar (${authorData.selectedAvatarIndex}).png`" alt="avatar">
                         </div>
                         <div class="flex gap-2 items-baseline justify-start flex-1">
-                            <span class="text-lg text-stone-700 font-bold">{{ authorData.username }}</span>
-                            <span class="font-bold text-sm text-stone-500">{{ formatDateTime(postData.createdAt!) }}
+                            <span class="text-lg xl:text-xl  text-stone-700 font-bold">{{ authorData.username }}</span>
+                            <span class="font-bold text-sm  xl:text-base text-stone-500">{{
+                                formatDateTime(postData.createdAt!) }}
                                 <span class="text-md italic">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
                                 {{ getTimeDifference(postData.createdAt!) }} 以前
                             </span>
                         </div>
                     </div>
-                    <h1 class="my-4 text-2xl text-stone-600 font-bold">{{ postData.title }}</h1>
+                    <h1 class="my-4 text-2xl xl:text-4xl xl:pt-4 text-stone-900 font-bold">{{ postData.title }}</h1>
                     <div class="flex gap-2 flex-wrap">
-                        <span v-for="tag in postData.topicTags" class="px-2 py-1 text-stone-100"
+                        <span v-for="tag in postData.topicTags" class="px-2 py-1 text-sm rounded-sm text-stone-100"
                             :style="`background-color:${setTagColor(tag)}`">
                             {{ tag }}
                         </span>
                     </div>
-                    <p class="text-stone-700 mt-20 whitespace-pre-wrap">{{ postData.content }}</p>
-                    <div class="mt-4 flex flex-col gap-4">
-                        <img v-for="image in postData.images" :src="image.url" class="border-4 border-stone-700" />
+                    <div v-if="postData.images && postData.images.length > 0" class="mt-20  flex flex-col gap-4">
+                        <img :src="postData.images[0].url" class="border-2 border-stone-700" />
+                    </div>
+                    <p class="mt-10 text-stone-700 xl:text-lg whitespace-pre-wrap">{{ postData.content }}</p>
+                    <div v-if="postData.images && postData.images.length > 0" class="mt-4 flex flex-col gap-4">
+                        <div v-for="image, index in postData.images">
+                            <img :key="index" v-if="index !== 0" :src="image.url" class="border-2 border-stone-700" />
+                        </div>
                     </div>
                     <div class="border-b-[1.5px] border-gray-300 my-4"></div>
-                    <div class="flex justify-between">
-                        <div class="flex gap-8"> <span class="flex gap-1">
-                                <EyeIcon class="w-4" />0
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-8 xl:text-xl">
+                            <span class="flex items-center gap-1 text-blue-900">
+                                <EyeIcon class="w-4 xl:w-6" />{{ postData.views }}
                             </span>
-                            <span class="flex gap-1">
-                                <ChatBubbleBottomCenterIcon class="w-4" />0
+                            <span class="flex items-center gap-1 xl:text-xl text-orange-900">
+                                <ChatBubbleBottomCenterIcon class="w-4 xl:w-6" />
+                                {{ commentsData ? commentsData.length : 0 }}
                             </span>
                         </div>
-                        <span class="group flex gap-1 hover:cursor-pointer focus:text-red-500 transition-all" tabindex="0">
-                            <HeartIcon class="w-4 group-focus:scale-[125%] transition-all duration-300" />0
+                        <span
+                            class="group flex items-center gap-1 xl:text-xl hover:cursor-pointer focus:text-red-600 transition-all"
+                            tabindex="0">
+                            <HeartIcon @click="handleLikes"
+                                class="w-4 xl:w-6 group-focus:scale-[115%] transition-all duration-300" />{{ postData.likes
+                                }}
                         </span>
                     </div>
                 </div>
                 <!-- 留言區 -->
-                <div ref="leftBlock"
-                    class="animate-slideInLeft basis-[30%]  border border-stone-800 bg-white py-10 px-8 overflow-auto">
-                    <span class="font-bold text-stone-600 tracking-widest">留言區</span>
-                    <div class="border-b-[.0938rem] border-gray-300 my-4"></div>
+                <div class="w-full border-2 border-stone-800 bg-white py-10 px-8 overflow-auto">
+                    <span class="font-bold text-stone-600 tracking-widest xl:text-xl">留言區</span>
+                    <div class="border-b-[.0938rem] xl:border-b-2 border-stone-300 my-4"></div>
                     <form method="POST" @submit.prevent="handleCommentSubmit">
-                        <div class="mt-10 mb-4 border border-stone-600 p-3">
+                        <div class="mt-10 mb-4 border-2 border-stone-600 p-4 xl:p-8 xl:text-lg">
                             <textarea v-model="commentPost" name="" id="" cols="20" rows="3" placeholder="輸入留言..."
-                                class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current"></textarea>
+                                class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current" />
                         </div>
-                        <div class="flex justify-end gap-2">
+                        <div class="flex justify-end gap-4 xl:gap-6">
                             <button type="button" @click="commentPost = ''"
-                                class="text-green-400 px-5 py-2 hover:text-green-600">取消</button>
+                                class="text-green-400 px-5 py-2 xl:text-lg hover:text-green-600">取消</button>
                             <button ref="commentSubmitButton" type="submit"
-                                class="text-white bg-gray-300 px-5 py-2 transition-all ">送出</button>
+                                class="text-white bg-gray-300 px-5 py-2 xl:text-lg transition-all ">送出</button>
                         </div>
                     </form>
-                    <ul v-if="commentsData" class="mt-8">
-                        <li v-for="comment in commentsData">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="border border-stone-800 rounded-full bg-white w-10 h-10 p-1 flex items-center justify-center overflow-hidden">
-                                    <img :src="`/assets/img/avatar (${comment.author.selectedAvatarIndex}).png`"
-                                        alt="avatar">
+                    <ul v-if="commentsData && commentsData.length > 0 && commentAuthorData.length > 0" class="mt-8">
+                        <li v-for="comment, index in commentsData">
+                            <div v-if="commentAuthorData[index]">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="border border-stone-800 rounded-full bg-white w-10 h-10 xl:w-12 xl:h-12 p-1 flex items-center justify-center overflow-hidden">
+                                        <img :src="`/assets/img/avatar (${commentAuthorData[index].selectedAvatarIndex}).png`"
+                                            alt="avatar">
+                                    </div>
+                                    <div class="flex gap-2 items-baseline justify-start flex-1">
+                                        <span class="xl:text-lg text-stone-700 font-bold">{{
+                                            commentAuthorData[index].username
+                                        }}</span>
+                                        <span class="text-sm xl:text-base text-stone-500 text-center">{{
+                                            formatDateTime(comment.createdAt!,
+                                                'concise')
+                                        }}</span>
+                                        <TrashIcon @click="handleDeleteComment(comment._id!)"
+                                            class="w-6 cursor-pointer  text-red-700 ml-auto" />
+                                    </div>
                                 </div>
-                                <div class="flex gap-2 items-center justify-start flex-1">
-                                    <span class=" text-sm text-stone-700 font-bold">{{ comment.author.username }}</span>
-                                    <span class="text-xs text-stone-500 text-center">{{ formatDateTime(comment.createdAt,
-                                        'concise')
-                                    }}</span>
-                                    <TrashIcon @click="handleDeleteComment(comment._id)"
-                                        class="w-5 cursor-pointer  text-red-700 ml-auto" />
+                                <div>
+                                    <p class="mt-4 xl:text-lg text-stone-700">{{ comment.content }}</p>
                                 </div>
+                                <div class="border-b-[.0938rem] xl:border-b-2 border-gray-300 my-4"></div>
                             </div>
-                            <div class="">
-                                <p class="mt-4 text-sm text-stone-700">{{ comment.content }}</p>
-                            </div>
-                            <div class="border-b-[.0938rem] border-gray-300 my-4"></div>
                         </li>
                     </ul>
-                    <div v-else class="border-b-[.0938rem] border-gray-300 mt-10 text-center text-gray-400 py-1">尚未有留言</div>
+                    <div v-else
+                        class="border-b-2 xl:text-lg xl:border-b-2 border-gray-300 mt-10 text-center text-gray-400 py-1">
+                        尚未有留言
+                    </div>
                 </div>
             </div>
         </div>
+        <Transition enter-active-class="transition ease-in duration-150 delay-0" enter-from-class="opacity-0 -translate-y-2"
+            enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150 delay-0"
+            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+            <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
+        </Transition>
     </div>
-    <Transition enter-active-class="transition ease-in duration-150 delay-0" enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150 delay-0"
-        leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
-        <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="(choice: boolean) => userChoice = choice" />
-    </Transition>
 </template>
+../../api/comment/communityComment../../api/community/communityComment.js../../api/community/community.js../../api/user/user.js

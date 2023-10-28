@@ -11,7 +11,6 @@ import Explore from "./pages/Explore.vue";
 import Gallery from "./pages/Gallery.vue";
 import Community from "./pages/Community.vue";
 
-
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -25,7 +24,7 @@ const router = createRouter({
       component: Login,
       name: "Login",
       beforeEnter: (to, from, next) => {
-        const userStore = useUserStore();//無法在global scope中/Pinia被掛載前使用
+        const userStore = useUserStore(); //無法在global scope中/Pinia被掛載前使用
         if (userStore.isLogin) {
           next({ name: "Articles" });
         } else {
@@ -38,7 +37,7 @@ const router = createRouter({
       component: Register,
       name: "Register",
       beforeEnter: (to, from, next) => {
-        const userStore = useUserStore(); 
+        const userStore = useUserStore();
         if (userStore.isLogin) {
           next({ name: "Articles" });
         } else {
@@ -148,6 +147,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+
   const userStore = useUserStore();
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   if (requiresAuth && !userStore.isLogin) {

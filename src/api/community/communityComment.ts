@@ -1,14 +1,30 @@
-import { apiClient } from "./axiosInstance";
+import { ref } from "vue";
+import { CommentType } from "../../types";
+import { apiClient } from "../axiosInstance";
 
 export const ApiConfig = {
-  index: "/comment",
-  getComment: (id: string) => `/comment/${id}`,
+  index: "/communityComment",
+  getComment: (id: string) => `/communityComment/${id}`,
+  getComments: "/communityComment/getComments",
 };
 
 export async function getComment(id: string) {
   try {
     const response = await apiClient.get(ApiConfig.getComment(id));
     return response.data;
+  } catch (error) {
+    console.error("獲取評論失敗，出現錯誤:", error);
+    throw error;
+  }
+}
+
+export async function getComments(idList: string[]) {
+  
+  try {
+    const responseData = ref<CommentType[]>();
+    const response = await apiClient.post(ApiConfig.getComments, idList);
+    responseData.value = response.data;
+    return responseData;
   } catch (error) {
     console.error("獲取評論失敗，出現錯誤:", error);
     throw error;

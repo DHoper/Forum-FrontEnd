@@ -7,26 +7,13 @@ export interface CommentType {
   content: string;
   createdAt?: string;
 }
-
-export interface CommentFilledType {
-  _id: string;
-  author?: {
-    username: string;
-    selectedAvatarIndex: number;
-    createdAt: string;
-  };
-  postId: string;
-  content: string;
-  createdAt: string;
-}
-
 export interface PhotoPostImageType {
   url: string;
   filename: string;
 }
 
 export interface PhotoPostType {
-  _id: string;
+  _id?: string;
   title: string;
   images: PhotoPostImageType[];
   location: string;
@@ -41,24 +28,6 @@ export interface PhotoPostType {
   createdAt?: string,
   commentsId: [];
   isEdit: false;
-}
-
-export interface PhotoPostFilledType {
-  _id: string;
-  title: string;
-  images: PhotoPostImageType[];
-  location: string;
-  geometry?: any;
-  description: string;
-  authorInfo: {
-    authorName: string;
-    authorAvatarIndex: number;
-  };
-  views: number;
-  likes: number;
-  comments: CommentFilledType[];
-  isEdit: boolean;
-  createdAt: string;
 }
 
 //----用戶----//

@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { ExclamationCircleIcon } from '@heroicons/vue/24/solid';
 import { useUserStore } from '../../store/user';
 import { FieldName, inputValidator } from '../../utils/validator';
-import { updateUser } from '../../api/user';
+import { updateUser } from '../../api/user/user.js';
 import Dialog from '../../components/utils/Dialog.vue';
 
 
@@ -319,4 +319,4 @@ const cancelEdit = () => {
         leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
         <Dialog v-if="showDialog" :dialogData="dialogData" @closePopup="showDialog = false" />
     </Transition>
-</template>
+</template>../../api/user/user

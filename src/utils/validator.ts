@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { checkRepeatEmail } from "../api/user";
+import { checkRepeatEmail } from "../api/user/user";
 
 ////UserData驗證
 export type FieldName =
@@ -69,6 +69,23 @@ export const inputValidator = () => {
       }
 
       let totalWeight = 0;
+      function countCharacters(text: string) {
+        let totalWeight = 0;
+        for (const char of text) {
+            if (/[\u4e00-\u9fa5\u3100-\u312F]/.test(char)) {
+                totalWeight += 2;
+            } else if (/^[A-Za-z0-9]+$/.test(char)) {
+                totalWeight += 1;
+            } else if (
+                /[\「」{}.,;:!?-、...。，；：！？_、，"'：]/.test(char)
+            ) {
+                totalWeight += 1;
+            } else {
+                totalWeight += 10000;
+            }
+        }
+        return totalWeight;
+    }
       switch (fieldName) {
         case "email":
           const emailRegex = /[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}/gim;
@@ -85,15 +102,7 @@ export const inputValidator = () => {
           }
           break;
         case "username":
-          for (const char of value) {
-            if (/[\u4e00-\u9fa5]/.test(char)) {
-              totalWeight += 2;
-            } else if (/^[A-Za-z0-9]+$/.test(char)) {
-              totalWeight += 1;
-            } else {
-              totalWeight += 15;
-            }
-          }
+          countCharacters(value);
 
           if (totalWeight < 4 || totalWeight > 15) {
             isValid = false;
@@ -119,33 +128,16 @@ export const inputValidator = () => {
           }
           break;
         case "title":
-          for (const char of value) {
-            
-            if (/[\u4e00-\u9fa5]/.test(char)) {
-              totalWeight += 2;
-            } else if (/^[A-Za-z0-9]+$/.test(char)) {
-              totalWeight += 1;
-            } else if (/[.,;:!?-、...]/.test(char)) {
-              totalWeight += 1;
-            } else {
-              totalWeight += 61;
-            }
-          }
+          countCharacters(value);
 
-          if (totalWeight < 10 || totalWeight > 60) {
+          if (totalWeight < 10 || totalWeight > 80) {
             isValid = false;
           }
           break;
         case "content":
-          for (const char of value) {
-            if (/[\u4e00-\u9fa5]/.test(char)) {
-              totalWeight += 2;
-            } else if (/^[A-Za-z0-9]+$/.test(char)) {
-              totalWeight += 1;
-            }
-          }
+          countCharacters(value);
 
-          if (totalWeight < 20 || totalWeight > 800) {
+          if (totalWeight < 20 || totalWeight > 2000) {
             isValid = false;
           }
           break;

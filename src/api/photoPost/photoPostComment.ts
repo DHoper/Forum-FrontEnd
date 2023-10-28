@@ -1,11 +1,11 @@
 import { ref } from "vue";
-import { CommentType } from "../types";
-import { apiClient } from "./axiosInstance";
+import { CommentType } from "../../types";
+import { apiClient } from "../axiosInstance";
 
 export const ApiConfig = {
-  index: "/communityComment",
-  getComment: (id: string) => `/communityComment/${id}`,
-  getComments: "/communityComment/getComments",
+  index: "/photoPostComment",
+  getComment: (id: string) => `/photoPostComment/${id}`,
+  getComments: "/photoPostComment/getComments",
 };
 
 export async function getComment(id: string) {
@@ -21,7 +21,6 @@ export async function getComment(id: string) {
 export async function getComments(idList: string[]) {
   
   try {
-    console.log(idList);
     const responseData = ref<CommentType[]>();
     const response = await apiClient.post(ApiConfig.getComments, idList);
     responseData.value = response.data;

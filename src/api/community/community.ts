@@ -1,5 +1,5 @@
-import { apiClient } from "./axiosInstance";
-import { CommunityPostType } from "../types.ts";
+import { apiClient } from "../axiosInstance.ts";
+import { CommunityPostType } from "../../types.ts";
 import { ref } from "vue";
 
 export const ApiConfig = {
