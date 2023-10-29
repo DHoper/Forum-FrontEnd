@@ -32,8 +32,14 @@ const props = defineProps({
     required: true,
   },
 });
-
 const emit = defineEmits(["close"]);
+
+const isLogin = ref<boolean>(userStore.isLogin);
+const userId = ref<string>();
+let  middleIdVar = userStore.getId();
+if (middleIdVar) {
+  userId.value = middleIdVar;
+}
 
 const leftBlock = ref<HTMLElement | null>(null);
 const rightBlock = ref<HTMLElement | null>(null);
@@ -123,7 +129,6 @@ async function handleCommentSubmit() {
   const userData: UserDataType = userStore.getData()!;
 
   if (commentPost.value && postData.value && postData.value._id) {
-
     const submitData: CommentType = {
       authorId: userData._id,
       postId: postData.value!._id,
@@ -261,6 +266,7 @@ onMounted(async () => {
                   formatDateTime(comment.createdAt!, "concise")
                 }}</span>
                 <TrashIcon
+                  v-if="isLogin && userId === postData._id"
                   @click="handleDeleteComment(comment._id!)"
                   class="w-5 xl:w-6 cursor-pointer text-red-700 ml-auto"
                 />
@@ -295,6 +301,7 @@ onMounted(async () => {
           :class="turnPage ? 'invisible' : 'block'"
         />
         <TrashIcon
+          v-if="isLogin && userId === postData._id"
           @click="close"
           class="w-10 xl:w-10 cursor-pointer text-red-800 py-4 hover:text-red-600 hover:scale-105 transition-all ease-in"
           :class="turnPage ? 'invisible' : 'block'"

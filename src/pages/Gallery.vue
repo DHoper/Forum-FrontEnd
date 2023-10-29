@@ -69,14 +69,14 @@ function closePhoto() {
     <div class="overflow-hidden flex flex-col relative">
         <div v-if="galleryDataset" class="flex relative overflow-hidden bg-stone-600">
             <div
-                class="flex flex-col items-center justify-center bg-gallery bg-no-repeat bg-cover bg-center basis-[30%] xl:basis-[20%] text-white h-full">
+                class="flex flex-col items-center justify-center bg-gallery bg-no-repeat bg-cover bg-center basis-[30%] text-white h-full">
                 <span class="text-5xl [writing-mode:vertical-lr] mt-16 tracking-[1rem] font-bold">偉大的世界</span>
                 <div class="mt-16 text-lg text-[#f9f9f9c8] flex flex-col items-center gap-4 tracking-[.8rem]">
                     <span>還有許多</span>
                     <span>你未曾探尋之地</span>
                 </div>
             </div>
-            <div class="basis-[70%] xl:basis-[80%] h-full">
+            <div class="basis-[70%] h-full">
                 <div ref="rightBlock" class="h-full flex flex-wrap overflow-y-auto overflow-x-hidden">
                     <div v-for="galleryData in galleryDataset"
                         class="relative basis-1/4 xl:basis-1/5 group cursor-pointer hover:z-10 border-4 border-stone-100">
