@@ -148,7 +148,7 @@ const filteredVotes = computed(() => {
     }
 });
 
-const totalPages = computed(() => Math.ceil(votes.value.length / itemsPerPage));
+const totalPages = computed(() => Math.ceil(communityPosts.value.length / itemsPerPage));
 
 const changeTab = (tab) => {
     activeTab.value = tab;
@@ -211,7 +211,7 @@ const goToPage = (pageNumber) => {
                     class="w-full basis-1 p-4 xl:p-8 xl:pb-4 border-2 border-stone-700 shadow cursor-pointer group hover:bg-stone-700 hover:text-white hover:border-stone-700 transition-all duration-300">
                     <div class="flex justify-between">
                         <div class="flex gap-4 items-center justify-center">
-                            <h2 class="text-xl font-bold max-w-[20rem] truncate overflow-hidden">{{ communityPost.title }}
+                            <h2 class="text-xl font-bold max-w-[20rem] xl:max-w-[60rem] truncate overflow-hidden">{{ communityPost.title }}
                             </h2>
                             <div class="flex gap-2 flex-wrap">
                                 <span v-for="tag in communityPost.topicTags"

@@ -70,22 +70,25 @@ export const inputValidator = () => {
 
       let totalWeight = 0;
       function countCharacters(text: string) {
-        let totalWeight = 0;
+        text = text.replace(/\u200B/g, '\n');
         for (const char of text) {
-            if (/[\u4e00-\u9fa5\u3100-\u312F]/.test(char)) {
-                totalWeight += 2;
-            } else if (/^[A-Za-z0-9]+$/.test(char)) {
-                totalWeight += 1;
-            } else if (
-                /[\「」{}.,;:!?-、...。，；：！？_、，"'：]/.test(char)
-            ) {
-                totalWeight += 1;
-            } else {
-                totalWeight += 10000;
-            }
+          if (/[\u4e00-\u9fa5\u3100-\u312F]/.test(char)) {
+            totalWeight += 2;
+          } else if (/[\w\s\p{P}]+/u.test(char)) {
+            totalWeight += 1;
+          } else if (
+            /[\「\」\{\}\(\)\<\>\.,;:!?\-、\.\。\、；：！？_\、，"'：=]/.test(
+              char
+            )
+          ) {
+            totalWeight += 1;
+          } else {
+            totalWeight += 10000;
+          }
+          // console.log(char, totalWeight);
         }
         return totalWeight;
-    }
+      }
       switch (fieldName) {
         case "email":
           const emailRegex = /[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}/gim;
@@ -129,7 +132,6 @@ export const inputValidator = () => {
           break;
         case "title":
           countCharacters(value);
-
           if (totalWeight < 10 || totalWeight > 80) {
             isValid = false;
           }
@@ -137,7 +139,7 @@ export const inputValidator = () => {
         case "content":
           countCharacters(value);
 
-          if (totalWeight < 20 || totalWeight > 2000) {
+          if (totalWeight < 20 || totalWeight > 4000) {
             isValid = false;
           }
           break;
@@ -150,7 +152,6 @@ export const inputValidator = () => {
         formInputInvalid.value.email.registered = emailRepeatCheck;
       } else {
         formInputInvalid.value[fieldName] = isValid;
-        console.log(formInputInvalid.value[fieldName]);
       }
     }
   }

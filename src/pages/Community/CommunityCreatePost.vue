@@ -251,7 +251,7 @@ const handelSubmit = async () => {
                         <div class="relative">
                             <label for="content" class="text-stone-600 font-bold text-sm xl:text-lg">貼文内容</label>
                             <textarea v-model="formData.content" id="content" name="content" cols="20" rows="10"
-                                placeholder="10 ~ 1000字" @blur="validateInput('content')"
+                                placeholder="10 ~ 2000字" @blur="validateInput('content')"
                                 class="mt-2 mb-0 w-full border-2 border-stone-800 py-2 px-3 xl:p-6 xl:text-lg outline-none resize-none"
                                 :class="formInputInvalid.content ? 'border-stone-800' : 'border-red-700'" required />
                             <div v-if="!formInputInvalid.content"

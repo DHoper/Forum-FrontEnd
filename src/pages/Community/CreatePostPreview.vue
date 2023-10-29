@@ -146,7 +146,7 @@ onMounted(async () => {
 
 <template>
     <div v-if="formData && authorData"
-        class="fixed top-0 w-screen h-full overflow-auto border-4 py-12 px-4 z-50 bg-white flex flex-col items-center justify-center gap-10 xl:gap-16">
+        class="fixed top-0 w-screen h-full overflow-auto border-4 py-12 px-4 z-50 bg-white flex flex-col items-center gap-10 xl:gap-16">
         <div class="mt-12 mx-auto border-2 border-stone-800 w-2/3 min-w-[62rem] max-w-full px-24 py-16">
             <div class="flex items-center gap-4">
                 <div

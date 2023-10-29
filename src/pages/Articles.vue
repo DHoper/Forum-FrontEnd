@@ -102,39 +102,40 @@ const articles = [
             <h3 class="italic text-xl mt-2">探索自然與保育之美</h3>
         </div>
         <div class="bg-white w-full mt-[55vh]">
-            <ul class="mx-auto flex flex-col items-center w-[62rem] translate-y-[-7.5rem]">
+            <ul class="mx-auto flex flex-col items-center min-w-[62rem] w-2/3 translate-y-[-7.5rem]">
                 <li v-for="article in articles" class="bg-white p-5 w-full">
                     <div class="">
-                        <div class="max-h-[32.5rem] overflow-hidden">
+                        <div class="h-[32.5rem] xl:h-[40rem] overflow-hidden">
                             <img :src="article.img" class="w-full filter grayscale-[10%]">
                         </div>
-                        <div class="w-full  border border-stone-300 px-12 py-6 overflow-hidden">
-                            <span class="text-sm">
-                            {{ article.postDate }}
+                        <div class="w-full  border border-stone-300 px-12 py-6 xl:px-20 xl:py-12 overflow-hidden">
+                            <span class="text-sm xl:text-base">
+                                {{ article.postDate }}
                                 <span class="font-bold text-md">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
                                 {{ getTimeDifference(article.postDate) }} 以前</span>
                             <div class="group">
                                 <h4 @click="router.push({ name: 'Article', params: { id: article.id } })"
-                                    class="mt-2 text-2xl font-bold text-stone-700 cursor-pointer group-hover:text-green-500 transition-all">
+                                    class="mt-2 text-2xl xl:text-3xl font-bold text-stone-900 cursor-pointer group-hover:text-green-500 transition-all">
                                     {{ article.title }}
                                 </h4>
                                 <p @click="router.push({ name: 'Article', params: { id: article.id } })"
-                                    class="cursor-pointer truncate mt-4 line-clamp-2 text-stone-600 whitespace-normal group-hover:text-green-500 transition-all">
+                                    class="cursor-pointer truncate mt-4 line-clamp-2 text-stone-600 whitespace-normal group-hover:text-green-500 transition-all xl:text-lg">
                                     {{ article.abstract }}
                                 </p>
                             </div>
-                            <div class="border-b-[.0938rem] border-gray-300  my-4"></div>
+                            <div class="border-b-[.0938rem] xl:border-b-2 xl:py-2 border-gray-300  my-4"></div>
                             <div class="flex justify-between">
-                                <div class="flex gap-8"> <span class="flex gap-1">
-                                        <EyeIcon class="w-4" />{{ article.stats.views }}
+                                <div class="flex gap-8">
+                                    <span class="flex gap-1 xl:">
+                                        <EyeIcon class="w-4 xl:w-8" />{{ article.stats.views }}
                                     </span>
-                                    <span class="flex gap-1">
-                                        <ChatBubbleBottomCenterIcon class="w-4" />{{ article.comments.length }}
+                                    <span class="flex gap-1 xl:">
+                                        <ChatBubbleBottomCenterIcon class="w-4 xl:w-8" />{{ article.comments.length }}
                                     </span>
                                 </div>
-                                <span class="group flex gap-1 hover:cursor-pointer focus:text-red-500 transition-all"
+                                <span class="group flex gap-1 xl: hover:cursor-pointer focus:text-red-500 transition-all"
                                     tabindex="0">
-                                    <HeartIcon class="w-4  group-focus:scale-[125%] transition-all duration-300" />{{
+                                    <HeartIcon class="w-4 xl:w-8  group-focus:scale-[125%] transition-all duration-300" />{{
                                         article.stats.likes }}
                                 </span>
                             </div>
