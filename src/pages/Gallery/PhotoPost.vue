@@ -177,7 +177,9 @@ onMounted(async () => {
         const authorResponseData = await getAuthor(postData.value.authorId);
         postAuthorData.value = authorResponseData.value!;
 
-        await fetchCommentData(postData.value.commentsId);
+        if(postData.value.commentsId.length > 0) {
+            await fetchCommentData(postData.value.commentsId);
+        }     
     }
 })
 </script>
