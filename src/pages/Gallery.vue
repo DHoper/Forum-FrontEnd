@@ -84,7 +84,7 @@ function closePhoto() {
                         <div
                             class="absolute top-0 left-0 w-full h-full scale-[101%] bg-black bg-opacity-0 group-hover:bg-opacity-30 group-hover:scale-105 transition-all ease-in duration-700">
                         </div>
-                        <div @click="openPhoto(galleryData._id)"
+                        <div @click="openPhoto(galleryData._id!)"
                             class="flex flex-col justify-between absolute top-0 left-0 w-full h-full scale-[101%] text-white px-4 pt-3 pb-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:scale-105 group-hover:translate-x-0 transition-all duration-700 ease-in"
                             tabindex="-1">
                             <div v-if="galleryData.createdAt">

@@ -13,7 +13,7 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 
-app.config.errorHandler = (err, vm, info) => {
+app.config.errorHandler = (err) => {
   console.error(err);
   const loadingStore = useLoadingStore();
   const errorStore = useErrorStore();

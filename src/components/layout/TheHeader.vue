@@ -91,7 +91,7 @@ const refreshCurrentRoute = (routeName: string) => {
                         class="tracking-widest px-4">探索</router-link>
                 </li>
                 <li
-                    class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-wv-ifhite">
+                    class="border-2 border-transparent hover:border-white transition-all duration-700 ease-in-out font-bold py-1 text-wite">
                     <router-link @click="refreshCurrentRoute('Gallery')" :to="{ name: 'Gallery' }"
                         class="tracking-widest px-4">照片牆</router-link>
                 </li>

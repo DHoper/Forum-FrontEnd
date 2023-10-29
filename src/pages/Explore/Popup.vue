@@ -12,9 +12,6 @@ const emit = defineEmits(['openPhoto']);
 
 const properties = ref(props.properties);
 
-const photoPostShow = ref(false);
-const photoPostShowInner = ref(false);
-const photoPostID = ref<string>('');
 </script>
   
 

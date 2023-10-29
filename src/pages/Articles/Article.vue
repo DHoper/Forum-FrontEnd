@@ -54,7 +54,7 @@ const article = {
         },
         {
             user: 'DODO',
-            content: 'ㄚㄚㄚㄚㄚ阿！',
+            content: '8 8 8 8 阿！',
             postDate: '2023-09-02 14:30:00',
         },
         {

@@ -11,7 +11,7 @@ import {
     XCircleIcon,
     ExclamationCircleIcon
 } from '@heroicons/vue/24/outline';
-import { PhotoPostType, PhotoPostImageType, DialogType, UserData } from '../../types.ts';
+import { PhotoPostType, PhotoPostImageType, DialogType, UserDataType } from '../../types.ts';
 import { useUserStore } from '../../store/user.ts';
 import { useLoadingStore } from '../../store/loading';
 import { createPost } from '../../api/photoPost/photoPost.ts';
@@ -183,7 +183,7 @@ const submitNewPost = async () => {
         return;
     }
     //問題--以userStore.getData()進行if判定仍無法通過TS檢查?
-    const userData: UserData = userStore.getData();
+    const userData: UserDataType = userStore.getData()!;
     await uploadImages()
     const submitForm: PhotoPostType = {
         authorId: userData._id,
@@ -348,7 +348,7 @@ const handleSubmit = async () => {
                             </div>
                         </div>
                         <div v-else class="flex gap-3 mx-auto">
-                            <div v-for="i in 5"
+                            <div v-for=" in 5"
                                 class="border-4 border-dashed border-stone-300 rounded-sm w-[140px] h-[105px] flex items-center justify-center text-stone-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="w-10 h-10">

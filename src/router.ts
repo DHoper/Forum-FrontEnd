@@ -24,6 +24,8 @@ const router = createRouter({
       component: Login,
       name: "Login",
       beforeEnter: (to, from, next) => {
+        if (to || from) {  //--問題--build問題 待解決
+        } 
         const userStore = useUserStore(); //無法在global scope中/Pinia被掛載前使用
         if (userStore.isLogin) {
           next({ name: "Articles" });
@@ -37,6 +39,8 @@ const router = createRouter({
       component: Register,
       name: "Register",
       beforeEnter: (to, from, next) => {
+        if (to || from) {
+        }
         const userStore = useUserStore();
         if (userStore.isLogin) {
           next({ name: "Articles" });
@@ -147,15 +151,16 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-
-  const userStore = useUserStore();
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  if (requiresAuth && !userStore.isLogin) {
-    next({ name: "Login" });
+  if (from) {
+    const userStore = useUserStore();
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    if (requiresAuth && !userStore.isLogin) {
+      next({ name: "Login" });
+    }
+    useLoadingStore().setLoadingStatus(true);
+    useLoadingStore().setIsCountingSeconds(true);
+    next();
   }
-  useLoadingStore().setLoadingStatus(true);
-  useLoadingStore().setIsCountingSeconds(true);
-  next();
 });
 
 router.afterEach(() => {

@@ -148,14 +148,14 @@ const filteredVotes = computed(() => {
     }
 });
 
-const totalPages = computed(() => Math.ceil(communityPosts.value.length / itemsPerPage));
+const totalPages = computed(() => Math.ceil(communityPosts.value!.length / itemsPerPage));
 
-const changeTab = (tab) => {
+const changeTab = (tab:string) => {
     activeTab.value = tab;
     currentPage.value = 1; // 切换标签时重置当前頁码
 };
 
-const changePage = (action) => {
+const changePage = (action:string) => {
     if (action === 'prev' && currentPage.value > 1) {
         currentPage.value--;
     } else if (action === 'next' && currentPage.value < totalPages.value) {
@@ -163,7 +163,7 @@ const changePage = (action) => {
     }
 };
 
-const goToPage = (pageNumber) => {
+const goToPage = (pageNumber:number) => {
     currentPage.value = pageNumber;
 };
 </script>
