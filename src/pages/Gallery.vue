@@ -26,7 +26,7 @@ onMounted(async () => {
 
     await fetchData();
     rightBlock.value?.addEventListener('scroll', handleScroll);
-    console.log(alleryDataset.value, 88);
+    console.log(galleryDataset.value, 88);
     
 
     loadingStore.setInRequest(false);
