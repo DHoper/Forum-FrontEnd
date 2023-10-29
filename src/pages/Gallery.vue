@@ -15,7 +15,11 @@ console.log(import.meta.env.VITE_APP_API_URL, import.meta.env.FORUM_BACK_END_HOS
 
 const galleryDataset = ref<PhotoPostType[]>();
 const fetchData = async () => {
+    console.log(444);
+    
     const response = await getGalleryData();
+    console.log(222,response.value);
+    
     galleryDataset.value = response.value;
 };
 
@@ -26,9 +30,7 @@ onMounted(async () => {
 
     await fetchData();
     rightBlock.value?.addEventListener('scroll', handleScroll);
-    console.log(galleryDataset.value, 88);
     
-
     loadingStore.setInRequest(false);
     loadingStore.setLoadingStatus(false);
 });
