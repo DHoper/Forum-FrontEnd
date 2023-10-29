@@ -171,7 +171,8 @@ onMounted(async () => {
             <div v-if="formData.images && formData.images.length > 0" class="mt-20  flex flex-col gap-4">
                 <img :src="formData.images[0].url" class="border-2 border-stone-700" />
             </div>
-            <p class="mt-10 text-stone-700 xl:text-lg whitespace-pre-wrap">{{ formData.content }}</p>
+                         <!-- 問題--部分轉譯字元文本會超出寬度 -->
+            <p class="mt-10 text-stone-700 xl:text-lg whitespace-pre-wrap overflow-auto">{{ formData.content }}</p>
             <div v-if="formData.images && formData.images.length > 0" class="mt-4 flex flex-col gap-4">
                 <div v-for="image, index in formData.images">
                     <img :key="index" v-if="index !== 0" :src="image.url" class="border-2 border-stone-700" />

@@ -343,7 +343,7 @@ onMounted(async () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="mt-4 xl:text-lg text-stone-700">{{ comment.content }}</p>
+                                    <p class="mt-10 text-stone-700 xl:text-lg whitespace-pre-wrap overflow-auto">{{ postData.content }}</p>
                                 </div>
                                 <div class="border-b-[.0938rem] xl:border-b-2 border-gray-300 my-4"></div>
                             </div>
