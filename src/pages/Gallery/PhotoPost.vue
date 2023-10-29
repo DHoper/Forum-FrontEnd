@@ -55,10 +55,7 @@ const fetchPostData = async () => {
 
 const fetchCommentData = async (idList: string[]) => {
 
-    // commentAuthorData.value = [];
-    console.log(commentAuthorData.value);
     const commentsResponseData = await getComments(idList);
-    console.log(commentAuthorData.value);
 
     if (commentsResponseData.value) {
         commentsData.value = commentsResponseData.value;

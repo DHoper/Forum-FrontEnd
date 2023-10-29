@@ -113,7 +113,7 @@ async function handleSubmit() {
     };
 
     await postUserData(submitFormData).catch((err) => {
-      console.log(`postUserData 失敗: ${err}`);
+      console.error(`postUserData 失敗: ${err}`);
     });
     loadingStore.setInRequest(false);
     loadingStore.setLoadingStatus(false);

@@ -145,7 +145,6 @@ const uploadImages = async () => {
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            console.log(file);
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", "Community_preset");

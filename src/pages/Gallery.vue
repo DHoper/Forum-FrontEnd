@@ -9,17 +9,10 @@ import { useLoadingStore } from '../store/loading';
 import { PhotoPostType } from '../types';
 import { formatDateTime } from '../utils/formattingUtils';
 
-console.log(import.meta.env.VITE_APP_API_URL, import.meta.env.FORUM_BACK_END_HOST);
-
-
-
 const galleryDataset = ref<PhotoPostType[]>();
 const fetchData = async () => {
-    console.log(444);
     
     const response = await getGalleryData();
-    console.log(222,response.value);
-    
     galleryDataset.value = response.value;
 };
 

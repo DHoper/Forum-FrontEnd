@@ -39,7 +39,7 @@ export const useUserStore = defineStore("user", () => {
         loggingStatus.value = LoginStatus.EmailError;
       }
     } catch (err) {
-      console.log("getUserData取得資料失敗: ", err);
+      console.error("getUserData取得資料失敗: ", err);
     }
   }
 
