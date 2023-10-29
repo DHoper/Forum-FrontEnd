@@ -9,7 +9,6 @@ import { useLoadingStore } from '../store/loading';
 import { PhotoPostType } from '../types';
 import { formatDateTime } from '../utils/formattingUtils';
 
-console.log(7777);
 console.log(import.meta.env.VITE_APP_API_URL, import.meta.env.FORUM_BACK_END_HOST);
 
 
@@ -27,6 +26,8 @@ onMounted(async () => {
 
     await fetchData();
     rightBlock.value?.addEventListener('scroll', handleScroll);
+    console.log(alleryDataset.value, 88);
+    
 
     loadingStore.setInRequest(false);
     loadingStore.setLoadingStatus(false);
