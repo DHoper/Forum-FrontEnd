@@ -146,22 +146,22 @@ onMounted(async () => {
 
 <template>
     <div v-if="formData && authorData"
-        class="fixed top-0 w-screen h-full overflow-auto border-4 py-12 px-4 z-50 bg-white flex flex-col items-center gap-10 xl:gap-16">
+        class="fixed top-0 w-screen h-full overflow-auto border-4 py-12 px-4 z-50 bg-white flex flex-col items-center gap-10 2xl:gap-16">
         <div class="mt-12 mx-auto border-2 border-stone-800 w-2/3 min-w-[62rem] max-w-full px-24 py-16">
             <div class="flex items-center gap-4">
                 <div
-                    class="border border-stone-800 rounded-full bg-white w-14 h-14 xl:w-16 xl:h-16 p-1 flex items-center justify-center overflow-hidden">
+                    class="border border-stone-800 rounded-full bg-white w-14 h-14 2xl:w-16 2xl:h-16 p-1 flex items-center justify-center overflow-hidden">
                     <img :src="`/assets/img/avatar (${authorData.selectedAvatarIndex}).png`" alt="avatar">
                 </div>
                 <div class="flex gap-2 items-baseline justify-start flex-1">
-                    <span class="text-lg xl:text-xl text-stone-700 font-bold">{{ authorData.username }}</span>
-                    <span class="font-bold text-sm xl:text-base text-stone-500">{{ formatDateTime(formData.createdAt) }}
+                    <span class="text-lg 2xl:text-xl text-stone-700 font-bold">{{ authorData.username }}</span>
+                    <span class="font-bold text-sm 2xl:text-base text-stone-500">{{ formatDateTime(formData.createdAt) }}
                         <span class="text-md italic">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
                         {{ getTimeDifference(formData.createdAt) }} 以前
                     </span>
                 </div>
             </div>
-            <h1 class="my-4 text-2xl xl:text-3xl text-stone-900 font-bold">{{ formData.title }}</h1>
+            <h1 class="my-4 text-2xl 2xl:text-3xl text-stone-900 font-bold">{{ formData.title }}</h1>
             <div class="flex gap-2 flex-wrap">
                 <span v-for="tag in formData.topicTags" class="px-2 py-1 text-stone-100 rounded-sm"
                     :style="`background-color:${setTagColor(tag)}`">
@@ -172,7 +172,7 @@ onMounted(async () => {
                 <img :src="formData.images[0].url" class="border-2 border-stone-700" />
             </div>
                          <!-- 問題--部分轉譯字元文本會超出寬度 -->
-            <p class="mt-10 text-stone-700 xl:text-lg whitespace-pre-wrap overflow-auto">{{ formData.content }}</p>
+            <p class="mt-10 text-stone-700 2xl:text-lg whitespace-pre-wrap overflow-auto">{{ formData.content }}</p>
             <div v-if="formData.images && formData.images.length > 0" class="mt-4 flex flex-col gap-4">
                 <div v-for="image, index in formData.images">
                     <img :key="index" v-if="index !== 0" :src="image.url" class="border-2 border-stone-700" />
@@ -181,17 +181,17 @@ onMounted(async () => {
             <div class="border-b-2 border-gray-300 my-4 mt-16"></div>
             <div class="flex justify-between">
                 <div class="flex gap-8">
-                    <span class="flex items-center gap-1 xl:text-xl">
-                        <EyeIcon class="w-4 xl:w-6" />0
+                    <span class="flex items-center gap-1 2xl:text-xl">
+                        <EyeIcon class="w-4 2xl:w-6" />0
                     </span>
-                    <span class="flex items-center gap-1 xl:text-xl">
-                        <ChatBubbleBottomCenterIcon class="w-4 xl:w-6" />0
+                    <span class="flex items-center gap-1 2xl:text-xl">
+                        <ChatBubbleBottomCenterIcon class="w-4 2xl:w-6" />0
                     </span>
                 </div>
                 <span
-                    class="group flex items-center gap-1 xl:text-xl hover:cursor-pointer focus:text-red-500 transition-all"
+                    class="group flex items-center gap-1 2xl:text-xl hover:cursor-pointer focus:text-red-500 transition-all"
                     tabindex="0">
-                    <HeartIcon class="w-4 xl:w-6 group-focus:scale-[125%] transition-all duration-300" />0
+                    <HeartIcon class="w-4 2xl:w-6 group-focus:scale-[125%] transition-all duration-300" />0
                 </span>
             </div>
         </div>

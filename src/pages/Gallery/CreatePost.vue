@@ -249,9 +249,9 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-    <div class="w-full flex-1 flex flex-col overflow-auto px-40 xl:px-80 py-12 gap-4 bg-stone-700">
+    <div class="w-full flex-1 flex flex-col overflow-auto px-40 2xl:px-80 py-12 gap-4 bg-stone-700">
         <div class="flex flex-col items-center bg-stone-600 border-2 border-x-0 border-stone-100">
-            <h3 class="text-white text-xl xl:text-3xl border-2 border-y-0 border-stone-100 bg-stone-500 p-1 px-8">
+            <h3 class="text-white text-xl 2xl:text-3xl border-2 border-y-0 border-stone-100 bg-stone-500 p-1 px-8">
                 新貼文
             </h3>
         </div>
@@ -259,34 +259,34 @@ const handleSubmit = async () => {
             <form method="POST" autocomplete="off" @submit.prevent="handleSubmit"
                 class="flex-1 w-full flex flex-col items-end gap-12">
                 <div class="mapBlock w-full flex flex-col items-center gap-8">
-                    <div ref="mapContainer" class="border-t-4 border-stone-300 w-full h-80 xl:h-96"></div>
+                    <div ref="mapContainer" class="border-t-4 border-stone-300 w-full h-80 2xl:h-96"></div>
                     <input v-model="newPost.location" type="text" id="location" placeholder="請從地圖選擇照片拍攝地點"
-                        class="w-full border-4 border-stone-300 border-dashed p-2 pointer-events-none bg-stone-100 text-center xl:text-lg tracking-wide"
+                        class="w-full border-4 border-stone-300 border-dashed p-2 pointer-events-none bg-stone-100 text-center 2xl:text-lg tracking-wide"
                         required readonly>
                 </div>
                 <div class="contentBlock flex flex-col items-center gap-8 w-full text-white px-10">
                     <div class="border-t-2 border-stone-100 w-full "></div>
                     <div class="relative w-1/2 flex flex-col items-center gap-2">
-                        <label for="title" class="text-lg xl:text-xl xl:p-4">貼文標題</label>
+                        <label for="title" class="text-lg 2xl:text-xl 2xl:p-4">貼文標題</label>
                         <input v-model="newPost.title" @blur="validateInput('title')" type="text" id="title"
-                            class="w-full p-2 border-2 focus:border-stone-200 focus:outline-none text-stone-700 xl:text-lg xl:px-4"
+                            class="w-full p-2 border-2 focus:border-stone-200 focus:outline-none text-stone-700 2xl:text-lg 2xl:px-4"
                             :class="postInputInvalid.title ? 'border-stone-400' : 'border-red-500'" placeholder="2~15字"
                             required>
                         <div v-if="!postInputInvalid.title"
-                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm  xl:text-base xl:-bottom-7 text-red-500">
+                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm  2xl:text-base 2xl:-bottom-7 text-red-500">
                             <ExclamationCircleIcon class="w-4" />
                             <p>請輸入2 ~ 15字之標題</p>
                         </div>
                     </div>
                     <div class="relative w-1/2 flex flex-col items-center gap-2">
-                        <label for="description" class="block text-lg xl:text-xl xl:p-4">簡短描述</label>
+                        <label for="description" class="block text-lg 2xl:text-xl 2xl:p-4">簡短描述</label>
                         <textarea v-model="newPost.description" @blur="validateInput('description')" id="description"
                             rows="4"
-                            class="w-full border-2 resize-none focus:border-stone-200 focus:outline-none text-stone-700 p-2 xl:text-lg xl:p-4"
+                            class="w-full border-2 resize-none focus:border-stone-200 focus:outline-none text-stone-700 p-2 2xl:text-lg 2xl:p-4"
                             :class="postInputInvalid.description ? 'border-stone-400' : 'border-red-500'"
                             placeholder="5~100字(中英2:1)" required></textarea>
                         <div v-if="!postInputInvalid.description"
-                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm xl:text-base xl:-bottom-7 text-red-500">
+                            class="w-full absolute left-0 -bottom-6 flex justify-center items-center gap-1 text-sm 2xl:text-base 2xl:-bottom-7 text-red-500">
                             <ExclamationCircleIcon class="w-4" />
                             <p>請輸入5 ~ 100字之內容</p>
                         </div>
@@ -305,7 +305,7 @@ const handleSubmit = async () => {
                                 leave-active-class="transition ease-in duration-300" leave-from-class="opacity-100"
                                 leave-to-class="opacity-0">
                                 <div v-if="showPreview"
-                                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] xl:w-[800px] xl:h-[600px] border-4 border-stone-200 rounded-sm z-10">
+                                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] 2xl:w-[800px] 2xl:h-[600px] border-4 border-stone-200 rounded-sm z-10">
                                     <img :src="previewUrls[previewImg]" alt="Preview"
                                         class="w-full h-full object-cover rounded-sm" />
                                     <XCircleIcon class="w-8 text-stone-100 absolute top-1 right-1  hover:scale-105"
@@ -323,7 +323,7 @@ const handleSubmit = async () => {
                         </div>
                         <label for="imgUpload" class="relative cursor-pointer bg-white w-full">
                             <span type="button"
-                                class="bg-green-600 text-stone-100 p-2 w-full font-bold hover:bg-green-600 transition-all duration-300 text-center text-lg xl:text-xl xl:p-3">選擇圖片</span>
+                                class="bg-green-600 text-stone-100 p-2 w-full font-bold hover:bg-green-600 transition-all duration-300 text-center text-lg 2xl:text-xl 2xl:p-3">選擇圖片</span>
                             <input ref="imgInput" id="imgUpload" name="imgUpload" type="file" class="sr-only"
                                 @change="previewImages" multiple required>
                         </label>
@@ -360,7 +360,7 @@ const handleSubmit = async () => {
                     </div>
                 </div>
                 <button type="submit"
-                    class="w-full bg-green-600 text-white px-4 py-2 basis-1 text-lg xl:text-2xl xl:py-4 font-bold hover:bg-green-500 transition-all duration-300">發佈</button>
+                    class="w-full bg-green-600 text-white px-4 py-2 basis-1 text-lg 2xl:text-2xl 2xl:py-4 font-bold hover:bg-green-500 transition-all duration-300">發佈</button>
             </form>
         </div>
     </div>

@@ -170,7 +170,7 @@ const goToPage = (pageNumber:number) => {
 
 <template>
     <div v-if="communityPosts && votes && usernameList"
-        class="flex flex-col items-center gap-12 py-4 xl:py-16 xl:px-8 bg-stone-100 p-4 overflow-auto">
+        class="flex flex-col items-center gap-12 py-4 2xl:py-16 2xl:px-8 bg-stone-100 p-4 overflow-auto">
         <div class="w-full">
             <h1 class="text-3xl mb-4">話題投票</h1>
             <div class="border-b-2 border-stone-700 my-4"></div>
@@ -199,7 +199,7 @@ const goToPage = (pageNumber:number) => {
             <div class="flex items-center justify-between gap-4">
                 <h1 class="text-3xl leading-none">社區討論</h1>
                 <div @click="router.push({ name: 'CommunityCreatePost' })"
-                    class="flex gap-2 border-2 border-stone-600 p-1 px-2 xl:p-2 xl:px-4 xl:text-lg hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer">
+                    class="flex gap-2 border-2 border-stone-600 p-1 px-2 2xl:p-2 2xl:px-4 2xl:text-lg hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer">
                     新增文章
                     <PlusIcon class="w-4" />
                 </div>
@@ -208,41 +208,41 @@ const goToPage = (pageNumber:number) => {
             <div class="flex flex-col gap-4 justify-between mt-8">
                 <div v-for="communityPost, index in communityPosts" :key="communityPost._id"
                     @click="router.push({ name: 'CommunityPost', params: { id: communityPost._id } })"
-                    class="w-full basis-1 p-4 xl:p-8 xl:pb-4 border-2 border-stone-700 shadow cursor-pointer group hover:bg-stone-700 hover:text-white hover:border-stone-700 transition-all duration-300">
+                    class="w-full basis-1 p-4 2xl:p-8 2xl:pb-4 border-2 border-stone-700 shadow cursor-pointer group hover:bg-stone-700 hover:text-white hover:border-stone-700 transition-all duration-300">
                     <div class="flex justify-between">
                         <div class="flex gap-4 items-center justify-center">
-                            <h2 class="text-xl font-bold max-w-[20rem] xl:max-w-[60rem] truncate overflow-hidden">{{ communityPost.title }}
+                            <h2 class="text-xl font-bold max-w-[20rem] 2xl:max-w-[60rem] truncate overflow-hidden">{{ communityPost.title }}
                             </h2>
                             <div class="flex gap-2 flex-wrap">
                                 <span v-for="tag in communityPost.topicTags"
-                                    class="px-2 py-1 text-xs xl:text-sm rounded text-stone-100"
+                                    class="px-2 py-1 text-xs 2xl:text-sm rounded text-stone-100"
                                     :style="`background-color:${setTagColor(tag)}`">
                                     {{ tag }}
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <p class="my-2 xl:my-4 text-stone-600 xl:text-lg truncate group-hover:text-stone-100">{{
+                    <p class="my-2 2xl:my-4 text-stone-600 2xl:text-lg truncate group-hover:text-stone-100">{{
                         communityPost.content }}</p>
 
                     <div class="mt-4 w-full flex gap-4 justify-between">
                         <div class="flex items-baseline gap-2">
-                            <p class="text-sm xl:text-base text-stone-700 font-bold group-hover:text-stone-100">#{{
+                            <p class="text-sm 2xl:text-base text-stone-700 font-bold group-hover:text-stone-100">#{{
                                 usernameList[index] }}
                             </p>
-                            <p class="text-sm xl:text-base italic text-stone-500 group-hover:text-stone-100">--{{
+                            <p class="text-sm 2xl:text-base italic text-stone-500 group-hover:text-stone-100">--{{
                                 getTimeDifference(communityPost.createdAt!) }}&nbsp;前</p>
                         </div>
 
                         <div class="flex items-center gap-4">
                             <span class="flex items-center gap-1 text-blue-900 group-hover:text-stone-100">
-                                <EyeIcon class="w-6 xl:w-7" />{{ communityPost.views }}
+                                <EyeIcon class="w-6 2xl:w-7" />{{ communityPost.views }}
                             </span>
                             <span class="flex items-center gap-1 text-red-600 group-hover:text-stone-100">
-                                <HeartIcon class="w-6 xl:w-7" />{{ communityPost.likes }}
+                                <HeartIcon class="w-6 2xl:w-7" />{{ communityPost.likes }}
                             </span>
                             <span class="flex items-center gap-1 text-stone-700 group-hover:text-stone-100">
-                                <ChatBubbleBottomCenterIcon class="w-6 xl:w-7" />{{ communityPost.views }}
+                                <ChatBubbleBottomCenterIcon class="w-6 2xl:w-7" />{{ communityPost.views }}
                             </span>
                         </div>
                     </div>
@@ -252,16 +252,16 @@ const goToPage = (pageNumber:number) => {
             <!-- 分頁標籤 -->
             <div class="mt-16 flex justify-center gap-4">
                 <button @click="changePage('next')" :disabled="currentPage === 1"
-                    class="border-2 px-3 py-1 xl:px-6 xl:py-2 ml-2 xl:text-lg transition-all duration-300"
+                    class="border-2 px-3 py-1 2xl:px-6 2xl:py-2 ml-2 2xl:text-lg transition-all duration-300"
                     :class="currentPage === 1 ? 'border-stone-500 text-stone-500' : 'border-stone-800 text-stone-800 cursor-pointer hover:text-white hover:bg-stone-800'">上一頁</button>
                 <div class="flex space-x-2">
                     <button v-for="pageNumber in totalPages" :key="pageNumber" @click="goToPage(pageNumber)"
-                        class="border-2 px-3 py-1 xl:px-5 xl:py-2 xl:text-lg transition-all duration-300"
+                        class="border-2 px-3 py-1 2xl:px-5 2xl:py-2 2xl:text-lg transition-all duration-300"
                         :class="pageNumber === currentPage ? 'border-stone-800 text-stone-800 hover:bg-stone-800 hover:text-white' : 'bg-stone-500 text-white hover:bg-stone-600 '">{{
                             pageNumber }}</button>
                 </div>
                 <button @click="changePage('next')" :disabled="currentPage === totalPages"
-                    class="border-2 px-3 py-1 xl:px-6 xl:py-2 xl:text-lg transition-all duration-300"
+                    class="border-2 px-3 py-1 2xl:px-6 2xl:py-2 2xl:text-lg transition-all duration-300"
                     :class="currentPage === totalPages ? 'border-stone-500 text-stone-500' : 'border-stone-800 text-stone-800 cursor-pointer hover-text-white hover:bg-stone-800'">下一頁</button>
             </div>
         </div>

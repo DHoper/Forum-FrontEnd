@@ -210,12 +210,12 @@ onMounted(async () => {
       ref="leftBlock"
       class="animate-slideInLeft basis-[30%] bg-white py-10 px-8 overflow-auto"
     >
-      <span class="font-bold text-stone-600 xl:text-xl tracking-widest"
+      <span class="font-bold text-stone-600 2xl:text-xl tracking-widest"
         >留言區</span
       >
-      <div class="border-b-[.0938rem] xl:border-b-2 border-gray-300 my-4"></div>
+      <div class="border-b-[.0938rem] 2xl:border-b-2 border-gray-300 my-4"></div>
       <form method="POST" @submit.prevent="handleCommentSubmit">
-        <div class="mt-10 mb-4 border-2 border-stone-600 p-3 xl:p-6">
+        <div class="mt-10 mb-4 border-2 border-stone-600 p-3 2xl:p-6">
           <textarea
             v-model="commentPost"
             name=""
@@ -226,18 +226,18 @@ onMounted(async () => {
             class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current"
           />
         </div>
-        <div class="flex justify-end gap-2 xl:my-8">
+        <div class="flex justify-end gap-2 2xl:my-8">
           <button
             type="button"
             @click="commentPost = ''"
-            class="text-green-400 px-5 py-2 xl:px-6 xl:text-lg hover:text-green-600"
+            class="text-green-400 px-5 py-2 2xl:px-6 2xl:text-lg hover:text-green-600"
           >
             取消
           </button>
           <button
             ref="commentSubmitButton"
             type="submit"
-            class="text-white bg-gray-300 px-5 py-2 xl:px-6 xl:text-lg transition-all"
+            class="text-white bg-gray-300 px-5 py-2 2xl:px-6 2xl:text-lg transition-all"
           >
             送出
           </button>
@@ -245,13 +245,13 @@ onMounted(async () => {
       </form>
       <ul
         v-if="commentsData.length > 0 && commentAuthorData.length > 0"
-        class="mt-8 xl:mt-16"
+        class="mt-8 2xl:mt-16"
       >
         <li v-for="(comment, index) in commentsData">
           <div v-if="commentAuthorData[index]">
             <div class="flex items-center gap-4">
               <div
-                class="border border-stone-800 rounded-full bg-white w-10 h-10 xl:w-16 xl:h-16 p-1 flex items-center justify-center overflow-hidden"
+                class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-16 2xl:h-16 p-1 flex items-center justify-center overflow-hidden"
               >
                 <img
                   :src="`/assets/img/avatar (${commentAuthorData[index].selectedAvatarIndex}).png`"
@@ -259,33 +259,33 @@ onMounted(async () => {
                 />
               </div>
               <div class="flex gap-2 items-baseline justify-start flex-1">
-                <span class="text-sm xl:text-xl text-stone-800 font-bold">{{
+                <span class="text-sm 2xl:text-xl text-stone-800 font-bold">{{
                   commentAuthorData[index].username
                 }}</span>
-                <span class="text-xs xl:text-base text-stone-500 text-center">{{
+                <span class="text-xs 2xl:text-base text-stone-500 text-center">{{
                   formatDateTime(comment.createdAt!, "concise")
                 }}</span>
                 <TrashIcon
                   v-if="isLogin && userId === postData._id"
                   @click="handleDeleteComment(comment._id!)"
-                  class="w-5 xl:w-6 cursor-pointer text-red-700 ml-auto"
+                  class="w-5 2xl:w-6 cursor-pointer text-red-700 ml-auto"
                 />
               </div>
             </div>
             <div>
-              <p class="mt-4 xl:my-8 text-sm xl:text-xl text-stone-700">
+              <p class="mt-4 2xl:my-8 text-sm 2xl:text-xl text-stone-700">
                 {{ comment.content }}
               </p>
             </div>
             <div
-              class="border-b-[.0938rem] xl:border-b-2 border-gray-300 my-4"
+              class="border-b-[.0938rem] 2xl:border-b-2 border-gray-300 my-4"
             ></div>
           </div>
         </li>
       </ul>
       <div
         v-else
-        class="border-b-[.0938rem] xl:border-b-2 border-gray-300 mt-10 xl:mt-20 text-center text-gray-400 py-1"
+        class="border-b-[.0938rem] 2xl:border-b-2 border-gray-300 mt-10 2xl:mt-20 text-center text-gray-400 py-1"
       >
         尚未有留言
       </div>
@@ -294,56 +294,56 @@ onMounted(async () => {
       ref="rightBlock"
       class="animate-slideInRight basis-[70%] flex flex-col w-full bg-[#484538] pt-8 px-20 overflow-auto"
     >
-      <div class="w-full flex justify-around xl:mb-4">
+      <div class="w-full flex justify-around 2xl:mb-4">
         <PencilSquareIcon
           @click="close"
-          class="w-10 xl:w-10 cursor-pointer text-blue-600 py-4 hover:text-blue-500 hover:scale-105 transition-all ease-in"
+          class="w-10 2xl:w-10 cursor-pointer text-blue-600 py-4 hover:text-blue-500 hover:scale-105 transition-all ease-in"
           :class="turnPage ? 'invisible' : 'block'"
         />
         <TrashIcon
           v-if="isLogin && userId === postData._id"
           @click="close"
-          class="w-10 xl:w-10 cursor-pointer text-red-800 py-4 hover:text-red-600 hover:scale-105 transition-all ease-in"
+          class="w-10 2xl:w-10 cursor-pointer text-red-800 py-4 hover:text-red-600 hover:scale-105 transition-all ease-in"
           :class="turnPage ? 'invisible' : 'block'"
         />
       </div>
-      <div class="relative h-[26rem] xl:h-[36rem] my-auto">
+      <div class="relative h-[26rem] 2xl:h-[36rem] my-auto">
         <div
-          class="relative bg-white px-8 pb-1 pt-6 xl:p-10 rounded-xs flex flex-col gap-2 shadow-sm shadow-stone-600 h-full border border-stone-400"
+          class="relative bg-white px-8 pb-1 pt-6 2xl:p-10 rounded-xs flex flex-col gap-2 shadow-sm shadow-stone-600 h-full border border-stone-400"
         >
           <Transition :duration="1000">
             <div v-if="!turnPage" class="h-full flex flex-col">
               <div class="flex gap-4">
                 <div class="relative basis-2/3 -ml-2">
-                  <!-- <div class="absolute top-0 left-0 w-1/6 h-1/4 border-l-2 border-t-4 xl:border-l-4 xl:border-t-8 border-stone-600 " /> -->
+                  <!-- <div class="absolute top-0 left-0 w-1/6 h-1/4 border-l-2 border-t-4 2xl:border-l-4 2xl:border-t-8 border-stone-600 " /> -->
                   <img
                     :src="postData.images[0].url"
                     :alt="postData.images[0].filename"
-                    class="rounded-sm xl:w-[36rem] z-10 shadow-sm shadow-stone-600"
+                    class="rounded-sm 2xl:w-[36rem] z-10 shadow-sm shadow-stone-600"
                   />
                 </div>
                 <div
                   class="flex-1 h-full pt-4 flex flex-col items-center text-stone-700 border-b-4 border-stone-600"
                 >
-                  <h2 class="text-2xl font-bold text-center xl:text-3xl">
+                  <h2 class="text-2xl font-bold text-center 2xl:text-3xl">
                     {{ postData.title }}
                   </h2>
                   <p
-                    class="text-sm text-center text-stone-500 py-2 xl:py-4 xl:text-xl"
+                    class="text-sm text-center text-stone-500 py-2 2xl:py-4 2xl:text-xl"
                   >
                     {{ postData.location }}
                   </p>
                   <p
-                    class="w-full max-h-60 p-4 italic text-center flex justify-center my-auto overflow-auto xl:text-xl"
+                    class="w-full max-h-60 p-4 italic text-center flex justify-center my-auto overflow-auto 2xl:text-xl"
                   >
                     {{ postData.description }}
                   </p>
                 </div>
               </div>
-              <div class="flex gap-4 justify-between italic xl:mt-4">
+              <div class="flex gap-4 justify-between italic 2xl:mt-4">
                 <div class="flex items-center py-2 gap-2">
                   <div
-                    class="border border-stone-800 rounded-full bg-white w-10 h-10 xl:w-14 xl:h-14 p-1 flex items-center justify-center"
+                    class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-14 2xl:h-14 p-1 flex items-center justify-center"
                   >
                     <img
                       class="rounded-full"
@@ -353,41 +353,41 @@ onMounted(async () => {
                   </div>
                   <div class="flex items-baseline">
                     <p
-                      class="text-stone-600 xl:text-xl xl:text-stone-700 font-bold"
+                      class="text-stone-600 2xl:text-xl 2xl:text-stone-700 font-bold"
                     >
                       {{ postAuthorData.username! }}
                     </p>
                     <p
                       v-if="postData.createdAt"
-                      class="text-stone-600 xl:text-base text-sm"
+                      class="text-stone-600 2xl:text-base text-sm"
                     >
                       -- {{ formatDateTime(postData.createdAt) }}
                     </p>
                     <p
                       v-if="!postData.isEdit"
-                      class="text-stone-600 xl:text-base text-sm"
+                      class="text-stone-600 2xl:text-base text-sm"
                     >
                       發布
                     </p>
-                    <p v-else class="text-stone-600 xl:text-base text-sm">
+                    <p v-else class="text-stone-600 2xl:text-base text-sm">
                       已編輯
                     </p>
                   </div>
                 </div>
                 <div class="flex items-center gap-4">
                   <span
-                    class="flex items-center gap-1 xl:text-lg text-blue-900"
+                    class="flex items-center gap-1 2xl:text-lg text-blue-900"
                   >
-                    <EyeIcon class="w-6 xl:w-8" />
+                    <EyeIcon class="w-6 2xl:w-8" />
                     <span>{{ postData.views }}</span>
                   </span>
                   <span
-                    class="flex items-center gap-1 xl:text-lg group"
+                    class="flex items-center gap-1 2xl:text-lg group"
                     :class="isLiked ? 'text-red-500' : 'text-stone-700'"
                   >
                     <HeartIcon
                       @click="handleLikes"
-                      class="w-6 xl:w-8 cursor-pointer group-hover:scale-105 transition-all duration-500"
+                      class="w-6 2xl:w-8 cursor-pointer group-hover:scale-105 transition-all duration-500"
                     />
                     <span class="transition-all duration-500">{{
                       postData.likes
@@ -396,17 +396,17 @@ onMounted(async () => {
                 </div>
               </div>
             </div>
-            <div v-else class="xl:w-[calc(100%-2.5rem)] h-full absolute top-0">
+            <div v-else class="2xl:w-[calc(100%-2.5rem)] h-full absolute top-0">
               <div
-                class="flex justify-around xl:pr-10 items-center h-full p-4 xl:py-8 xl:px-0"
+                class="flex justify-around 2xl:pr-10 items-center h-full p-4 2xl:py-8 2xl:px-0"
               >
                 <div
-                  class="imgList basis-1/4 xl:basis-1/3 overflow-hidden overflow-y-auto h-full flex flex-col gap-4 xl:gap-10 p-2 xl:px-0"
+                  class="imgList basis-1/4 2xl:basis-1/3 overflow-hidden overflow-y-auto h-full flex flex-col gap-4 2xl:gap-10 p-2 2xl:px-0"
                 >
                   <div
                     v-for="(picture, index) in postData.images"
                     @click="pictureIndex = index"
-                    class="relative cursor-pointer hover:scale-[105%] xl:hover:scale-100 transition-all duration-500 border-4 border-stone-400 focus:border-stone-700"
+                    class="relative cursor-pointer hover:scale-[105%] 2xl:hover:scale-100 transition-all duration-500 border-4 border-stone-400 focus:border-stone-700"
                     tabindex="0"
                   >
                     <img
@@ -417,12 +417,12 @@ onMounted(async () => {
                   </div>
                   <div
                     v-if="postData.images.length === 1"
-                    class="flex items-center justify-center xl:h-80 border-4 border-dashed border-stone-200 py-10 xl:py-28 xl:text-2xl text-stone-400"
+                    class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                   >
                     <p>沒有更多的圖了</p>
                   </div>
                   <div
-                    class="flex items-center justify-center xl:h-80 border-4 border-dashed border-stone-200 py-10 xl:py-28 xl:text-2xl text-stone-400"
+                    class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                   >
                     <p>沒有更多的圖了</p>
                   </div>
@@ -434,7 +434,7 @@ onMounted(async () => {
                   <img
                     :src="postData.images[pictureIndex].url"
                     :alt="postData.images[pictureIndex].filename"
-                    class="relative z-10 shadow-sm shadow-stone-600 xl:w-[36rem]"
+                    class="relative z-10 shadow-sm shadow-stone-600 2xl:w-[36rem]"
                   />
                 </div>
               </div>
@@ -446,10 +446,10 @@ onMounted(async () => {
           class="absolute top-2 left-0 shadow-sm shadow-stone-600 rotate-[3deg] w-full h-full -z-10 bg-white cursor-pointer hover:top-4 transition-all duration-500"
         ></div>
       </div>
-      <div class="w-full self-center flex justify-around xl:mb-4">
+      <div class="w-full self-center flex justify-around 2xl:mb-4">
         <XCircleIcon
           @click="close"
-          class="w-12 xl:w-16 cursor-pointer text-white mx-auto py-4 hover:scale-105 transition-all ease-in"
+          class="w-12 2xl:w-16 cursor-pointer text-white mx-auto py-4 hover:scale-105 transition-all ease-in"
         />
       </div>
     </div>

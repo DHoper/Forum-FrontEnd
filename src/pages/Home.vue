@@ -63,7 +63,7 @@ const removeLineClass = () => {
 <template>
     <div
         class="banner font-Cormorant overflow-hidden flex flex-col items-center w-full h-screen pt-10 pb-2 bg-white text-white px-16 bg-banner bg-no-repeat bg-cover bg-center text-shadow-md shadow-inner">
-        <div class="flex flex-col items-center xl:my-auto">
+        <div class="flex flex-col items-center 2xl:my-auto">
             <h1 class="text-6xl mt-auto">WILDLENS</h1>
             <nav ref="nav" class="flex flex-wrap mt-2 justify-end font-semibold text-xl text-[#ffffff9e]">
                 <button @mouseover="addTabClass(0)"
