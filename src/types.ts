@@ -52,6 +52,7 @@ export interface UserDataType {
 
 export interface AuthorDataType {
   username: string,
+  email: string,
   selectedAvatarIndex: number;
 }
 

@@ -124,9 +124,10 @@ const router = createRouter({
       path: "/user",
       children: [
         {
-          path: "personalInfo",
+          path: "personalInfo/:email",
           name: "PersonalInfo",
           component: () => import("./pages/User/PersonalInfo.vue"),
+          props: true,
           meta: { requiresAuth: true },
         },
         {

@@ -1,32 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, watchEffect } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import {
-  EyeIcon,
-  ChatBubbleBottomCenterIcon,
-  TrashIcon,
-} from "@heroicons/vue/24/outline";
-
+import { EyeIcon, ChatBubbleBottomCenterIcon } from "@heroicons/vue/24/outline";
 import { HeartIcon } from "@heroicons/vue/24/solid";
+import Comment from "../../components/layout/Comment.vue";
 import { getTimeDifference, formatDateTime } from "../../utils/formattingUtils";
-import {
-  AuthorDataType,
-  CommentType,
-  CommunityPostType,
-  DialogType,
-  UserDataType,
-} from "../../types";
+import { AuthorDataType, CommentType, CommunityPostType } from "../../types";
 import { getPostData, setStats } from "../../api/community/community.js";
 import { getAuthor } from "../../api/user/user.js";
 import {
+  deleteComment,
   getComments,
   postComment,
-  deleteComment,
 } from "../../api/community/communityComment.js";
-import { useUserStore } from "../../store/user";
 
 const router = useRouter();
-const userStore = useUserStore();
 const props = defineProps({
   id: {
     type: String,
@@ -34,17 +22,8 @@ const props = defineProps({
   },
 });
 
-const isLogin = ref<boolean>(userStore.isLogin);
-const userId = ref<string>();
-let  middleIdVar = userStore.getId();
-if (middleIdVar) {
-  userId.value = middleIdVar;
-}
-
 const postData = ref<CommunityPostType>();
 const authorData = ref<AuthorDataType>();
-const commentsData = ref<CommentType[]>();
-const commentAuthorData = ref<AuthorDataType[]>([]);
 
 const topicTags: {
   [key: string]: {
@@ -107,25 +86,40 @@ const setTagColor = (tag: string) => {
   }
 };
 
-//--資料取得
+//--貼文資料
 const fetchPostData = async () => {
   const responseData = await getPostData(props.id);
   postData.value = responseData.value;
 };
 
+//--留言區資料
+const commentsData = ref<CommentType[]>();
 const fetchCommentData = async (idList: string[]) => {
   const commentsResponseData = await getComments(idList);
+
   if (commentsResponseData.value) {
     commentsData.value = commentsResponseData.value;
-    let authorList: AuthorDataType[] = [];
-    for (const comment of commentsData.value) {
-      const authorResponseData = await getAuthor(comment.authorId);
-      if (authorResponseData.value) {
-        authorList.push(authorResponseData.value);
-      }
-    }
-    commentAuthorData.value = authorList;
   }
+};
+
+const reloadCommentData = async () => {
+  //重新加載留言資料//
+  await fetchPostData();
+  if (postData.value) {
+    await fetchCommentData(postData.value.commentsId);
+  }
+};
+
+const handlePostComment = async (submitData: object) => {
+  await postComment(submitData).catch((err) => {
+    console.error(`postUserData 失敗: ${err}`);
+  });
+  await reloadCommentData();
+};
+
+const handleDeleteComment = async (commentId: string) => {
+  await deleteComment(commentId);
+  await reloadCommentData();
 };
 
 //--按讚
@@ -143,85 +137,6 @@ async function handleLikes() {
       isLiked = false;
     }
   }
-}
-
-//----留言區
-
-//留言區輸入框樣式偵測
-const commentPost = ref("");
-const commentSubmitButton = ref();
-
-watchEffect(() => {
-  if (commentSubmitButton.value) {
-    const trimmedComment = commentPost.value.trim();
-
-    if (trimmedComment) {
-      commentSubmitButton.value.classList.toggle("bg-green-600", true);
-      commentSubmitButton.value.classList.toggle("bg-gray-300", false);
-    } else {
-      commentSubmitButton.value.classList.toggle("bg-green-600", false);
-      commentSubmitButton.value.classList.toggle("bg-gray-300", true);
-    }
-  }
-});
-
-async function handleCommentSubmit() {
-  const userData: UserDataType = userStore.getData()!;
-
-  if (commentPost.value && postData.value && postData.value._id) {
-    const submitData: CommentType = {
-      authorId: userData._id,
-      postId: postData.value!._id,
-      content: commentPost.value,
-    };
-    
-    await postComment(submitData).catch((err) => {
-      console.error(`postUserData 失敗: ${err}`);
-    });
-
-    commentPost.value = "";
-
-    //重新加載留言資料//
-    await fetchPostData();
-    await fetchCommentData(postData.value.commentsId);
-  }
-}
-
-////刪除留言
-const showDialog = ref(false);
-const dialogData = ref<DialogType>({
-  title: "刪除評論",
-  content: "是否確認刪除該評論?",
-  warringStyle: true,
-  cancelButton: true,
-});
-
-//彈窗框邏輯
-const userChoice = ref<boolean>();
-
-const handleDialog = async () => {
-  showDialog.value = true;
-  const dialogPromise = new Promise((resolve) => {
-    watch(userChoice, () => {
-      showDialog.value = false;
-      resolve(userChoice.value);
-    });
-  });
-  return dialogPromise;
-};
-
-async function handleDeleteComment(commentId: string) {
-  const choice = await handleDialog();
-
-  if (choice) {
-    await deleteComment(commentId);
-    await fetchPostData();
-    if (postData.value) {
-      await fetchCommentData(postData.value.commentsId);
-    }
-  }
-
-  userChoice.value = undefined;
 }
 
 onMounted(async () => {
@@ -264,9 +179,16 @@ onMounted(async () => {
               />
             </div>
             <div class="flex gap-2 items-baseline justify-start flex-1">
-              <span class="text-lg 2xl:text-xl text-stone-700 font-bold">{{
-                authorData.username
-              }}</span>
+              <span class="text-lg 2xl:text-xl text-stone-700 font-bold">
+                <router-link
+                  :to="{
+                    name: 'PersonalInfo',
+                    params: { email: authorData.email },
+                  }"
+                >
+                  {{ authorData.username }}
+                </router-link>
+              </span>
               <span class="font-bold text-sm 2xl:text-base text-stone-500"
                 >{{ formatDateTime(postData.createdAt!) }}
                 <span class="text-md italic">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
@@ -335,116 +257,13 @@ onMounted(async () => {
             </span>
           </div>
         </div>
-        <!-- 留言區 -->
-        <div
-          class="w-full border-2 border-stone-800 bg-white py-10 px-8 overflow-auto"
-        >
-          <span class="font-bold text-stone-600 tracking-widest 2xl:text-xl"
-            >留言區</span
-          >
-          <div
-            class="border-b-[.0938rem] 2xl:border-b-2 border-stone-300 my-4"
-          ></div>
-          <form method="POST" @submit.prevent="handleCommentSubmit">
-            <div
-              class="mt-10 mb-4 border-2 border-stone-600 p-4 2xl:p-8 2xl:text-lg"
-            >
-              <textarea
-                v-model="commentPost"
-                name=""
-                id=""
-                cols="20"
-                rows="3"
-                placeholder="輸入留言..."
-                class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current"
-              />
-            </div>
-            <div class="flex justify-end gap-4 2xl:gap-6">
-              <button
-                type="button"
-                @click="commentPost = ''"
-                class="text-green-400 px-5 py-2 2xl:text-lg hover:text-green-600"
-              >
-                取消
-              </button>
-              <button
-                ref="commentSubmitButton"
-                type="submit"
-                class="text-white bg-gray-300 px-5 py-2 2xl:text-lg transition-all"
-              >
-                送出
-              </button>
-            </div>
-          </form>
-          <ul
-            v-if="
-              commentsData &&
-              commentsData.length > 0 &&
-              commentAuthorData.length > 0
-            "
-            class="mt-8"
-          >
-            <li v-for="(comment, index) in commentsData">
-              <div v-if="commentAuthorData[index]">
-                <div class="flex items-center gap-4">
-                  <div
-                    class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-12 2xl:h-12 p-1 flex items-center justify-center overflow-hidden"
-                  >
-                    <img
-                      :src="`/assets/img/avatar (${commentAuthorData[index].selectedAvatarIndex}).png`"
-                      alt="avatar"
-                    />
-                  </div>
-                  <div class="flex gap-2 items-baseline justify-start flex-1">
-                    <span class="2xl:text-lg text-stone-700 font-bold">{{
-                      commentAuthorData[index].username
-                    }}</span>
-                    <span
-                      class="text-sm 2xl:text-base text-stone-500 text-center"
-                      >{{ formatDateTime(comment.createdAt!, "concise") }}</span
-                    >
-                    <TrashIcon
-                      v-if="isLogin && userId === postData._id"
-                      @click="handleDeleteComment(comment._id!)"
-                      class="w-6 cursor-pointer text-red-700 ml-auto"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <p
-                    class="mt-10 text-stone-700 2xl:text-lg whitespace-pre-wrap overflow-auto"
-                  >
-                    {{ comment.content }}
-                  </p>
-                </div>
-                <div
-                  class="border-b-[.0938rem] 2xl:border-b-2 border-gray-300 my-4"
-                ></div>
-              </div>
-            </li>
-          </ul>
-          <div
-            v-else
-            class="border-b-2 2xl:text-lg 2xl:border-b-2 border-gray-300 mt-10 text-center text-gray-400 py-1"
-          >
-            尚未有留言
-          </div>
-        </div>
+        <Comment
+          :post-id="postData._id!"
+          :comments-data="commentsData ? commentsData : []"
+          @delete-comment="(commentId) => handleDeleteComment(commentId)"
+          @post-comment="(submitData) => handlePostComment(submitData)"
+        />
       </div>
     </div>
-    <Transition
-      enter-active-class="transition ease-in duration-150 delay-0"
-      enter-from-class="opacity-0 -translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition ease-in duration-150 delay-0"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 translate-y-1"
-    >
-      <Dialog
-        v-if="showDialog"
-        :dialogData="dialogData"
-        @closePopup="(choice: boolean) => userChoice = choice"
-      />
-    </Transition>
   </div>
 </template>

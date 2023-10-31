@@ -101,10 +101,10 @@ const articles = [
             <h3 class="italic text-xl mt-2">探索自然與保育之美</h3>
         </div>
         <div class="bg-white w-full mt-[55vh]">
-            <ul class="mx-auto flex flex-col items-center min-w-[62rem] w-2/3 translate-y-[-7.5rem]">
+            <ul class="mx-auto flex flex-col items-center w-2/3 translate-y-[-7.5rem]">
                 <li v-for="article in articles" class="bg-white p-5 w-full">
                     <div class="">
-                        <div class="h-[32.5rem] 2xl:h-[40rem] overflow-hidden">
+                        <div class="max-h-[32.5rem] 2xl:max-h-[40rem] overflow-hidden">
                             <img :src="article.img" class="w-full filter grayscale-[10%]">
                         </div>
                         <div class="w-full  border border-stone-300 px-12 py-6 2xl:px-20 2xl:py-12 overflow-hidden">

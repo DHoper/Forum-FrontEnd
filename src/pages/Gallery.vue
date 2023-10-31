@@ -70,8 +70,8 @@ function closePhoto() {
         <div v-if="galleryDataset" class="flex relative overflow-hidden bg-stone-600">
             <div
                 class="flex flex-col items-center justify-center bg-gallery bg-no-repeat bg-cover bg-center basis-[30%] text-white h-full">
-                <span class="text-5xl [writing-mode:vertical-lr] mt-16 tracking-[1rem] font-bold">偉大的世界</span>
-                <div class="mt-16 text-lg text-[#f9f9f9c8] flex flex-col items-center gap-4 tracking-[.8rem]">
+                <span class="text-5xl 2xl:text-6xl [writing-mode:vertical-lr] mt-auto tracking-[1rem] font-bold">偉大的世界</span>
+                <div class="my-auto text-lg 2xl:text-xl text-[#f9f9f9c8] flex flex-col items-center gap-4 tracking-[.8rem]">
                     <span>還有許多</span>
                     <span>你未曾探尋之地</span>
                 </div>

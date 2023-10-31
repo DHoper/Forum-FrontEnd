@@ -6,7 +6,7 @@ import { useErrorStore } from "../../store/error.ts";
 const errorData = ref();
 const router = useRouter();
 const navigateHome = () => {
-    router.back();
+    router.push({name: "Articles"});
 }
 onMounted(() => {
     const errorStore = useErrorStore();

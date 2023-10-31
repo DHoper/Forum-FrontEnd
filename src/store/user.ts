@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { getUserData } from "../api/user/user.ts";
+import { getUserData, putUser } from "../api/user/user.ts";
 import { UserDataType } from "../types.ts";
+import router from "../router.ts";
 
 export enum LoginStatus {
   Success = "登錄成功",
@@ -23,20 +24,22 @@ export const useUserStore = defineStore("user", () => {
 
   async function login(email: string, password: string) {
     try {
-      const dataResponse = await getUserData(email);
-
-      if (dataResponse) {
-        if (dataResponse.password === password) {
-          data.value = dataResponse;
-          loggingStatus.value = LoginStatus.Success;
-          localStorage.setItem("user", JSON.stringify(data.value));
+      const responseData = await getUserData(email);
+      if (responseData.value) {
+        const userData = ref<UserDataType>(responseData.value);
+        if (userData) {
+          if (userData.value.password === password) {
+            data.value = userData.value;
+            loggingStatus.value = LoginStatus.Success;
+            localStorage.setItem("user", JSON.stringify(data.value));
+          } else {
+            alert("請輸入正確密碼");
+            loggingStatus.value = LoginStatus.PasswordError;
+          }
         } else {
-          alert("請輸入正確密碼");
-          loggingStatus.value = LoginStatus.PasswordError;
+          alert("請輸入正確信箱");
+          loggingStatus.value = LoginStatus.EmailError;
         }
-      } else {
-        alert("請輸入正確信箱");
-        loggingStatus.value = LoginStatus.EmailError;
       }
     } catch (err) {
       console.error("getUserData取得資料失敗: ", err);
@@ -46,6 +49,7 @@ export const useUserStore = defineStore("user", () => {
   function logout() {
     localStorage.removeItem("user");
     data.value = null;
+    router.push({ name: "Articles" });
   }
 
   function getData() {
@@ -64,6 +68,22 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  async function updateUser(updatedData: UserDataType) {
+    try {
+      await putUser(updatedData);
+      if (data.value) {
+        const responseData = await getUserData(data.value.email);
+        if (responseData.value) {
+          const userData = ref<UserDataType>(responseData.value);
+          data.value = userData.value;
+          localStorage.setItem("user", JSON.stringify(data.value));
+        }
+      }
+    } catch (err) {
+      console.error("getUserData取得資料失敗: ", err);
+    }
+  }
+
   return {
     data,
     isLogin,
@@ -72,5 +92,6 @@ export const useUserStore = defineStore("user", () => {
     getId,
     login,
     logout,
+    updateUser
   };
 });

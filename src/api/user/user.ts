@@ -22,8 +22,11 @@ export async function checkRepeatEmail(email: string) {
 
 export async function getUserData(email: string) {
   try {
+    const responseData = ref<UserDataType>();
     const response = await apiClient.get(ApiConfig.getUser(email));
-    return response.data;
+    responseData.value = response.data;
+    
+    return responseData;
   } catch (error) {
     console.error("獲取使用者資料時發生錯誤:", error);
     throw error;
@@ -57,7 +60,7 @@ export async function postUserData(postData: object) {
   }
 }
 
-export async function updateUser(updatedData: UserDataType) {
+export async function putUser(updatedData: UserDataType) {
   try {
     const response = await apiClient.put(`/user`, updatedData);
     return response;
