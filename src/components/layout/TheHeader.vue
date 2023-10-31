@@ -32,7 +32,12 @@ const userActions = [
     action: () =>
       router.push({ name: "PersonalInfo", params: { email: "self" } }),
   },
-  { actionName: "貼文", icon: BookmarkSquareIcon },
+  {
+    actionName: "貼文",
+    icon: BookmarkSquareIcon,
+    action: () =>
+      router.push({name: "PersonalPosts"})
+  },
   { actionName: "追蹤", icon: HeartIcon },
   { actionName: "幫助", icon: QuestionMarkCircleIcon },
   {

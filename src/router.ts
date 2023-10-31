@@ -131,9 +131,9 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: "personalPost",
-          name: "PersonalPost",
-          component: () => import("./pages/User/PersonalPost.vue"),
+          path: "personalPosts",
+          name: "PersonalPosts",
+          component: () => import("./pages/User/PersonalPosts.vue"),
           meta: { requiresAuth: true },
         },
       ],

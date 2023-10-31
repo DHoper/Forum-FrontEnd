@@ -6,10 +6,10 @@ import {
   AuthorDataType,
   UserDataType,
   DialogType,
-} from "../../types";
-import { useUserStore } from "../../store/user";
+} from "../../types.ts";
+import { useUserStore } from "../../store/user.ts";
 import { formatDateTime } from "../../utils/formattingUtils.ts";
-import { getAuthor } from "../../api/user/user";
+import { getAuthor } from "../../api/user/user.ts";
 
 const userStore = useUserStore();
 const props = defineProps({
@@ -169,25 +169,27 @@ onMounted(async () => {
       <li v-for="(comment, index) in commentsData">
         <div v-if="authorData[index]">
           <div class="flex items-center gap-4">
-            <div
-              class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-12 2xl:h-12 p-1 flex items-center justify-center overflow-hidden"
+            <router-link
+              :to="{
+                name: 'PersonalInfo',
+                params: { email: authorData[index].email },
+              }"
             >
-              <img
-                :src="`/assets/img/avatar (${authorData[index].selectedAvatarIndex}).png`"
-                alt="avatar"
-              />
-            </div>
-            <div class="flex gap-2 items-baseline justify-start flex-1">
-              <span class="2xl:text-lg text-stone-700 font-bold">
-                <router-link
-                  :to="{
-                    name: 'PersonalInfo',
-                    params: { email: authorData[index].email },
-                  }"
+              <div class="flex items-center gap-2">
+                <div
+                  class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-12 2xl:h-12 p-1 flex items-center justify-center overflow-hidden"
                 >
+                  <img
+                    :src="`/assets/img/avatar (${authorData[index].selectedAvatarIndex}).png`"
+                    alt="avatar"
+                  />
+                </div>
+                <span class="2xl:text-lg text-stone-700 font-bold">
                   {{ authorData[index].username }}
-                </router-link></span
-              >
+                </span>
+              </div>
+            </router-link>
+            <div class="flex gap-2 items-baseline justify-start flex-1">
               <span class="text-sm 2xl:text-base text-stone-500 text-center"
                 >{{ formatDateTime(comment.createdAt!, "concise") }}
               </span>

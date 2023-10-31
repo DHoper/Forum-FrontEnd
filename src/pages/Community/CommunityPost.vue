@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { EyeIcon, ChatBubbleBottomCenterIcon } from "@heroicons/vue/24/outline";
 import { HeartIcon } from "@heroicons/vue/24/solid";
-import Comment from "../../components/layout/Comment.vue";
+import Comment from "../../components/post/Comment.vue";
 import { getTimeDifference, formatDateTime } from "../../utils/formattingUtils";
 import { AuthorDataType, CommentType, CommunityPostType } from "../../types";
 import { getPostData, setStats } from "../../api/community/community.js";
@@ -170,25 +170,27 @@ onMounted(async () => {
         </button>
         <div class="mx-auto border-2 border-stone-800 w-full px-24 py-16">
           <div class="flex items-center gap-4">
-            <div
-              class="border border-stone-800 rounded-full bg-white w-14 h-14 2xl:w-16 2xl:h-16 p-1 flex items-center justify-center overflow-hidden"
+            <router-link
+              :to="{
+                name: 'PersonalInfo',
+                params: { email: authorData.email },
+              }"
             >
-              <img
-                :src="`/assets/img/avatar (${authorData.selectedAvatarIndex}).png`"
-                alt="avatar"
-              />
-            </div>
-            <div class="flex gap-2 items-baseline justify-start flex-1">
-              <span class="text-lg 2xl:text-xl text-stone-700 font-bold">
-                <router-link
-                  :to="{
-                    name: 'PersonalInfo',
-                    params: { email: authorData.email },
-                  }"
+              <div class="flex items-center gap-2">
+                <div
+                  class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-12 2xl:h-12 p-1 flex items-center justify-center overflow-hidden"
                 >
+                  <img
+                    :src="`/assets/img/avatar (${authorData.selectedAvatarIndex}).png`"
+                    alt="avatar"
+                  />
+                </div>
+                <span class="2xl:text-lg text-stone-700 font-bold">
                   {{ authorData.username }}
-                </router-link>
-              </span>
+                </span>
+              </div>
+            </router-link>
+            <div class="flex gap-2 items-baseline justify-start flex-1">
               <span class="font-bold text-sm 2xl:text-base text-stone-500"
                 >{{ formatDateTime(postData.createdAt!) }}
                 <span class="text-md italic">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
@@ -219,7 +221,7 @@ onMounted(async () => {
               class="border-2 border-stone-700"
             />
           </div>
-          <p class="mt-10 text-stone-700 2xl:text-lg whitespace-pre-wrap">
+          <p class="mt-10 text-stone-700 2xl:text-lg whitespace-pre-wrap overflow-auto">
             {{ postData.content }}
           </p>
           <div

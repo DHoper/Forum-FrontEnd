@@ -124,4 +124,4 @@ function closePhoto() {
             <PhotoPost v-if="photoPostShow" :id="photoPostID" @close="closePhoto" />
         </div>
     </div>
-</template>../api/photoPost.ts
+</template>

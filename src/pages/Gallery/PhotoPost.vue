@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getPostData, setStats } from "../../api/photoPost/photoPost.ts";
 import { getAuthor } from "../../api/user/user.ts";
-import Comment from "../../components/layout/Comment.vue";
+import Comment from "../../components/post/Comment.vue";
 import {
   postComment,
   deleteComment,
@@ -132,7 +132,10 @@ onMounted(async () => {
     class="z-10 flex absolute top-0 left-0 w-full h-full overflow-hidden"
   >
     <div class="relative flex w-full h-full">
-      <div ref="leftBlock" class="h-full animate-slideInLeft basis-[30%] bg-white overflow-auto">
+      <div
+        ref="leftBlock"
+        class="h-full animate-slideInLeft basis-[30%] bg-white overflow-auto"
+      >
         <Comment
           :post-id="postData._id!"
           :comments-data="commentsData ? commentsData : []"
@@ -192,21 +195,30 @@ onMounted(async () => {
                 </div>
                 <div class="flex gap-4 justify-between italic 2xl:mt-4">
                   <div class="flex items-center py-2 gap-2">
-                    <div
-                      class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-14 2xl:h-14 p-1 flex items-center justify-center"
+                    <router-link
+                      :to="{
+                        name: 'PersonalInfo',
+                        params: { email: postAuthorData.email },
+                      }"
                     >
-                      <img
-                        class="rounded-full"
-                        :src="`/assets/img/avatar (${postAuthorData.selectedAvatarIndex!}).png`"
-                        alt="avatar"
-                      />
-                    </div>
+                      <div class="flex items-center gap-2">
+                        <div
+                          class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-14 2xl:h-14 p-1 flex items-center justify-center"
+                        >
+                          <img
+                            class="rounded-full"
+                            :src="`/assets/img/avatar (${postAuthorData.selectedAvatarIndex!}).png`"
+                            alt="avatar"
+                          />
+                        </div>
+                        <p
+                          class="text-stone-600 2xl:text-xl 2xl:text-stone-700 font-bold"
+                        >
+                          {{ postAuthorData.username }}
+                        </p>
+                      </div>
+                    </router-link>
                     <div class="flex items-baseline">
-                      <p
-                        class="text-stone-600 2xl:text-xl 2xl:text-stone-700 font-bold"
-                      >
-                        {{ postAuthorData.username! }}
-                      </p>
                       <p
                         v-if="postData.createdAt"
                         class="text-stone-600 2xl:text-base text-sm"
