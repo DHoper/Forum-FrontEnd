@@ -85,7 +85,6 @@ export const inputValidator = () => {
           } else {
             totalWeight += 10000;
           }
-          // console.log(char, totalWeight);
         }
         return totalWeight;
       }
@@ -132,7 +131,7 @@ export const inputValidator = () => {
           break;
         case "title":
           countCharacters(value);
-          if (totalWeight < 10 || totalWeight > 80) {
+          if (totalWeight < 6 || totalWeight > 80) {
             isValid = false;
           }
           break;

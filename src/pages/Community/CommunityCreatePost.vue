@@ -150,7 +150,6 @@ const handelSubmit = async () => {
     loadingStore.setIsCountingSeconds(true);
     loadingStore.setIsCountingSeconds(false);
     await uploadImages();
-    console.log(createPostImages, 777);
     
     const {
         title,
@@ -192,13 +191,13 @@ const handelSubmit = async () => {
                     <form class="mt-4 flex flex-col gap-4 2xl:gap-12">
                         <div class="relative">
                             <label for="title" class="text-stone-600 font-bold text-sm 2xl:text-lg">標題</label>
-                            <input v-model="formData.title" type="text" id="title" name="title" placeholder="5 ~ 40字"
+                            <input v-model="formData.title" type="text" id="title" name="title" placeholder="3 ~ 40字"
                                 @blur="validateInput('title')" class="mt-2 w-full border-2 py-2 px-3 outline-none"
                                 :class="formInputInvalid.title ? 'border-stone-800' : 'border-red-700'" required>
                             <div v-if="!formInputInvalid.title"
                                 class="w-full absolute left-0 bottom-0 2xl:-bottom-1 translate-y-full flex items-center gap-1 text-xs 2xl:text-base text-red-500">
                                 <ExclamationCircleIcon class="w-4 2xl:w-6" />
-                                <p>請輸入有效標題</p>
+                                <p>請輸入3 ~ 40字有效標題</p>
                             </div>
                         </div>
                         <div>
@@ -237,7 +236,7 @@ const handelSubmit = async () => {
                             <div v-if="!formInputInvalid.content"
                                 class="w-full absolute left-0 bottom-1 translate-y-full flex items-center gap-1 text-xs 2xl:text-base text-red-500">
                                 <ExclamationCircleIcon class="w-4 2xl:w-6" />
-                                <p>請輸入有效內容</p>
+                                <p>請輸入10 ~ 2000字有效內容</p>
                             </div>
                         </div>
                         <div class="mt-8 flex justify-between">

@@ -296,7 +296,7 @@ watch(activeTab, () => {
                 class="w-full absolute left-0 -top-6 flex justify-center items-center gap-1 text-sm 2xl:text-base text-red-500"
               >
                 <ExclamationCircleIcon class="w-4" />
-                <p>請輸入有效暱稱</p>
+                <p>請輸入2~7字有效暱稱</p>
               </div>
             </div>
           </div>
