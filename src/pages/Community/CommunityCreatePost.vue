@@ -150,6 +150,8 @@ const handelSubmit = async () => {
     loadingStore.setIsCountingSeconds(true);
     loadingStore.setIsCountingSeconds(false);
     await uploadImages();
+    console.log(createPostImages, 777);
+    
     const {
         title,
         content,
