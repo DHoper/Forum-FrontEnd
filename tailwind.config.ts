@@ -3,7 +3,8 @@
 export default {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+    },
     fontFamily: {
       Raleway: ["Raleway, sans-serif"],
       Josefin: ["Josefin Slab, sans-serif"],
@@ -224,7 +225,7 @@ export default {
         "0%": {
           opacity: "1",
           width: ".75rem",
-          height: ".75rem"
+          height: ".75rem",
         },
         "50%": {
           opacity: ".5",
@@ -232,7 +233,7 @@ export default {
         "100%": {
           opacity: "0",
           width: ".5rem",
-          height: ".5rem"
+          height: ".5rem",
         },
       },
     },

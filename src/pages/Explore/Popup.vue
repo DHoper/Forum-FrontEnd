@@ -17,13 +17,13 @@ const properties = ref(props.properties);
 
 <template>
     <div 
-        class="transition-all bg-white duration-700 ease-in rounded-sm  shadow-md shadow-gray-800 cursor-pointer hover:scale-105 border-t-8 border-2 border-b border-stone-600 flex w-72">
-        <img :src="properties.url" alt="animal" class="w-52 rounded-sm rounded-r-none shadow-xl">
+        class="transition-all bg-white duration-700 ease-in rounded-sm  shadow-md shadow-gray-800 cursor-pointer hover:scale-105 border-t-8 border-2 border-b border-stone-600 flex w-72 xl:w-96">
+        <img :src="properties.url" alt="animal" class="w-52 xl:w-72 rounded-sm rounded-r-none shadow-xl">
         <div class="relative rounded-r-sm border-l-0 flex flex-col justify-between items-center flex-1 p-4 max-w-[6rem]">
             <div class="my-2 w-full h-full overflow-hidden flex flex-col justify-between items-center">
-                <div>
-                    <p class="text-xl font-bold text-center leading-6 line-clamp-2">{{ properties.title }}</p>
-                    <p class="text-gray-500 text-center text-xs truncate" mt-1>{{ properties.location }}</p>
+                <div class="h-full flex flex-col justify-around items-center">
+                    <p class="text-xl font-bold [writing-mode:vertical-lr] text-center leading-6 line-clamp-2 xl:max-h-28 max-h-20 overflow-hidden">{{ properties.title }}</p>
+                    <p class="text-gray-500 text-center text-xs truncate">{{ properties.location }}</p>
                 </div>
                 <svg @click="emit('openPhoto', properties._id)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     stroke-width="1.5" stroke="currentColor"

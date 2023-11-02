@@ -294,7 +294,7 @@ onMounted(async () => {
             @click="turnPage = !turnPage"
             class="absolute top-2 left-0 shadow-sm shadow-stone-600 rotate-[3deg] w-full h-full -z-10 bg-white cursor-pointer hover:top-4 transition-all duration-500"
           >
-            <span class="absolute bottom-1 right-2 text-sm text-stone-600">
+            <span class="absolute bottom-1 right-2 text-sm text-stone-600 italic">
               {{ turnPage ? "Page1" : "Page2" }}</span
             >
           </div>
