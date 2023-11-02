@@ -6,14 +6,11 @@ import { HeartIcon } from "@heroicons/vue/24/solid";
 import { getTimeDifference, formatDateTime } from "../../utils/formattingUtils";
 import { AuthorDataType, CommunityPostType, DialogType } from "../../types";
 import { getAuthor } from "../../api/user/user.js";
-import { useLoadingStore } from "../../store/loading";
 
 const props = defineProps({
   data: Object as PropType<CommunityPostType>,
 });
 const emit = defineEmits(["close", "submit"]);
-const loadingStore = useLoadingStore();
-
 const topicTags: {
   [key: string]: {
     color: string;
