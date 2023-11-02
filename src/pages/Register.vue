@@ -385,7 +385,7 @@ watch(activeTab, () => {
             >
               <img
                 class="p-3"
-                :src="`../../public//assets/img/avatar (${formInput.selectedAvatarIndex}).png`"
+                :src="`/assets/img/avatar (${formInput.selectedAvatarIndex}).png`"
                 alt=""
               />
             </div>
@@ -607,7 +607,7 @@ watch(activeTab, () => {
                   >
                     <img
                       class="sm:w-16 md:w-20 lg:w-32 w-12 focus:scale-110 transition-all duration-300"
-                      :src="`../../public//assets/img/avatar (${index}).png`"
+                      :src="`/assets/img/avatar (${index}).png`"
                       alt=""
                       tabindex="0"
                     />
