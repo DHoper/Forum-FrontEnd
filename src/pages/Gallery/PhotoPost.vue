@@ -11,10 +11,7 @@ import { formatDateTime } from "../../utils/formattingUtils.ts";
 import { CommentType, PhotoPostType, AuthorDataType } from "../../types.ts";
 import { ref, toRefs, onMounted } from "vue";
 import router from "../../router";
-import {
-  XCircleIcon,
-  EyeIcon,
-} from "@heroicons/vue/24/outline";
+import { XCircleIcon, EyeIcon } from "@heroicons/vue/24/outline";
 import { HeartIcon } from "@heroicons/vue/24/solid";
 import { getComments } from "../../api/photoPost/photoPostComment.ts";
 import { useRoute } from "vue-router";
@@ -180,7 +177,7 @@ onMounted(async () => {
                     </p>
                   </div>
                 </div>
-                <div class="flex gap-4 justify-between italic 2xl:mt-4">
+                <div class="flex gap-4 justify-between italic xl:mt-4 2xl:mt-4">
                   <div class="flex items-center py-2 gap-2">
                     <router-link
                       :to="{
@@ -188,7 +185,7 @@ onMounted(async () => {
                         params: { email: postAuthorData.email },
                       }"
                     >
-                      <div class="flex items-center gap-2">
+                      <div class="flex items-center gap-2 group">
                         <div
                           class="border border-stone-800 rounded-full bg-white w-10 h-10 2xl:w-14 2xl:h-14 p-1 flex items-center justify-center"
                         >
@@ -199,7 +196,7 @@ onMounted(async () => {
                           />
                         </div>
                         <p
-                          class="text-stone-600 2xl:text-xl 2xl:text-stone-700 font-bold"
+                          class="text-stone-600 2xl:text-xl 2xl:text-stone-700 group-hover:text-blue-800 font-bold"
                         >
                           {{ postAuthorData.username }}
                         </p>
@@ -296,9 +293,13 @@ onMounted(async () => {
           <div
             @click="turnPage = !turnPage"
             class="absolute top-2 left-0 shadow-sm shadow-stone-600 rotate-[3deg] w-full h-full -z-10 bg-white cursor-pointer hover:top-4 transition-all duration-500"
-          ></div>
+          >
+            <span class="absolute bottom-1 right-2 text-sm text-stone-600">
+              {{ turnPage ? "Page1" : "Page2" }}</span
+            >
+          </div>
         </div>
-        <div class="w-full self-center flex justify-around 2xl:mb-4">
+        <div class="mx-auto self-center flex justify-around 2xl:mb-4">
           <XCircleIcon
             @click="close"
             class="w-12 2xl:w-16 cursor-pointer text-white mx-auto py-4 hover:scale-105 transition-all ease-in"
