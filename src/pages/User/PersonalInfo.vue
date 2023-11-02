@@ -373,6 +373,7 @@ onMounted(async () => {
             v-else
             v-model="formData.intro"
             placeholder="10 ~ 100字"
+            maxlength="100"
             class="w-full h-40 overflow-auto p-2 border-2 border-stone-600 resize-none"
           ></textarea>
         </div>

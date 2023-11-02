@@ -288,6 +288,7 @@ onMounted(async () => {
                 cols="20"
                 rows="10"
                 placeholder="10 ~ 2000字"
+                maxlength="2000"
                 @blur="validateInput('content')"
                 class="mt-2 mb-0 w-full border-2 border-stone-800 py-2 px-3 2xl:p-6 2xl:text-lg outline-none resize-none"
                 :class="

@@ -125,7 +125,7 @@ watchEffect(() => {
                     <div class="border-b-[.0938rem] border-gray-300 my-4"></div>
                     <div class="">
                         <div class="my-12 border border-stone-600 p-6">
-                            <textarea v-model="comment" name="" id="" cols="20" rows="3" placeholder="輸入留言..."
+                            <textarea v-model="comment" name="" id="" cols="20" rows="3" placeholder="輸入留言..." maxlength="100"
                                 class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current"></textarea>
                         </div>
                         <div class="flex justify-end gap-2">

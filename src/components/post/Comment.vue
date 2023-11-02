@@ -145,6 +145,7 @@ onMounted(async () => {
           cols="20"
           rows="3"
           placeholder="輸入留言..."
+          maxlength="50"
           class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current"
         />
       </div>

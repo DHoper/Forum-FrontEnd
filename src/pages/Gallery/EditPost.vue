@@ -332,6 +332,7 @@ onMounted(async () => {
                 @blur="validateInput('description')"
                 id="description"
                 rows="4"
+                maxlength="100"
                 class="w-full border-2 resize-none focus:border-stone-500 focus:outline-none text-stone-700 p-2 2xl:text-lg 2xl:p-4"
                 :class="
                   postInputInvalid.description
