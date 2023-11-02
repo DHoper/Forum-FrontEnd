@@ -4,12 +4,13 @@ import { ref } from "vue";
 
 export const ApiConfig = {
   index: "/photoPost",
-  getSinglePost: (id: string) => `photoPost/${id}`,
+  singlePost: (id: string) => `photoPost/${id}`,
+  getUserPosts: (authorId: string) => `/photoPost/user/${authorId}`,
   setStats: (id: string, action: string) =>
     `/photoPost/${id}/statistics/${action}`,
 };
 
-export async function getGalleryData() {
+export async function getPostsData() {
   try {
     const responseData = ref<PhotoPostType[]>();
     let response;
@@ -24,13 +25,28 @@ export async function getGalleryData() {
   }
 }
 
+export async function getUserPostsData(authorId: string) {
+  try {
+    const responseData = ref<PhotoPostType[]>();
+    let response;
+
+    response = await apiClient.get(ApiConfig.getUserPosts(authorId));
+    responseData.value = response.data;
+
+    return responseData;
+  } catch (error) {
+    console.error("獲取用戶所有照片牆貼文數據時發生錯誤：", error);
+    throw error;
+  }
+}
+
 export async function getPostData(id: string) {
   try {
     const responseData = ref<PhotoPostType>();
     let response;
-    response = await apiClient.get(ApiConfig.getSinglePost(id));
+    response = await apiClient.get(ApiConfig.singlePost(id));
     responseData.value = response.data;
-    return  responseData;
+    return responseData;
   } catch (error) {
     console.error("獲取單筆照片牆貼文數據時發生錯誤：", error);
     throw error;
@@ -54,6 +70,30 @@ export async function createPost(postData: PhotoPostType) {
     return response;
   } catch (error) {
     console.error("建立新貼文時發生錯誤：", error);
+    throw error;
+  }
+}
+
+export async function updatePost(postId: string, postData: PhotoPostType) {
+  try {
+    const response = await apiClient.put(
+      ApiConfig.singlePost(postId),
+      postData
+    );
+    return response;
+  } catch (error) {
+    console.error("更新新貼文時發生錯誤：", error);
+    throw error;
+  }
+}
+
+export async function deletePost(id: string) {
+  try {
+    let response;
+    response = await apiClient.delete(ApiConfig.singlePost(id));
+    return response.data.deletedPhotoPost;
+  } catch (error) {
+    console.error("刪除貼文時發生錯誤：", error);
     throw error;
   }
 }

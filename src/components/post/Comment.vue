@@ -130,7 +130,7 @@ onMounted(async () => {
 
 <template>
   <div
-    class="w-full border-2 border-stone-800 bg-white py-10 px-8 overflow-auto"
+    class="w-full border-2 border-stone-800 bg-white py-10 px-8 2xl:px-24 2xl:py-20 overflow-auto"
   >
     <span class="font-bold text-stone-600 tracking-widest 2xl:text-xl"
       >留言區</span

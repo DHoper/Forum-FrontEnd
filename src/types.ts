@@ -61,7 +61,7 @@ export interface AuthorDataType {
 export interface CommunityPostType {
   title: string;
   authorId: string;
-  images?: PhotoPostImageType[] | null;
+  images: PhotoPostImageType[];
   content: string;
   likes: number;
   views: number;

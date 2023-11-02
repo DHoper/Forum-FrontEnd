@@ -156,11 +156,11 @@ onMounted(async () => {
 <template>
   <div
     v-if="postData && authorData"
-    class="bg-communityPosts bg-no-repeat bg-cover bg-center w-full bg-fixed"
+    class="flex-1 w-full bg-fixed"
   >
-    <div class="bg-white w-full py-8 px-4">
+    <div class="bg-stone-100 w-full py-8 px-4">
       <div
-        class="mx-auto flex flex-col items-center gap-20 bg-white min-w-[62rem] w-2/3 pt-20 px-5"
+        class="mx-auto flex flex-col items-center gap-20 bg-stone-100 w-[62rem] pt-20 px-5"
       >
         <button
           @click="router.back()"
@@ -168,7 +168,7 @@ onMounted(async () => {
         >
           上一頁
         </button>
-        <div class="mx-auto border-2 border-stone-800 w-full px-24 py-16">
+        <div class="mx-auto border-2 border-stone-800 w-full px-24 py-16 bg-white">
           <div class="flex items-center gap-4">
             <router-link
               :to="{

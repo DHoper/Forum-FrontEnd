@@ -2,7 +2,7 @@
 import Popup from "./Explore/Popup.vue";
 import PhotoPost from "./Gallery/PhotoPost.vue";
 import { ref, onMounted, h, render } from "vue";
-import { getGalleryData } from "../api/photoPost/photoPost.js";
+import { getPostsData } from "../api/photoPost/photoPost.js";
 import mapboxgl from "mapbox-gl";
 import MapBoxGeoCoder, { Result } from "@mapbox/mapbox-gl-geocoder";
 import MapBoxLanguage from "@mapbox/mapbox-gl-language";
@@ -32,7 +32,7 @@ onMounted(async () => {
   loadingStore.setLoadingStatus(true);
   loadingStore.setInRequest(true);
 
-  const response = await getGalleryData(); //取得照片牆貼文資料
+  const response = await getPostsData(); //取得照片牆貼文資料
   const animalsDataset = response.value!;
 
   const geoJSONFeatures = animalsDataset.map((animalsData: PhotoPostType) => ({

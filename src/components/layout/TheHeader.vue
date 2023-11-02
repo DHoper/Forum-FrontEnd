@@ -35,8 +35,7 @@ const userActions = [
   {
     actionName: "貼文",
     icon: BookmarkSquareIcon,
-    action: () =>
-      router.push({name: "PersonalPosts"})
+    action: () => router.push({ name: "PersonalPosts" }),
   },
   { actionName: "追蹤", icon: HeartIcon },
   { actionName: "幫助", icon: QuestionMarkCircleIcon },
@@ -48,15 +47,10 @@ const userActions = [
 ];
 
 const notifications = [
-  {
-    content:
-      '有人喜歡妳在"我的靴子裡有蛇"的留言: 「笑死,我就看他什麼時候摔下去」',
-    href: "#",
-  },
-  { content: "Molina123 為你的一則貼文點了讚", href: "#" },
-  { content: "Fain64543 為你的一則貼文點了讚", href: "#" },
-  { content: "Ol34i2 開始追蹤您", href: "#" },
-  { content: 'Albert34442 喜歡妳在"我的靴子裡有蛇"的留言', href: "#" },
+  { content: "#Molina123 為你的一則貼文點了讚" },
+  { content: "#Fain64543 為你的一則貼文點了讚" },
+  { content: "#Ol34i2 已經開始追蹤您" },
+  { content: '#Albert34442 為你的一則貼文點了讚', href: "#" },
 ];
 
 //----隱藏效果

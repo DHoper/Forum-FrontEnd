@@ -14,12 +14,12 @@ import router from "../../router";
 import {
   XCircleIcon,
   EyeIcon,
-  TrashIcon,
-  PencilSquareIcon,
 } from "@heroicons/vue/24/outline";
 import { HeartIcon } from "@heroicons/vue/24/solid";
 import { getComments } from "../../api/photoPost/photoPostComment.ts";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const userStore = useUserStore();
 const props = defineProps({
   id: {
@@ -29,7 +29,6 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const isLogin = ref<boolean>(userStore.isLogin);
 const userId = ref<string>();
 let middleIdVar = userStore.getId();
 if (middleIdVar) {
@@ -129,7 +128,8 @@ onMounted(async () => {
 <template>
   <div
     v-if="postData && postAuthorData"
-    class="z-10 flex absolute top-0 left-0 w-full h-full overflow-hidden"
+    class="z-10 flex top-0 left-0 w-full h-full overflow-hidden"
+    :class="route.name === 'PhotoPost' ? 'relative' : 'absolute'"
   >
     <div class="relative flex w-full h-full">
       <div
@@ -148,19 +148,6 @@ onMounted(async () => {
         ref="rightBlock"
         class="animate-slideInRight basis-[70%] flex flex-col w-full bg-[#484538] pt-8 px-20 overflow-auto"
       >
-        <div class="w-full flex justify-around 2xl:mb-4">
-          <PencilSquareIcon
-            @click="close"
-            class="w-10 2xl:w-10 cursor-pointer text-blue-600 py-4 hover:text-blue-500 hover:scale-105 transition-all ease-in"
-            :class="turnPage ? 'invisible' : 'block'"
-          />
-          <TrashIcon
-            v-if="isLogin && userId === postData._id"
-            @click="close"
-            class="w-10 2xl:w-10 cursor-pointer text-red-800 py-4 hover:text-red-600 hover:scale-105 transition-all ease-in"
-            :class="turnPage ? 'invisible' : 'block'"
-          />
-        </div>
         <div class="relative h-[26rem] 2xl:h-[36rem] my-auto">
           <div
             class="relative bg-white px-8 pb-1 pt-6 2xl:p-10 rounded-xs flex flex-col gap-2 shadow-sm shadow-stone-600 h-full border border-stone-400"
@@ -315,6 +302,7 @@ onMounted(async () => {
           <XCircleIcon
             @click="close"
             class="w-12 2xl:w-16 cursor-pointer text-white mx-auto py-4 hover:scale-105 transition-all ease-in"
+            :class="route.name === 'PhotoPost' ? 'hidden' : 'block'"
           />
         </div>
       </div>

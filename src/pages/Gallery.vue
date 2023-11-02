@@ -4,7 +4,7 @@ import {
     PlusCircleIcon,
 } from '@heroicons/vue/24/solid';
 import { ref, onMounted } from 'vue';
-import { getGalleryData } from '../api/photoPost/photoPost.js';
+import { getPostsData } from '../api/photoPost/photoPost.js';
 import { useLoadingStore } from '../store/loading';
 import { PhotoPostType } from '../types';
 import { formatDateTime } from '../utils/formattingUtils';
@@ -12,7 +12,7 @@ import { formatDateTime } from '../utils/formattingUtils';
 const galleryDataset = ref<PhotoPostType[]>();
 const fetchData = async () => {
     
-    const response = await getGalleryData();
+    const response = await getPostsData();
     galleryDataset.value = response.value;
 };
 

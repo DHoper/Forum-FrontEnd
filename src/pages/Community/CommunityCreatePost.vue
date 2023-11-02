@@ -6,9 +6,9 @@ import CreatePostPreview from './CreatePostPreview.vue';
 import { createPost } from '../../api/community/community.js';
 import { useUserStore } from '../../store/user';
 import { CommunityPostType, PhotoPostImageType } from '../../types';
-import axios from 'axios';
 import { useLoadingStore } from '../../store/loading';
 import { FieldName, inputValidator } from '../../utils/validator';
+import { postImages } from '../../api/image/image';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -132,37 +132,16 @@ const handelPreview = () => {
 }
 
 //圖片處裡
-const cloudName = import.meta.env.VITE_APP_CLOUDINARY_CLOUD_NAME;
 let createPostImages: PhotoPostImageType[] = [];//儲存最終提交之圖片url
 const uploadImages = async () => {
-    const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-    const inputElement = imgInput.value;
+  if (!formData.value) return;
+  const inputElement = imgInput.value;
 
-    if (inputElement) {
-        const files = inputElement.files as FileList;
-        const uploadPromises = [];
+  if (inputElement) {
+    const files = inputElement.files as FileList;
 
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("upload_preset", "Community_preset");
-
-            const uploadPromise = axios.post(url, formData)
-                .then(response => createPostImages.push({
-                    url: response.data.secure_url,
-                    filename: response.data.public_id
-                }))
-                .catch(error => {
-                    console.error("圖片上傳失敗", error);
-                    return null;
-                });
-
-            uploadPromises.push(uploadPromise);
-        }
-        await Promise.all(uploadPromises);
-    }
+    createPostImages = await postImages(files, "Community");
+  }
 };
 
 const handelSubmit = async () => {
@@ -204,7 +183,7 @@ const handelSubmit = async () => {
 <template>
     <div class="relative flex-1">
         <div class="bg-white w-full py-12 px-4">
-            <div class="mx-auto flex flex-col bg-white w-2/3 min-w-[62rem] max-w-full px-5">
+            <div class="mx-auto flex flex-col bg-white w-[62rem] max-w-full px-5">
                 <button @click="router.back()" class="self-start text-sm 2xl:text-lg font-bold text-stone-800">上一頁</button>
                 <div class="mt-12 border-2 border-stone-800 px-24 py-16">
                     <h1 class="my-8 text-4xl text-stone-600">發佈新貼文</h1>

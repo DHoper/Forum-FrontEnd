@@ -10,7 +10,7 @@ import {
 import {
     HeartIcon,
 } from '@heroicons/vue/24/solid';
-import { getPostDataset } from '../api/community/community.js';
+import { getPostsData } from '../api/community/community.js';
 import { CommunityPostType } from '../types';
 import { getTimeDifference } from '../utils/formattingUtils';
 import { getAuthor } from '../api/user/user.js';
@@ -33,7 +33,7 @@ const votes = ref([
 const communityPosts = ref<CommunityPostType[]>();
 const usernameList = ref<string[]>([]);
 const fetchData = async () => {
-    const response = await getPostDataset();
+    const response = await getPostsData();
     communityPosts.value = response.value;
 }
 
@@ -170,7 +170,7 @@ const goToPage = (pageNumber:number) => {
 
 <template>
     <div v-if="communityPosts && votes && usernameList"
-        class="flex flex-col items-center gap-12 py-4 2xl:py-16 2xl:px-8 bg-stone-100 p-4 overflow-auto">
+        class="flex-1 flex flex-col items-center gap-12 py-4 2xl:py-16 2xl:px-8 bg-stone-100 p-4 overflow-auto">
         <div class="w-full">
             <h1 class="text-3xl mb-4">話題投票</h1>
             <div class="border-b-2 border-stone-700 my-4"></div>
@@ -195,7 +195,7 @@ const goToPage = (pageNumber:number) => {
             </div>
         </div>
         <!-- 貼文 -->
-        <div class="w-full">
+        <div class="w-full mt-auto">
             <div class="flex items-center justify-between gap-4">
                 <h1 class="text-3xl leading-none">社區討論</h1>
                 <div @click="router.push({ name: 'CommunityCreatePost' })"

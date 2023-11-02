@@ -10,6 +10,8 @@ import Articles from "./pages/Articles.vue";
 import Explore from "./pages/Explore.vue";
 import Gallery from "./pages/Gallery.vue";
 import Community from "./pages/Community.vue";
+import PhotoPost from "./pages/Gallery/PhotoPost.vue";
+import CommunityPost from "./pages/Community/CommunityPost.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,8 +26,9 @@ const router = createRouter({
       component: Login,
       name: "Login",
       beforeEnter: (to, from, next) => {
-        if (to || from) {  //--問題--build問題 待解決
-        } 
+        if (to || from) {
+          //--問題--build問題 待解決
+        }
         const userStore = useUserStore(); //無法在global scope中/Pinia被掛載前使用
         if (userStore.isLogin) {
           next({ name: "Articles" });
@@ -87,6 +90,18 @@ const router = createRouter({
           name: "CreatePost",
           component: () => import("./pages/Gallery/CreatePost.vue"),
         },
+        {
+          path: "photoPost/:id",
+          name: "PhotoPost",
+          component: PhotoPost,
+          props: true,
+        },
+        {
+          path: "photoPost/edit/:id",
+          name: "EditPhotoPost",
+          component: () => import("./pages/Gallery/EditPost.vue"),
+          props: true,
+        },
       ],
     },
     {
@@ -101,7 +116,7 @@ const router = createRouter({
         {
           path: "post/:id",
           name: "CommunityPost",
-          component: () => import("./pages/Community/CommunityPost.vue"),
+          component: CommunityPost,
           meta: { requiresAuth: true },
           props: true,
         },
@@ -110,6 +125,12 @@ const router = createRouter({
           name: "CommunityCreatePost",
           component: () => import("./pages/Community/CommunityCreatePost.vue"),
           meta: { requiresAuth: true },
+        },
+        {
+          path: "editPost/:id",
+          name: "EditCommunityPost",
+          component: () => import("./pages/Community/EditPost.vue"),
+          props: true,
         },
         {
           path: "createPostPreview",
