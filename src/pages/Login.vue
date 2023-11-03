@@ -11,10 +11,13 @@ const password = ref<string | null>(null);
 const loginIsFailed = computed<LoginStatus | undefined>(() => userStore.loggingStatus);
 
 async function login() {
+    
     if (email.value && password.value) {
         await userStore.login(email.value, password.value).catch(err => console.error("請求登錄失敗:", err));
         if (userStore.isLogin) {
             router.push({name: "Articles"});
+        }else {
+            alert("帳號或密碼錯誤");
         }
     }
 }

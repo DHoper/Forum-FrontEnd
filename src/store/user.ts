@@ -25,13 +25,18 @@ export const useUserStore = defineStore("user", () => {
   async function login(email: string, password: string) {
     try {
       const responseData = await getUserData(email);
+      
       if (responseData.value) {
         const userData = ref<UserDataType>(responseData.value);
+        console.log(responseData.value, password);
+        
         if (userData) {
           if (userData.value.password === password) {
             data.value = userData.value;
             loggingStatus.value = LoginStatus.Success;
             localStorage.setItem("user", JSON.stringify(data.value));
+            console.log(isLogin);
+            
           } else {
             alert("請輸入正確密碼");
             loggingStatus.value = LoginStatus.PasswordError;
