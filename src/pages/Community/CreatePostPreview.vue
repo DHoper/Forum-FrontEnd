@@ -158,7 +158,7 @@ onMounted(async () => {
       </div>
       <div
         v-if="formData.images && formData.images.length > 0"
-        class="mt-20 w-[600px] h-[450px] border-2 border-stone-700"
+        class="mt-20 border-2 border-stone-700"
       >
         <img :src="formData.images[0].url" class="object-cover w-full h-full" />
       </div>
@@ -176,7 +176,7 @@ onMounted(async () => {
         <div v-for="(image, index) in formData.images">
           <div
             v-if="index != 0"
-            class="w-[600px] h-[450px] border-2 border-stone-700"
+            class="border-2 border-stone-700"
           >
             <img
               :key="index"
