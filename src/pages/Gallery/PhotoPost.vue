@@ -160,9 +160,11 @@ onMounted(async () => {
                     />
                   </div>
                   <div
-                    class="flex-1 h-full pt-4 flex flex-col items-center text-stone-700 border-b-4 border-stone-600"
+                    class="flex-1 h-full pt-4 flex flex-col items-center text-stone-700 border-b-4 border-stone-600 overflow-hidden"
                   >
-                    <h2 class="text-2xl font-bold text-center 2xl:text-3xl">
+                    <h2
+                      class="text-2xl font-bold text-center 2xl:text-3x truncate"
+                    >
                       {{ postData.title }}
                     </h2>
                     <p
@@ -294,7 +296,9 @@ onMounted(async () => {
             @click="turnPage = !turnPage"
             class="absolute top-2 left-0 shadow-sm shadow-stone-600 rotate-[3deg] w-full h-full -z-10 bg-white cursor-pointer hover:top-4 transition-all duration-500"
           >
-            <span class="absolute bottom-1 right-2 text-sm text-stone-600 italic">
+            <span
+              class="absolute bottom-1 right-2 text-sm text-stone-600 italic"
+            >
               {{ turnPage ? "Page1" : "Page2" }}</span
             >
           </div>

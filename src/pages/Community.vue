@@ -242,7 +242,7 @@ const goToPage = (pageNumber:number) => {
                                 <HeartIcon class="w-6 2xl:w-7" />{{ communityPost.likes }}
                             </span>
                             <span class="flex items-center gap-1 text-stone-700 group-hover:text-stone-100">
-                                <ChatBubbleBottomCenterIcon class="w-6 2xl:w-7" />{{ communityPost.views }}
+                                <ChatBubbleBottomCenterIcon class="w-6 2xl:w-7" />{{ communityPost.commentsId.length }}
                             </span>
                         </div>
                     </div>
