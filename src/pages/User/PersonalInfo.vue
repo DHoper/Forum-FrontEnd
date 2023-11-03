@@ -378,7 +378,7 @@ onMounted(async () => {
                 >
                   <img
                     class="sm:w-16 md:w-20 lg:w-32 w-12 focus:scale-110 transition-all duration-300"
-                    :src="`ssets/img/avatar (${index}).png`"
+                    :src="`assets/img/avatar (${index}).png`"
                     alt=""
                     tabindex="0"
                   />
