@@ -26,3 +26,27 @@ export function getTimeDifference(date: string): string {
 
   return formattedDifference;
 }
+
+export function formatDateTime(
+  dateTimeString: string,
+  formatType?: string
+): string {
+  const dateTime = new Date(dateTimeString);
+  const year = dateTime.getFullYear();
+  const month = (dateTime.getMonth() + 1).toString().padStart(2, "0");
+  const day = dateTime.getDate().toString().padStart(2, "0");
+  const hours = dateTime.getHours().toString().padStart(2, "0");
+  const minutes = dateTime.getMinutes().toString().padStart(2, "0");
+
+  const conciseFormat = `${year}-${month}-${day} ${hours}:${minutes}`;
+  const chineseFormat = `${year}年 ${month}月 ${day}日 ${hours} 點 ${minutes} 分`;
+  let returnString = null;
+
+  if (formatType === "concise") {
+    returnString = conciseFormat;
+  } else {
+    returnString = chineseFormat;
+  }
+
+  return returnString;
+}

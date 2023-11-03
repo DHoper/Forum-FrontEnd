@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TheHeader from '../../components/layout/TheHeader.vue';
 import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router'
 import {
@@ -55,7 +54,7 @@ const article = {
         },
         {
             user: 'DODO',
-            content: 'ㄚㄚㄚㄚㄚ阿！',
+            content: '8 8 8 8 阿！',
             postDate: '2023-09-02 14:30:00',
         },
         {
@@ -88,7 +87,6 @@ watchEffect(() => {
 
 <template>
     <div class="bg-articles bg-no-repeat bg-cover bg-center w-full bg-fixed">
-        <TheHeader :is-login="false" />
         <div class="absolute flex flex-col items-center top-52 left-1/2 -translate-x-1/2 font-Josefin tracking-widest">
             <h1 class="uppercase text-5xl font-bold">The beauty of nature</h1>
             <h3 class="italic text-xl mt-2">探索自然與保育之美</h3>
@@ -127,7 +125,7 @@ watchEffect(() => {
                     <div class="border-b-[.0938rem] border-gray-300 my-4"></div>
                     <div class="">
                         <div class="my-12 border border-stone-600 p-6">
-                            <textarea v-model="comment" name="" id="" cols="20" rows="3" placeholder="輸入留言..."
+                            <textarea v-model="comment" name="" id="" cols="20" rows="3" placeholder="輸入留言..." maxlength="100"
                                 class="w-full border-none outline-none resize-none bg-transparent p-0 m-0 text-current"></textarea>
                         </div>
                         <div class="flex justify-end gap-2">
