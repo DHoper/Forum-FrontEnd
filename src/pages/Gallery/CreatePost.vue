@@ -21,11 +21,10 @@ import { useUserStore } from "../../store/user.ts";
 import { useLoadingStore } from "../../store/loading";
 import { createPost } from "../../api/photoPost/photoPost.ts";
 import router from "../../router";
+import { postImages } from "../../api/image/image";
 
 //----cloudinary&圖片預覽----
 const cloudName = import.meta.env.VITE_APP_CLOUDINARY_CLOUD_NAME;
-// const uploadPreset = import.meta.env.VITE_APP_CLOUDINARY_KEY;
-// const apiSecret = import.meta.env.VITE_APP_CLOUDINARY_SECRET;
 
 const previewImg = ref<number>(0); //紀錄所選預覽大圖
 
@@ -48,35 +47,12 @@ const previewImages = () => {
 
 let createPostImages: PhotoPostImageType[] = []; //儲存最終提交之圖片url
 const uploadImages = async () => {
-  const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
   const inputElement = imgInput.value;
 
   if (inputElement) {
     const files = inputElement.files as FileList;
-    const uploadPromises = [];
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "Animals_preset");
-
-      const uploadPromise = axios
-        .post(url, formData)
-        .then((response) =>
-          createPostImages.push({
-            url: response.data.secure_url,
-            filename: response.data.public_id,
-          })
-        )
-        .catch((error) => {
-          console.error("圖片上傳失敗", error);
-          return null;
-        });
-
-      uploadPromises.push(uploadPromise);
-    }
-    await Promise.all(uploadPromises);
+    createPostImages = await postImages(files, "Animal-Word");
   }
 };
 
@@ -84,34 +60,6 @@ const uploadImages = async () => {
 mapboxgl.accessToken = import.meta.env.VITE_APP_MAPBOX_TOKEN;
 
 const mapContainer = ref<HTMLElement | null>(null);
-
-onMounted(async () => {
-  const map = new mapboxgl.Map({
-    container: mapContainer.value!,
-    style: "mapbox://styles/mapbox/light-v10",
-    center: [120.93874358912397, 23.92239934359359],
-    zoom: 3,
-    interactive: false,
-  });
-
-  const language = new MapBoxLanguage({ defaultLanguage: "zh-Hant" });
-  map.addControl(language);
-
-  const geoCoder = new MapBoxGeoCoder({
-    accessToken: mapboxgl.accessToken,
-    language: "zh-TW",
-    marker: true,
-    types: "country, region",
-    mapboxgl: mapboxgl,
-  });
-
-  map.addControl(geoCoder);
-
-  geoCoder.on("result", (event: mapboxgl.EventData) => {
-    newPost.value.location = event.result.place_name;
-    newPost.value.coordinates = event.result.center;
-  });
-});
 
 //----表單----
 
@@ -146,8 +94,6 @@ function countCharacters(text: string) {
       totalWeight += 1;
     } else if (/[\「」{}.,;:!?-、...。，；：！？_、，"'：]/.test(char)) {
       totalWeight += 1;
-    } else {
-      totalWeight += 10000;
     }
   }
   return totalWeight;
@@ -253,6 +199,35 @@ const handleSubmit = async () => {
   //驗證成功
   await submitNewPost();
 };
+
+onMounted(async () => {
+  const map = new mapboxgl.Map({
+    container: mapContainer.value!,
+    style: "mapbox://styles/mapbox/light-v10",
+    center: [120.93874358912397, 23.92239934359359],
+    zoom: 3,
+    interactive: false,
+  });
+
+  const language = new MapBoxLanguage({ defaultLanguage: "zh-Hant" });
+  map.addControl(language);
+
+  const geoCoder = new MapBoxGeoCoder({
+    accessToken: mapboxgl.accessToken,
+    language: "zh-TW",
+    marker: true,
+    types: "country, region",
+    mapboxgl: mapboxgl,
+  });
+
+  map.addControl(geoCoder);
+
+  geoCoder.on("result", (event: mapboxgl.EventData) => {
+    newPost.value.location = event.result.place_name;
+    newPost.value.coordinates = event.result.center;
+  });
+});
+
 </script>
 
 <template>

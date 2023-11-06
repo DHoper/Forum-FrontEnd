@@ -75,7 +75,6 @@ const setFileUrl = () => {
 
 let createPostImages: PhotoPostImageType[] = []; //儲存最終提交之圖片url
 const uploadImages = async () => {
-  if (!formData.value) return;
   const inputElement = imgInput.value;
 
   if (inputElement) {
