@@ -1,5 +1,5 @@
 # [後端連結](https://github.com/DHoper/Forum-BackEnd) 
-# [作品介紹簡報]("/assets/WILDLENS 作品介紹簡報.pdf")
+# [作品介紹簡報](/assets/WILDLENS%20作品介紹簡報.pdf)
 
 
 # Wildens 野生攝影分享網站
