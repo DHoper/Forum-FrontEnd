@@ -8,6 +8,8 @@ Wildens 是一個全球旅行愛好者的社區，讓用戶可以紀錄並分享
 ### 前端: 使用Vue3 + TypeScript + Tailwind，並串接mapbox地圖。
 ### 後端: 使用Node.js，資料庫為MongoDB Atlas，圖片資源則轉存在Cloudinary。
 
+## [作品介紹簡報]("./Forum-FrontEnd/public/assets/WILDLENS 作品介紹簡報.pdf")
+
 ## 功能簡介
 ### 主頁
 主頁是 Wildens 的入口，僅作展示用途。
