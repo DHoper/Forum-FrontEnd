@@ -1,3 +1,4 @@
+# [作品網址](https://wildlens.zeabur.app/home)  (因部署環境，有時post的api回應會慢一點點)
 # [後端連結](https://github.com/DHoper/Forum-BackEnd) 
 # [作品介紹簡報](./public//assets/WILDLENS%20作品介紹簡報.pdf)
 
