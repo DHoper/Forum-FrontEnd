@@ -523,7 +523,7 @@ watch(activeTab, () => {
             <button
               class="border-2 border-stone-100 text-stone-100 py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500 2xl:text-lg 2xl:px-6"
             >
-              聯絡我們
+              關於我們
             </button>
           </router-link>
         </div>

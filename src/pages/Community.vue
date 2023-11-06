@@ -60,19 +60,8 @@ const fetchData = async () => {
   communityPosts.value = response.value;
 };
 
-onMounted(async () => {
-  await fetchData();
-  if (communityPosts.value) {
-    for (const post of communityPosts.value) {
-      const responseData = await getAuthor(post.authorId);
-      if (responseData.value) {
-        const username = responseData.value.username;
-        usernameList.value.push(username);
-      }
-    }
-  }
-});
 
+//--分頁
 const activeTab = ref("latest");
 const currentPage = ref(1);
 const itemsPerPage = 6;
@@ -88,15 +77,15 @@ const filteredVotes = computed(() => {
 });
 
 const filteredPosts = computed(() => {
-  if (!communityPosts.value) return;
-  return communityPosts.value.slice(
+  if (!sortedPosts.value) return;
+  return sortedPosts.value.slice(
     (currentPage.value - 1) * itemsPerPage,
     currentPage.value * itemsPerPage
   );
 });
 
 const totalPages = computed(() =>
-  Math.ceil(communityPosts.value!.length / itemsPerPage)
+  Math.ceil(sortedPosts.value!.length / itemsPerPage)
 );
 
 const changeTab = (tab: string) => {
@@ -115,6 +104,34 @@ const changePage = (action: string) => {
 const goToPage = (pageNumber: number) => {
   currentPage.value = pageNumber;
 };
+
+//--搜索
+const searchString = ref<string>("");
+const sortedPosts = ref<CommunityPostType[]>([]);
+
+const sortPostsByTopic = () => {
+  if (!communityPosts.value ) return;
+  const search = searchString.value.toLowerCase();
+  sortedPosts.value = communityPosts.value.filter(
+    (post) =>
+      post.topicTags.some((tag) => tag.toLowerCase().includes(search)) ||
+      post.title.toLowerCase().includes(search)
+  );
+};
+
+onMounted(async () => {
+  await fetchData();
+  if (communityPosts.value) {
+    for (const post of communityPosts.value) {
+      const responseData = await getAuthor(post.authorId);
+      if (responseData.value) {
+        const username = responseData.value.username;
+        usernameList.value.push(username);
+      }
+    }
+    sortPostsByTopic();
+  }
+});
 </script>
 
 <template>
@@ -180,12 +197,29 @@ const goToPage = (pageNumber: number) => {
     <div class="w-full mt-auto">
       <div class="flex items-center justify-between gap-4">
         <h1 class="text-3xl leading-none">社區討論</h1>
-        <div
-          @click="router.push({ name: 'CommunityCreatePost' })"
-          class="flex gap-2 border-2 border-stone-600 p-1 px-2 2xl:p-2 2xl:px-4 2xl:text-lg hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer"
-        >
-          新增文章
-          <PlusIcon class="w-4" />
+        <div class="flex gap-4 items-center">
+          <div class="flex items-center h-12">
+            <label
+              for="searchByTopic"
+              class="border-2 border-stone-600 bg-stone-600 text-stone-100 border-r-0 h-full px-4 text-lg flex justify-center items-center"
+            >
+              <p>搜索</p>
+            </label>
+            <input
+              type="text"
+              id="searchByTopic"
+              v-model="searchString"
+              @input="sortPostsByTopic"
+              class="rounded-none focus:outline-none border-2 border-stone-600 h-full text-lg m-0 w-48 px-2"
+            />
+          </div>
+          <div
+            @click="router.push({ name: 'CommunityCreatePost' })"
+            class="flex gap-2 border-2 border-stone-600 p-1 px-2 2xl:p-2 2xl:px-4 2xl:text-lg hover:bg-stone-600 hover:text-stone-100 transition-all duration-300 cursor-pointer"
+          >
+            新增文章
+            <PlusIcon class="w-4" />
+          </div>
         </div>
       </div>
       <div class="border-b-2 border-stone-700 my-4"></div>
@@ -321,4 +355,3 @@ const goToPage = (pageNumber: number) => {
   background-color: gray;
 }
 </style>
-
