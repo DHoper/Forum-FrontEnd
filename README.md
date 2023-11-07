@@ -2,6 +2,8 @@
 # [後端連結](https://github.com/DHoper/Forum-BackEnd) 
 # [作品介紹簡報](./public//assets/WILDLENS%20作品介紹簡報.pdf)
 
+# 專案啟動
+前後端下載後，將.env.example改為.env，然後皆npm i 、npm run dev即可
 
 # Wildens 野生攝影分享網站
 Wildens 是一個全球旅行愛好者的社區，讓用戶可以紀錄並分享他們旅途中的精彩時刻、探索不同地方，並與其他用戶互動交流。
