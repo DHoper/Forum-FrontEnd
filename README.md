@@ -9,7 +9,7 @@
 Wildens 是一個全球旅行愛好者的社區，讓用戶可以紀錄並分享他們旅途中的精彩時刻、探索不同地方，並與其他用戶互動交流。
 
 ## 作品概述
-### 前端: 使用Vue3 + TypeScript + Tailwind，並串接mapbox地圖。
+### 前端: 使用Vue3 + TypeScript + Tailwind開發的SPA網站，並串接mapbox地圖。
 ### 後端: 使用Node.js，資料庫為MongoDB Atlas，圖片資源則轉存在Cloudinary。
 
 ## 功能簡介
