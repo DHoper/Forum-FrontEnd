@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import axios from "axios";
 import mapboxgl from "mapbox-gl";
 import MapBoxGeoCoder from "@mapbox/mapbox-gl-geocoder";
 import MapBoxLanguage from "@mapbox/mapbox-gl-language";
@@ -24,8 +23,6 @@ import router from "../../router";
 import { postImages } from "../../api/image/image";
 
 //----cloudinary&圖片預覽----
-const cloudName = import.meta.env.VITE_APP_CLOUDINARY_CLOUD_NAME;
-
 const previewImg = ref<number>(0); //紀錄所選預覽大圖
 
 const imgInput = ref<HTMLInputElement>();
