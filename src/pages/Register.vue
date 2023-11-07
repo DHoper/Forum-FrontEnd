@@ -414,13 +414,13 @@ watch(activeTab, () => {
             註冊
           </button>
         </div>
-        <button
+        <!-- <button
           v-if="formStep !== 2"
           type="button"
           class="w-full bg-[#FF5722] text-white border-2 border-[#FF5722] px-4 py-2 opacity-90 hover:bg-[#FF5722] hover:opacity-100 transition-all duration-500 2xl:text-lg"
         >
           使用Google帳號註冊
-        </button>
+        </button> -->
         <router-link :to="{ name: 'Login' }">
           <div class="text-sm 2xl:text-lg underline">已有帳號?</div>
         </router-link>

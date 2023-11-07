@@ -122,12 +122,12 @@ async function login() {
           >
             登錄
           </button>
-          <button
+          <!-- <button
             type="button"
             class="w-full bg-[#FF5722] text-white border-2 border-[#FF5722] px-4 py-2 opacity-90 hover:bg-[#FF5722] hover:opacity-100 transition-all duration-500 2xl:text-lg"
           >
             使用Google帳號登錄
-          </button>
+          </button> -->
           <div class="text-sm 2xl:text-base underline">
             <router-link :to="{ name: 'Register' }">還未註冊?</router-link>
           </div>
