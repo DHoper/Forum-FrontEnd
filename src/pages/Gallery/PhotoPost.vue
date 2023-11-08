@@ -11,7 +11,7 @@ import { formatDateTime } from "../../utils/formattingUtils.ts";
 import { CommentType, PhotoPostType, AuthorDataType } from "../../types.ts";
 import { ref, toRefs, onMounted } from "vue";
 import router from "../../router";
-import { XCircleIcon, EyeIcon } from "@heroicons/vue/24/outline";
+import { XCircleIcon, EyeIcon, PhotoIcon } from "@heroicons/vue/24/outline";
 import { HeartIcon } from "@heroicons/vue/24/solid";
 import { getComments } from "../../api/photoPost/photoPostComment.ts";
 import { useRoute } from "vue-router";
@@ -268,14 +268,14 @@ onMounted(async () => {
                     </div>
                     <div
                       v-if="postData.images.length === 1"
-                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-4 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
+                      class="relative flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-8 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                     >
-                      <p>沒有更多的圖了</p>
+                      <PhotoIcon class="lg:w-8 xl:w-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                     </div>
                     <div
-                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-4 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
+                      class="relative flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-8 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                     >
-                      <p>沒有更多的圖了</p>
+                    <PhotoIcon class="lg:w-8 xl:w-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                     </div>
                   </div>
 
