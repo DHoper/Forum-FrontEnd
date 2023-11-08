@@ -179,7 +179,7 @@ onMounted(async () => {
                     </p>
                   </div>
                 </div>
-                <div class="flex gap-4 justify-between italic xl:mt-4 2xl:mt-4">
+                <div class="flex gap-4 justify-between italic my-auto xl:mt-4 2xl:mt-4">
                   <div class="flex items-center py-2 gap-2">
                     <router-link
                       :to="{
@@ -249,7 +249,7 @@ onMounted(async () => {
                 class="2xl:w-[calc(100%-2.5rem)] h-full absolute top-0"
               >
                 <div
-                  class="flex justify-around 2xl:pr-10 items-center h-full p-4 2xl:py-8 2xl:px-0"
+                  class="flex justify-around gap-8 2xl:pr-10 items-center h-full p-4 2xl:py-8 2xl:px-0"
                 >
                   <div
                     class="imgList basis-1/4 2xl:basis-1/3 overflow-hidden overflow-y-auto h-full flex flex-col gap-4 2xl:gap-10 p-2 2xl:px-0"
@@ -268,12 +268,12 @@ onMounted(async () => {
                     </div>
                     <div
                       v-if="postData.images.length === 1"
-                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 py-10 2xl:py-28 2xl:text-2xl text-stone-400"
+                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-4 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                     >
                       <p>沒有更多的圖了</p>
                     </div>
                     <div
-                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 py-10 2xl:py-28 2xl:text-2xl text-stone-400"
+                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-4 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                     >
                       <p>沒有更多的圖了</p>
                     </div>
