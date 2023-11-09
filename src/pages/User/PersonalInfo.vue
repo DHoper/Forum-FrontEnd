@@ -366,24 +366,24 @@ onMounted(async () => {
           <div class="grid grid-cols-6 gap-4 p-4">
             <div v-for="index in 12" :key="index">
               <label class="cursor-pointer">
-                <input
-                  class="hidden"
-                  type="radio"
-                  :value="index"
-                  name="avatar"
-                  v-model="formData.selectedAvatarIndex"
-                />
-                <div
-                  class="p-1 border-2 border-dashed border-stone-600 hover:scale-105 transition-all duration-300 hover:border-solid group focus-within:border-solid"
-                >
-                  <img
-                    class="sm:w-16 md:w-20 lg:w-32 w-12 focus:scale-110 transition-all duration-300"
-                    :src="`assets/img/avatar (${index}).png`"
-                    alt=""
-                    tabindex="0"
+                  <input
+                    class="hidden"
+                    type="radio"
+                    :value="index"
+                    name="avatar"
+                    v-model="formData.selectedAvatarIndex"
                   />
-                </div>
-              </label>
+                  <div
+                    class="p-1 border-2 border-dashed border-stone-600 hover:scale-105 transition-all duration-300 hover:border-solid group focus-within:border-solid"
+                  >
+                    <img
+                      class="sm:w-16 md:w-20 lg:w-32 w-12 focus:scale-110 transition-all duration-300"
+                      :src="`/assets/img/avatar (${index}).png`"
+                      alt=""
+                      tabindex="0"
+                    />
+                  </div>
+                </label>
             </div>
           </div>
           <button
