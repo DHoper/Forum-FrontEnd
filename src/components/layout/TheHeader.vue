@@ -38,7 +38,11 @@ const userActions = [
     action: () => router.push({ name: "PersonalPosts" }),
   },
   { actionName: "追蹤", icon: HeartIcon },
-  { actionName: "幫助", icon: QuestionMarkCircleIcon },
+  {
+    actionName: "幫助",
+    icon: QuestionMarkCircleIcon,
+    action: () => router.push({ name: "Help" }),
+  },
   {
     actionName: "登出",
     action: userStore.logout,
@@ -50,7 +54,7 @@ const notifications = [
   { content: "#Molina123 為你的一則貼文點了讚" },
   { content: "#Fain64543 為你的一則貼文點了讚" },
   { content: "#Ol34i2 已經開始追蹤您" },
-  { content: '#Albert34442 為你的一則貼文點了讚', href: "#" },
+  { content: "#Albert34442 為你的一則貼文點了讚", href: "#" },
 ];
 
 //----隱藏效果

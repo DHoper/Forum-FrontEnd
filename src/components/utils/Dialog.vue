@@ -21,7 +21,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="bg-stone-700 bg-opacity-80 fixed top-0 left-0 w-screen h-screen z-50 flex justify-center items-center">
+    <div class="bg-stone-700 bg-opacity-80 fixed top-0 left-0 w-full h-full z-50 flex justify-center items-center">
         <div class="p-1 w-80 2xl:w-96 -mt-20" :class="props.dialogData.warringStyle ? 'bg-red-500' : 'bg-white'">
             <div class="text-white flex flex-col justify-around items-center py-10 2xl:py-16 gap-6"
                 :class="props.dialogData.warringStyle ? 'bg-red-500' : 'bg-stone-600'">

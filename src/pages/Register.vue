@@ -6,58 +6,11 @@ import { useLoadingStore } from "../store/loading";
 import { useUserStore } from "../store/user";
 import { postUserData } from "../api/user/user.ts";
 import { FieldName, inputValidator } from "../utils/validator";
+import { topicTags } from "../fakeData/topicTags.js";
 
 const loadingStore = useLoadingStore();
 const router = useRouter();
 
-const topicTags = {
-  ecology: {
-    color: "#A89376",
-    tags: [
-      "生態系",
-      "水生生物",
-      "魚類",
-      "陸生動物",
-      "節肢動物",
-      "兩棲動物",
-      "植物",
-      "瀕危物種",
-      "危險動物",
-      "鳥類",
-    ],
-  },
-  knowledge: {
-    color: "#875B4A",
-    tags: ["動物行為", "遷徒", "奇特行為", "攝影技巧"],
-  },
-  geographicalFeatures: {
-    color: "#B7AFA6",
-    tags: [
-      "野生動物保護區",
-      "海洋",
-      "溪河湖泊",
-      "山林",
-      "森林",
-      "草原",
-      "雪地",
-      "沙漠",
-      "海島",
-      "沼澤",
-    ],
-  },
-  style: {
-    color: "#566E3D",
-    tags: ["自然風景", "夜間攝影", "微距攝影", "野外探險", "地理風貌"],
-  },
-  issue: {
-    color: "#22577A",
-    tags: ["環境保育", "全球生態", "嚴重議題"],
-  },
-  geolocation: {
-    color: "#F4B860",
-    tags: ["非洲", "亞洲", "南美洲", "北美洲", "歐洲", "澳大利亞", "南極洲"],
-  },
-};
 
 //表單註冊
 const formInput = ref({
@@ -461,13 +414,13 @@ watch(activeTab, () => {
             註冊
           </button>
         </div>
-        <button
+        <!-- <button
           v-if="formStep !== 2"
           type="button"
           class="w-full bg-[#FF5722] text-white border-2 border-[#FF5722] px-4 py-2 opacity-90 hover:bg-[#FF5722] hover:opacity-100 transition-all duration-500 2xl:text-lg"
         >
           使用Google帳號註冊
-        </button>
+        </button> -->
         <router-link :to="{ name: 'Login' }">
           <div class="text-sm 2xl:text-lg underline">已有帳號?</div>
         </router-link>
@@ -570,7 +523,7 @@ watch(activeTab, () => {
             <button
               class="border-2 border-stone-100 text-stone-100 py-2 px-4 hover:bg-stone-100 hover:text-stone-600 tracking-widest transition-all duration-500 2xl:text-lg 2xl:px-6"
             >
-              聯絡我們
+              關於我們
             </button>
           </router-link>
         </div>

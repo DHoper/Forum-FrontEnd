@@ -82,9 +82,7 @@ export const inputValidator = () => {
             )
           ) {
             totalWeight += 1;
-          } else {
-            totalWeight += 10000;
-          }
+          } 
         }
         return totalWeight;
       }

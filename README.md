@@ -1,8 +1,15 @@
+# [作品網址](https://wildlens.zeabur.app/home)  (因部署環境，有時api回應會慢一點點)
+# [後端連結](https://github.com/DHoper/Forum-BackEnd) 
+# [作品介紹簡報](./public//assets/WILDLENS%20作品介紹簡報.pdf)
+
+# 專案啟動
+前後端下載後，將.env.example改為.env，然後皆npm i 、npm run dev即可
+
 # Wildens 野生攝影分享網站
 Wildens 是一個全球旅行愛好者的社區，讓用戶可以紀錄並分享他們旅途中的精彩時刻、探索不同地方，並與其他用戶互動交流。
 
 ## 作品概述
-### 前端: 使用Vue3 + TypeScript + Tailwind，並串接mapbox地圖。
+### 前端: 使用Vue3 + TypeScript + Tailwind開發的SPA網站，並串接mapbox地圖。
 ### 後端: 使用Node.js，資料庫為MongoDB Atlas，圖片資源則轉存在Cloudinary。
 
 ## 功能簡介
@@ -29,4 +36,4 @@ Wildens 是一個全球旅行愛好者的社區，讓用戶可以紀錄並分享
 
 ### 登錄與註冊頁
 進行登錄和註冊操作，註冊時可以選擇頭像，和感興趣的主題。(Google 相關選項暫無功能)。
-####提供一組已註冊帳號: test@gmail.com / 000000
+#### 提供一組已註冊帳號: test@gmail.com / 000000

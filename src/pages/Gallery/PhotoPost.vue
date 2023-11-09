@@ -11,7 +11,7 @@ import { formatDateTime } from "../../utils/formattingUtils.ts";
 import { CommentType, PhotoPostType, AuthorDataType } from "../../types.ts";
 import { ref, toRefs, onMounted } from "vue";
 import router from "../../router";
-import { XCircleIcon, EyeIcon } from "@heroicons/vue/24/outline";
+import { XCircleIcon, EyeIcon, PhotoIcon } from "@heroicons/vue/24/outline";
 import { HeartIcon } from "@heroicons/vue/24/solid";
 import { getComments } from "../../api/photoPost/photoPostComment.ts";
 import { useRoute } from "vue-router";
@@ -160,9 +160,11 @@ onMounted(async () => {
                     />
                   </div>
                   <div
-                    class="flex-1 h-full pt-4 flex flex-col items-center text-stone-700 border-b-4 border-stone-600"
+                    class="flex-1 h-full pt-4 flex flex-col items-center text-stone-700 border-b-4 border-stone-600 overflow-hidden"
                   >
-                    <h2 class="text-2xl font-bold text-center 2xl:text-3xl">
+                    <h2
+                      class="text-2xl font-bold text-center 2xl:text-3x truncate"
+                    >
                       {{ postData.title }}
                     </h2>
                     <p
@@ -177,7 +179,7 @@ onMounted(async () => {
                     </p>
                   </div>
                 </div>
-                <div class="flex gap-4 justify-between italic xl:mt-4 2xl:mt-4">
+                <div class="flex gap-4 justify-between italic my-auto xl:mt-4 2xl:mt-4">
                   <div class="flex items-center py-2 gap-2">
                     <router-link
                       :to="{
@@ -247,7 +249,7 @@ onMounted(async () => {
                 class="2xl:w-[calc(100%-2.5rem)] h-full absolute top-0"
               >
                 <div
-                  class="flex justify-around 2xl:pr-10 items-center h-full p-4 2xl:py-8 2xl:px-0"
+                  class="flex justify-around gap-8 2xl:pr-10 items-center h-full p-4 2xl:py-8 2xl:px-0"
                 >
                   <div
                     class="imgList basis-1/4 2xl:basis-1/3 overflow-hidden overflow-y-auto h-full flex flex-col gap-4 2xl:gap-10 p-2 2xl:px-0"
@@ -266,14 +268,14 @@ onMounted(async () => {
                     </div>
                     <div
                       v-if="postData.images.length === 1"
-                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 py-10 2xl:py-28 2xl:text-2xl text-stone-400"
+                      class="relative flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-8 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                     >
-                      <p>沒有更多的圖了</p>
+                      <PhotoIcon class="lg:w-8 xl:w-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                     </div>
                     <div
-                      class="flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 py-10 2xl:py-28 2xl:text-2xl text-stone-400"
+                      class="relative flex items-center justify-center 2xl:h-80 border-4 border-dashed border-stone-200 lg:py-8 xl:py-10 2xl:py-28 2xl:text-2xl text-stone-400"
                     >
-                      <p>沒有更多的圖了</p>
+                    <PhotoIcon class="lg:w-8 xl:w-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                     </div>
                   </div>
 
@@ -294,7 +296,9 @@ onMounted(async () => {
             @click="turnPage = !turnPage"
             class="absolute top-2 left-0 shadow-sm shadow-stone-600 rotate-[3deg] w-full h-full -z-10 bg-white cursor-pointer hover:top-4 transition-all duration-500"
           >
-            <span class="absolute bottom-1 right-2 text-sm text-stone-600 italic">
+            <span
+              class="absolute bottom-1 right-2 text-sm text-stone-600 italic"
+            >
               {{ turnPage ? "Page1" : "Page2" }}</span
             >
           </div>
